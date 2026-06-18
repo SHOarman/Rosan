@@ -24,12 +24,21 @@ class AppRoutes {
   static const createaccount = '/createaccount';
   static const forgotpassword = '/forgotpassword';
   static const resetpassword = '/resetpassword';
+  static const resetsuccess = '/resetsuccess';
   static const verificationcode = '/verificationcode';
-  static const newSing= '/newSing';
 
   //==============================home==================================
   static const String home = '/home';
+  static const String mygoals_seeall = '/mygoals_seeall';
+  static const String todaytaks_seeall = '/todaytaks_seeall';
   static const String profile = '/profile';
+  static const String editprofile='/editprofile';
+  static const String helpcenter = '/helpcenter';
+  static const String sendmail = '/sendmail';
+  static const String deleteaccount = '/deleteaccount';
+  static const String privacypolicy = '/privacypolicy';
+  static const String termsofservice = '/termsofservice';
+  static const String myplan = '/myplan';
   static const String inbox = '/inbox';
   static const String wins = '/wins';
   static const String gratitude = '/gratitude';

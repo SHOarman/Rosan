@@ -23,7 +23,7 @@ class CustomButton extends StatefulWidget {
     this.icon,
     this.isIconLeft = false,
     this.width = 350.0,
-    this.height = 52.0,
+    this.height = 48.0,
     this.borderRadius = 14.0,
     this.gradientColors,
     this.textStyle,
@@ -151,7 +151,8 @@ class _CustomButtonState extends State<CustomButton>
                     ],
                     Text(
                       widget.text,
-                      style: widget.textStyle ??
+                      style:
+                          widget.textStyle ??
                           AppTextStyles.plusJakartaSans(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
