@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/gratitude_controller.dart';
 import 'package:rosannalie/presention/Gratitude/gratitude.dart';
 import 'package:rosannalie/presention/ai_chart/aichart.dart';
 import 'package:rosannalie/presention/auth/create_accound.dart';
@@ -6,6 +7,8 @@ import 'package:rosannalie/presention/auth/email_verfication.dart';
 import 'package:rosannalie/presention/auth/forgot_password.dart';
 import 'package:rosannalie/presention/auth/reset_Password.dart';
 import 'package:rosannalie/presention/auth/reset_success_screen.dart';
+import 'package:rosannalie/presention/home/allQuotes.dart';
+import 'package:rosannalie/presention/home/futureMe.dart';
 import 'package:rosannalie/presention/home/home.dart';
 import 'package:rosannalie/presention/home/mygoals_seeall.dart';
 import 'package:rosannalie/presention/home/todaystaks_seeall.dart';
@@ -72,10 +75,19 @@ class AppPages {
     GetPage(name: AppRoutes.home, page: ()=>Home(),  transitionDuration: Duration.zero,),
     GetPage(name: AppRoutes.mygoals_seeall, page: ()=>MygoalsSeeall()),
     GetPage(name: AppRoutes.todaytaks_seeall, page: ()=>TodaystaksSeeall()),
+    GetPage(name: AppRoutes.allquotes, page: ()=>Allquotes()),
+    GetPage(name: AppRoutes.futureme, page: ()=>Futureme()),
 
     //===========================================Grarirude================================================
 
-    GetPage(name: AppRoutes.gratitude, page: ()=>Gratitude(),  transitionDuration: Duration.zero,),
+    GetPage(
+      name: AppRoutes.gratitude,
+      page: () => Gratitude(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => GratitudeController());
+      }),
+      transitionDuration: Duration.zero,
+    ),
     //===========================================aichart================================================
 
     GetPage(name: AppRoutes.inbox, page: ()=>Aichart(),  transitionDuration: Duration.zero,),

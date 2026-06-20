@@ -101,7 +101,7 @@ class MyGoalsWidget extends StatelessWidget {
       final percentageText = '${(goal.progress.value * 100).round()}%';
 
       return Container(
-        width: 350.0,
+        width: double.infinity,
         margin: const EdgeInsets.only(bottom: 12.0),
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         decoration: BoxDecoration(

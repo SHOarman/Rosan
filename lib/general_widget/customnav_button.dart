@@ -57,7 +57,7 @@ class CustomBottomNavBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(32.0),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.30),
-          width: 1.0,
+          width: 2.0,
         ),
         boxShadow: [
           BoxShadow(

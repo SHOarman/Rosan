@@ -33,6 +33,8 @@ class AppRoutes {
   static const String todaytaks_seeall = '/todaytaks_seeall';
   static const String profile = '/profile';
   static const String editprofile='/editprofile';
+  static const String allquotes='/allquotes';
+  static const String futureme='/futureme';
   static const String helpcenter = '/helpcenter';
   static const String sendmail = '/sendmail';
   static const String deleteaccount = '/deleteaccount';

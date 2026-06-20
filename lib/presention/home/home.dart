@@ -76,72 +76,77 @@ class Home extends StatelessWidget {
 
                       //=====================================quick_card==================================================
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Quickaccess(
-                            title: "To Do's",
-                            subtitle: "— 6 tasks",
-                            svgIconPath: "assets/icon/ListIcon.svg",
-                            iconBackgroundColor: Colors.white,
-                            gradientColors: const [
-                              Color(0xFFFFF0E8),
-                              Color(0xFFFFD4B5),
-                            ],
-                            onTap: () {
-                              print("To Do's Clicked!");
-                            },
+                          Expanded(
+                            child: Quickaccess(
+                              title: "To Do's",
+                              subtitle: "— 6 tasks",
+                              svgIconPath: "assets/icon/ListIcon.svg",
+                              iconBackgroundColor: Colors.white,
+                              gradientColors: const [
+                                Color(0xFFFFF0E8),
+                                Color(0xFFFFD4B5),
+                              ],
+                              onTap: () {
+                                Get.toNamed(AppRoutes.todaytaks_seeall);
+                              },
+                            ),
                           ),
 
                           const SizedBox(width: 16),
 
-                          Quickaccess(
-                            title: "Goals",
-                            subtitle: "— 6 goals",
-                            svgIconPath: "assets/icon/TargetIcon.svg",
-                            iconBackgroundColor: Colors.white,
-                            gradientColors: const [
-                              Color(0xFFF0E8FF),
-                              Color(0xFFDDD0FF),
-                            ],
-                            onTap: () {
-                              print("Goals Clicked!");
-                            },
+                          Expanded(
+                            child: Quickaccess(
+                              title: "Goals",
+                              subtitle: "— 6 goals",
+                              svgIconPath: "assets/icon/TargetIcon.svg",
+                              iconBackgroundColor: Colors.white,
+                              gradientColors: const [
+                                Color(0xFFF0E8FF),
+                                Color(0xFFDDD0FF),
+                              ],
+                              onTap: () {
+                                Get.toNamed(AppRoutes.mygoals_seeall);
+                              },
+                            ),
                           ),
                         ],
                       ),
                       SizedBox(height: 12),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Quickaccess(
-                            title: "Quotes",
-                            subtitle: "— 6 quotes",
-                            svgIconPath: "assets/icon/QuoteIcon (1).svg",
-                            iconBackgroundColor: Colors.white,
-                            gradientColors: const [
-                              Color(0xFFFFF0E8),
-                              Color(0xFFFFD4B5),
-                            ],
-                            onTap: () {
-                              print("To Do's Clicked!");
-                            },
+                          Expanded(
+                            child: Quickaccess(
+                              title: "Quotes",
+                              subtitle: "— 6 quotes",
+                              svgIconPath: "assets/icon/QuoteIcon (1).svg",
+                              iconBackgroundColor: Colors.white,
+                              gradientColors: const [
+                                Color(0xFFFFF0E8),
+                                Color(0xFFFFD4B5),
+                              ],
+                              onTap: () {
+                                Get.toNamed(AppRoutes.allquotes);
+                              },
+                            ),
                           ),
 
                           const SizedBox(width: 16),
 
-                          Quickaccess(
-                            title: "Future Me",
-                            subtitle: "— 6 future’s",
-                            svgIconPath: "assets/icon/ImageIcon (1).svg",
-                            iconBackgroundColor: Colors.white,
-                            gradientColors: const [
-                              Color(0xFFF0E8FF),
-                              Color(0xFFDDD0FF),
-                            ],
-
-                            onTap: () {
-                              print("Goals Clicked!");
-                            },
+                          Expanded(
+                            child: Quickaccess(
+                              title: "Future Me",
+                              subtitle: "— 6 future's",
+                              svgIconPath: "assets/icon/ImageIcon (1).svg",
+                              iconBackgroundColor: Colors.white,
+                              gradientColors: const [
+                                Color(0xFFF0E8FF),
+                                Color(0xFFDDD0FF),
+                              ],
+                              onTap: () {
+                                Get.toNamed(AppRoutes.futureme);
+                              },
+                            ),
                           ),
                         ],
                       ),

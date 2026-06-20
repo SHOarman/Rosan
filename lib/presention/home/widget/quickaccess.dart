@@ -24,7 +24,6 @@ class Quickaccess extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 167.0,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),

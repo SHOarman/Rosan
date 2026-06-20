@@ -16,7 +16,7 @@ class TodayTasks extends StatelessWidget {
       final double progressPercentage = controller.progressPercentage;
 
       return Container(
-        width: 350.0,
+        width: double.infinity,
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.8),

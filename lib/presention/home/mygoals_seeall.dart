@@ -69,7 +69,7 @@ class MygoalsSeeall extends StatelessWidget {
                 final activeCount = controller.activeGoalsCount;
 
                 return Container(
-                  width: 350.0,
+                  width: double.infinity,
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
@@ -148,7 +148,7 @@ class MygoalsSeeall extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () => _showAddGoalBottomSheet(context, controller),
                             child: Container(
-                              width: 350.0,
+                              width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.6),
@@ -246,7 +246,7 @@ class MygoalsSeeall extends StatelessWidget {
       final progressPercentText = '${(goal.progress.value * 100).round()}%';
 
       return Container(
-        width: 350.0,
+        width: double.infinity,
         margin: const EdgeInsets.only(bottom: 16.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
