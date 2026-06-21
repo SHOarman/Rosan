@@ -11,7 +11,9 @@ class Gratitude extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GratitudeController controller = Get.find<GratitudeController>();
+    final GratitudeController controller = Get.isRegistered<GratitudeController>()
+        ? Get.find<GratitudeController>()
+        : Get.put(GratitudeController());
 
     return CustomBackground(
       useSafeArea: false,
@@ -327,58 +329,77 @@ class Gratitude extends StatelessWidget {
     );
   }
 
-  // ── Add Entry Bottom Sheet ─────────────────────────────────────
+  // ── Add Entry Dialog ───────────────────────────────────────────
   void _showAddEntrySheet(
       BuildContext context, GratitudeController controller) {
     final textController = TextEditingController();
-    String selectedEmoji = '✨';
-    final emojis = ['✨', '☕', '💛', '🌅', '🌸', '🤝', '📚', '🎶'];
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.35),
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setState) {
-            return Container(
-              padding: EdgeInsets.only(
-                top: 24,
-                left: 24,
-                right: 24,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(26, 20, 26, 20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFC5B8E8), // 85% opacity feel
+                  Color(0xFFFFD7C3), // 75% opacity feel
+                ],
               ),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF6F5FB),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+              borderRadius: BorderRadius.circular(20),
+              border: const Border(
+                top: BorderSide(
+                  color: Color(0xFFFFFFFF),
+                  width: 1,
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF79479C), Color(0xFFAC6262)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF4A3870).withValues(alpha: 0.1),
+                  offset: const Offset(0, 8),
+                  blurRadius: 32,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Icon + Title row
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF79479C),
+                            Color(0xFFAC6262),
+                          ],
                         ),
-                        alignment: Alignment.center,
-                        child: const Text('✨',
-                            style: TextStyle(fontSize: 16)),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(width: 10),
-                      Text(
+                      alignment: Alignment.center,
+                      child: const Text(
+                        '✨',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
                         'What made you smile today?',
                         style: AppTextStyles.plusJakartaSans(
                           fontSize: 16,
@@ -386,159 +407,124 @@ class Gratitude extends StatelessWidget {
                           color: const Color(0xFF2E2252),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Emoji picker
-                  SizedBox(
-                    height: 40,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: emojis.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(width: 8),
-                      itemBuilder: (_, i) {
-                        final e = emojis[i];
-                        final bool isSelected = selectedEmoji == e;
-                        return GestureDetector(
-                          onTap: () => setState(() => selectedEmoji = e),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 180),
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFFEFE8FF)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected
-                                    ? const Color(0xFF7B64B0)
-                                    : const Color(0xFFE2DCF7),
-                                width: 1.5,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(e,
-                                style: const TextStyle(fontSize: 20)),
-                          ),
-                        );
-                      },
                     ),
-                  ),
-                  const SizedBox(height: 16),
+                  ],
+                ),
 
-                  // Text field
-                  TextField(
-                    controller: textController,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: 'Write freely, no judgment...',
-                      hintStyle: AppTextStyles.inter(
-                        color: const Color(0xFF8F7DB5).withValues(alpha: 0.6),
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                            color: Color(0xFFE2DCF7), width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                            color: Color(0xFF7B64B0), width: 1.5),
-                      ),
-                      contentPadding: const EdgeInsets.all(16),
+                const SizedBox(height: 16),
+
+                // Text field
+                TextField(
+                  controller: textController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'Write freely, no judgment...',
+                    hintStyle: AppTextStyles.inter(
+                      color: const Color(0xFF8F7DB5).withValues(alpha: 0.6),
+                      fontSize: 14,
                     ),
-                    style: AppTextStyles.inter(
-                        color: const Color(0xFF2E2252), fontSize: 14),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.85),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        width: 1,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF7B64B0),
+                        width: 1.5,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.all(14),
                   ),
-                  const SizedBox(height: 20),
+                  style: AppTextStyles.inter(
+                    color: const Color(0xFF2E2252),
+                    fontSize: 14,
+                  ),
+                ),
 
-                  // Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => Get.back(),
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                  color: const Color(0xFFE2DCF7)),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Cancel',
-                              style: AppTextStyles.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF8F7DB5),
-                              ),
+                const SizedBox(height: 20),
+
+                // Buttons row
+                Row(
+                  children: [
+                    // Cancel
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(ctx).pop(),
+                        child: Container(
+                          height: 48,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Cancel',
+                            style: AppTextStyles.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF8F7DB5),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            final text = textController.text.trim();
-                            if (text.isEmpty) return;
-                            controller.addEntry(text, selectedEmoji);
-                            Get.back();
-                          },
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF8F7DB5),
-                                  Color(0xFF7B64B0)
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                    ),
+                    const SizedBox(width: 12),
+                    // Save
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          final text = textController.text.trim();
+                          if (text.isEmpty) return;
+                          controller.addEntry(text, '✨');
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFF8F7DB5),
+                                Color(0xFF7B64B0),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF7B64B0)
+                                    .withValues(alpha: 0.35),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
                               ),
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF7B64B0)
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
+                            ],
+                          ),
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Save ',
+                                style: AppTextStyles.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
-                              ],
-                            ),
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Save ',
-                                  style: AppTextStyles.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const Text('💛',
-                                    style: TextStyle(fontSize: 14)),
-                              ],
-                            ),
+                              ),
+                              const Text('💛',
+                                  style: TextStyle(fontSize: 14)),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

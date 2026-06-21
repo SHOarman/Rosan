@@ -82,11 +82,7 @@ class AppPages {
 
     GetPage(
       name: AppRoutes.gratitude,
-      page: () => Gratitude(),
-      binding: BindingsBuilder(() {
-        Get.lazyPut(() => GratitudeController());
-      }),
-      transitionDuration: Duration.zero,
+      page: () => Gratitude(),transitionDuration: Duration.zero,
     ),
     //===========================================aichart================================================
 
