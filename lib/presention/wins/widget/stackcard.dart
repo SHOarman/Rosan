@@ -9,6 +9,13 @@ class StackCard extends StatelessWidget {
   final Widget? trailing;
   final List<BoxShadow>? customShadows;
   final bool showBorder;
+  final Color? titleColor;
+  final Color? subtitleColor;
+  final double? titleFontSize;
+  final double? subtitleFontSize;
+  final EdgeInsetsGeometry? padding;
+  final double? width;
+  final double? height;
 
   const StackCard({
     super.key,
@@ -19,33 +26,40 @@ class StackCard extends StatelessWidget {
     this.trailing,
     this.customShadows,
     this.showBorder = true,
+    this.titleColor,
+    this.subtitleColor,
+    this.titleFontSize,
+    this.subtitleFontSize,
+    this.padding,
+    this.width,
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     final defaultShadows = customShadows ?? [
       BoxShadow(
-        color: Colors.black.withOpacity(0.06),
+        color: Colors.black.withValues(alpha: 0.06),
         blurRadius: 10,
         offset: const Offset(0, 0),
       ),
       BoxShadow(
-        color: Colors.black.withOpacity(0.10),
+        color: Colors.black.withValues(alpha: 0.10),
         blurRadius: 4,
         offset: const Offset(0, 0),
       ),
     ];
 
     return Container(
-      width: 110,
-      height: 110,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      width: width,
+      height: height ?? 110,
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: gradientColors.map((c) => c.withOpacity(0.85)).toList(),
+          colors: gradientColors.map((c) => c.withValues(alpha: 0.85)).toList(),
         ),
         border: showBorder
             ? Border.all(
@@ -74,10 +88,10 @@ class StackCard extends StatelessWidget {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style:  AppTextStyles.plusJakartaSans(
+                  style: AppTextStyles.plusJakartaSans(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black87,
+                    fontSize: titleFontSize ?? 14,
+                    color: titleColor ?? Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -85,8 +99,8 @@ class StackCard extends StatelessWidget {
                   subtitle,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.plusJakartaSans(
-                    fontSize: 12,
-                    color: const Color(0xFF575B61),
+                    fontSize: subtitleFontSize ?? 12,
+                    color: subtitleColor ?? const Color(0xFF575B61),
                   ),
                 ),
               ],
@@ -96,4 +110,4 @@ class StackCard extends StatelessWidget {
       ),
     );
   }
-}
+}

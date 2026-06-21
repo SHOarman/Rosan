@@ -22,7 +22,7 @@ class CustomButton extends StatefulWidget {
     this.showIcon = false,
     this.icon,
     this.isIconLeft = false,
-    this.width = 350.0,
+    this.width = double.infinity,
     this.height = 48.0,
     this.borderRadius = 14.0,
     this.gradientColors,

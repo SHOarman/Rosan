@@ -192,7 +192,7 @@ class TodaystaksSeeall extends StatelessWidget {
   Widget _buildTaskCard(BuildContext context, TaskItem task, Todaytaskcontroller controller) {
     return Obx(() {
       return Container(
-        width: 350.0,
+        width: double.infinity,
         margin: const EdgeInsets.only(bottom: 12.0),
         padding: const EdgeInsets.only(top: 14, bottom: 14, left: 16, right: 16),
         decoration: BoxDecoration(

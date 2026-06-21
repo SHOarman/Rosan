@@ -37,10 +37,11 @@ import '../../presention/onloading/onlading7.dart';
 import '../../presention/onloading/onlading8.dart';
 import '../../presention/onloading/onlading9.dart';
 import '../../presention/auth/signin_screen.dart';
+import '../../presention/subscription_Promotion/subscriptionPromotion.dart';
 import 'app_pages.dart';
 
 class AppPages {
-  static const initial = AppRoutes.home;
+  static const initial = AppRoutes.onborading;
   static final routes = [
 
     //================================onloding==========================
@@ -100,9 +101,6 @@ class AppPages {
     GetPage(name: AppRoutes.privacypolicy, page: ()=>const PrivacyPolicyPage()),
     GetPage(name: AppRoutes.termsofservice, page: ()=>const TermsOfServicePage()),
     GetPage(name: AppRoutes.myplan, page: ()=>const MyPlanPage()),
-
-
-
-
+    GetPage(name: AppRoutes.subscriptionPromotion, page: ()=>const SubscriptionPromotion()),
   ];
 }

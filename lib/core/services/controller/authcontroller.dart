@@ -24,9 +24,7 @@ class Authcontroller extends GetxController {
     // Simulate API call for login
     Future.delayed(const Duration(milliseconds: 1500), () {
       isLoading.value = false;
-
-      Get.toNamed(AppRoutes.home);
-
+      Get.offAllNamed(AppRoutes.subscriptionPromotion);
     });
   }
 

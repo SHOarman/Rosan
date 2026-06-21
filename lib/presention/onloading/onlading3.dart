@@ -29,12 +29,13 @@ class _Onlading3State extends State<Onlading3> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 480;
+
     return CustomBackground.onboarding(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start
-          ,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
             const OnboardingHeader(currentPage: 2),
@@ -58,64 +59,89 @@ class _Onlading3State extends State<Onlading3> {
               ),
             ),
             const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    children: List.generate(4, (index) {
-                      final item = items[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: MiniCard(
-                          width: double.infinity,
-                          text: item["text"]!,
-                          emoji: item["emoji"]!,
-                          isSelected: selectedIndex == index,
-                          onTap: () {
-                            setState(() {
-                              if (selectedIndex == index) {
-                                selectedIndex = null;
-                              } else {
-                                selectedIndex = index;
-                              }
-                            });
-                          },
-                        ),
-                      );
-                    }),
+            if (isMobile)
+              Column(
+                children: List.generate(items.length, (index) {
+                  final item = items[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: MiniCard(
+                      width: double.infinity,
+                      text: item["text"]!,
+                      emoji: item["emoji"]!,
+                      isSelected: selectedIndex == index,
+                      onTap: () {
+                        setState(() {
+                          if (selectedIndex == index) {
+                            selectedIndex = null;
+                          } else {
+                            selectedIndex = index;
+                          }
+                        });
+                      },
+                    ),
+                  );
+                }),
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: List.generate(4, (index) {
+                        final item = items[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: MiniCard(
+                            width: double.infinity,
+                            text: item["text"]!,
+                            emoji: item["emoji"]!,
+                            isSelected: selectedIndex == index,
+                            onTap: () {
+                              setState(() {
+                                if (selectedIndex == index) {
+                                  selectedIndex = null;
+                                } else {
+                                  selectedIndex = index;
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    children: List.generate(2, (index) {
-                      final actualIndex = index + 4;
-                      final item = items[actualIndex];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: MiniCard(
-                          width: double.infinity,
-                          text: item["text"]!,
-                          emoji: item["emoji"]!,
-                          isSelected: selectedIndex == actualIndex,
-                          onTap: () {
-                            setState(() {
-                              if (selectedIndex == actualIndex) {
-                                selectedIndex = null;
-                              } else {
-                                selectedIndex = actualIndex;
-                              }
-                            });
-                          },
-                        ),
-                      );
-                    }),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      children: List.generate(2, (index) {
+                        final actualIndex = index + 4;
+                        final item = items[actualIndex];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: MiniCard(
+                            width: double.infinity,
+                            text: item["text"]!,
+                            emoji: item["emoji"]!,
+                            isSelected: selectedIndex == actualIndex,
+                            onTap: () {
+                              setState(() {
+                                if (selectedIndex == actualIndex) {
+                                  selectedIndex = null;
+                                } else {
+                                  selectedIndex = actualIndex;
+                                }
+                              });
+                            },
+                          ),
+                        );
+                      }),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             const SizedBox(height: 200),
             Center(
               child: CustomButton(

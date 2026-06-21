@@ -103,7 +103,7 @@ class Gratitude extends StatelessWidget {
                         );
                       }),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
 
                       // A note from Rise
                       _buildRiseNoteCard(),
@@ -318,7 +318,7 @@ class Gratitude extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             '"Gratitude doesn\'t change the scenery — it washes clean the glass you look through so you can see the colors in the same world. Keep noticing, fvbb."',
-            style: AppTextStyles.inter(
+            style: AppTextStyles.playfairDisplay(
               fontSize: 13,
               fontWeight: FontWeight.w400,
               color: const Color(0xFF8F7DB5),

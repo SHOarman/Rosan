@@ -18,7 +18,7 @@ class Stackcard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350.0,
+      width: double.infinity,
       height: 130.0,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
       decoration: BoxDecoration(

@@ -61,7 +61,7 @@ class _Onlading6State extends State<Onlading6> {
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: MiniCard(
                     text: options[index],
-                    width: 280.0,
+                    width: double.infinity,
                     isSelected: selectedIndex == index,
                     onTap: () {
                       setState(() {

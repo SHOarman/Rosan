@@ -13,7 +13,7 @@ class LogoutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350.0,
+      width: double.infinity,
       height: 52.0,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),

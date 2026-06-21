@@ -22,7 +22,7 @@ class CustomCard extends StatefulWidget {
     this.leading,
     this.imageAsset,
     this.onTap,
-    this.width = 350.0, // Default width as per UI spec (350px)
+    this.width = double.infinity, // Default responsive width
     this.height = 56.0,  // Default height as per UI spec (56px)
     this.textStyle,
     this.backgroundColor,

@@ -172,10 +172,10 @@ class Profile extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       //=============================================profilecard=================================================================
-                      Center(child: Profilecard(onTap: () {})),
+                      Profilecard(onTap: () {}),
                       const SizedBox(height: 20),
                       //===============================stackcard======================================================
-                      const Center(child: Stackcard()),
+                      const Stackcard(),
 
                       const SizedBox(height: 30),
 
@@ -189,15 +189,13 @@ class Profile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Center(
-                        child: Accound(
-                          onTapEditProfile: () {
-                            Get.toNamed(AppRoutes.editprofile);
-                          },
-                          onTapNotifications: () {
-                            print("Notifications Clicked from Profile Screen");
-                          },
-                        ),
+                      Accound(
+                        onTapEditProfile: () {
+                          Get.toNamed(AppRoutes.editprofile);
+                        },
+                        onTapNotifications: () {
+                          print("Notifications Clicked from Profile Screen");
+                        },
                       ),
                       const SizedBox(height: 30),
 
@@ -210,12 +208,10 @@ class Profile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Center(
-                        child: MyPlan(
-                          onTap: () {
-                            Get.toNamed(AppRoutes.myplan);
-                          },
-                        ),
+                      MyPlan(
+                        onTap: () {
+                          Get.toNamed(AppRoutes.myplan);
+                        },
                       ),
                       const SizedBox(height: 20),
                       Text(
@@ -227,28 +223,24 @@ class Profile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Center(
-                        child: SupportCard(
-                          onTapHelpCenter: () {
-                            print("Help Center Clicked from Profile Screen");
-                            Get.toNamed(AppRoutes.helpcenter);
-                          },
-                          onTapPrivacyPolicy: () {
-                            Get.toNamed(AppRoutes.privacypolicy);
-                          },
-                          onTapTermsOfService: () {
-                            Get.toNamed(AppRoutes.termsofservice);
-                          },
-                        ),
+                      SupportCard(
+                        onTapHelpCenter: () {
+                          print("Help Center Clicked from Profile Screen");
+                          Get.toNamed(AppRoutes.helpcenter);
+                        },
+                        onTapPrivacyPolicy: () {
+                          Get.toNamed(AppRoutes.privacypolicy);
+                        },
+                        onTapTermsOfService: () {
+                          Get.toNamed(AppRoutes.termsofservice);
+                        },
                       ),
                       const SizedBox(height: 30),
                       //============================loguout====================================
-                      Center(
-                        child: LogoutCard(
-                          onTap: () {
-                            _showLogoutDialog(context);
-                          },
-                        ),
+                      LogoutCard(
+                        onTap: () {
+                          _showLogoutDialog(context);
+                        },
                       ),
                       const SizedBox(height: 100),
                     ],

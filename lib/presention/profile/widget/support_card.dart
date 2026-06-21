@@ -13,11 +13,10 @@ class SupportCard extends StatelessWidget {
     this.onTapPrivacyPolicy,
     this.onTapTermsOfService,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350.0,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(20.0),

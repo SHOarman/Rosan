@@ -194,7 +194,7 @@ class Home extends StatelessWidget {
                       //============================================my_goals===============================================
                       const MyGoalsWidget(),
 
-                      const SizedBox(height: 80.0),
+                      const SizedBox(height: 60.0),
                     ],
                   ),
                 ),

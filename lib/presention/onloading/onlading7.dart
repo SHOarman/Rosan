@@ -64,46 +64,43 @@ class _Onlading7State extends State<Onlading7> {
               ),
             ),
             const SizedBox(height: 40),
-            SizedBox(
-              width: 350.0,
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: "e.g. Launch my side project, lose 10kg...",
-                  hintStyle: AppTextStyles.plusJakartaSans(
-                    color: const Color(0xFF8B7DB5).withValues(alpha: 0.5),
-                    fontSize: 15,
-                  ),
-                  fillColor: Colors.white.withValues(alpha: 0.55),
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14.0),
-                    borderSide: BorderSide(
-                      color: const Color(0xFFC5B8E8).withValues(alpha: 0.5),
-                      width: 1.0,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14.0),
-                    borderSide: BorderSide(
-                      color: const Color(0xFFC5B8E8).withValues(alpha: 0.5),
-                      width: 1.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14.0),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF7B64B0),
-                      width: 1.5,
-                    ),
+            TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: "e.g. Launch my side project, lose 10kg...",
+                hintStyle: AppTextStyles.plusJakartaSans(
+                  color: const Color(0xFF8B7DB5).withValues(alpha: 0.5),
+                  fontSize: 15,
+                ),
+                fillColor: Colors.white.withValues(alpha: 0.55),
+                filled: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14.0),
+                  borderSide: BorderSide(
+                    color: const Color(0xFFC5B8E8).withValues(alpha: 0.5),
+                    width: 1.0,
                   ),
                 ),
-                style: AppTextStyles.plusJakartaSans(
-                  color: const Color(0xFF2E2252),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14.0),
+                  borderSide: BorderSide(
+                    color: const Color(0xFFC5B8E8).withValues(alpha: 0.5),
+                    width: 1.0,
+                  ),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14.0),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF7B64B0),
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              style: AppTextStyles.plusJakartaSans(
+                color: const Color(0xFF2E2252),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 250),

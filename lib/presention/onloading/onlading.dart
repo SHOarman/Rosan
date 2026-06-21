@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
-import 'package:rosannalie/general_widget/custom_background.dart';
+import 'package:video_player/video_player.dart';
 
 class Onlading extends StatefulWidget {
   const Onlading({super.key});
@@ -11,68 +11,49 @@ class Onlading extends StatefulWidget {
 }
 
 class _OnladingState extends State<Onlading> {
+  VideoPlayerController? _controller;
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
-    // Navigate to onboarding 1 after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.offNamed(AppRoutes.onborading1);
-    });
+    _controller = VideoPlayerController.asset('assets/icon/302098.mp4')
+      ..initialize().then((_) {
+        setState(() {
+          _isInitialized = true;
+        });
+        _controller?.setVolume(0.0); // Mute the video to allow autoplay on Chrome (web)
+        _controller?.play();
+
+        // Navigate to onboarding 1 after 4 seconds of playback starting
+        Future.delayed(const Duration(seconds: 4), () {
+          Get.offNamed(AppRoutes.onborading1);
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomBackground.auth(
-      useSafeArea: false,
-      child: Center(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0.8, end: 1.0),
-          duration: const Duration(milliseconds: 1200),
-          curve: Curves.easeOutBack,
-          builder: (context, scale, child) {
-            return Transform.scale(
-              scale: scale,
-              child: TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 800),
-                builder: (context, opacity, child) {
-                  return Opacity(
-                    opacity: opacity,
-                    child: child,
-                  );
-                },
-                child: child,
-              ),
-            );
-          },
-          child: Container(
-            width: 180.0,
-            height: 180.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(36.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  blurRadius: 25.0,
-                  offset: const Offset(0, 10),
-                ),
-                BoxShadow(
-                  color: const Color(0xFF9B85CF).withValues(alpha: 0.3),
-                  blurRadius: 35.0,
-                  spreadRadius: 2.0,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(36.0),
-              child: Image.asset(
-                'assets/icon/LOGO (2) 1.png',
+    return Scaffold(
+      backgroundColor: Colors.black, // Clean black background
+      body: _isInitialized && _controller != null
+          ? SizedBox.expand(
+              child: FittedBox(
                 fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _controller!.value.size.width,
+                  height: _controller!.value.size.height,
+                  child: VideoPlayer(_controller!),
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

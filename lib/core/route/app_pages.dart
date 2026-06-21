@@ -41,6 +41,7 @@ class AppRoutes {
   static const String privacypolicy = '/privacypolicy';
   static const String termsofservice = '/termsofservice';
   static const String myplan = '/myplan';
+  static const String subscriptionPromotion = '/subscriptionPromotion';
   static const String inbox = '/inbox';
   static const String wins = '/wins';
   static const String gratitude = '/gratitude';

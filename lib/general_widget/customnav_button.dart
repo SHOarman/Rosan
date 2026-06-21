@@ -51,7 +51,8 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350.0,
+      width: double.infinity,
+      constraints: const BoxConstraints(maxWidth: 350.0),
       height: 70.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32.0),

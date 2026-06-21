@@ -20,7 +20,7 @@ class Profilecard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 350.0,
+        width: double.infinity,
         height: 85.0,
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
