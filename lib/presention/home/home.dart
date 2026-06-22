@@ -194,7 +194,7 @@ class Home extends StatelessWidget {
                       //============================================my_goals===============================================
                       const MyGoalsWidget(),
 
-                      const SizedBox(height: 60.0),
+                      const SizedBox(height: 70.0),
                     ],
                   ),
                 ),
@@ -202,7 +202,7 @@ class Home extends StatelessWidget {
             ),
           ),
           const Positioned(
-            bottom: 40.0,
+            bottom: 50.0,
             left: 0,
             right: 0,
             child: Center(child: CustomBottomNavBar(selectedIndex: 0)),

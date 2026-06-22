@@ -116,7 +116,7 @@ class Gratitude extends StatelessWidget {
             ),
           ),
           const Positioned(
-            bottom: 40.0,
+            bottom: 50.0,
             left: 0,
             right: 0,
             child: Center(
