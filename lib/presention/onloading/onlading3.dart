@@ -142,7 +142,7 @@ class _Onlading3State extends State<Onlading3> {
                   ),
                 ],
               ),
-            const SizedBox(height: 200),
+            const SizedBox(height: 100),
             Center(
               child: CustomButton(
                 text: "Continue",

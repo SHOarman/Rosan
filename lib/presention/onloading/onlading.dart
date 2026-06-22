@@ -17,7 +17,7 @@ class _OnladingState extends State<Onlading> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/icon/302098.mp4')
+    _controller = VideoPlayerController.asset('assets/icon/onlyvideoneee.mp4')
       ..initialize().then((_) {
         setState(() {
           _isInitialized = true;
