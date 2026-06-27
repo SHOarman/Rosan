@@ -15,7 +15,7 @@ class Onlading12 extends StatefulWidget {
 }
 
 class _Onlading12State extends State<Onlading12> {
-  int? selectedIndex;
+  final Set<int> selectedIndices = {};
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +64,13 @@ class _Onlading12State extends State<Onlading12> {
                   child: MoodPillCard(
                     text: item["text"]!,
                     emoji: item["emoji"]!,
-                    isSelected: selectedIndex == index,
+                    isSelected: selectedIndices.contains(index),
                     onTap: () {
                       setState(() {
-                        if (selectedIndex == index) {
-                          selectedIndex = null;
+                        if (selectedIndices.contains(index)) {
+                          selectedIndices.remove(index);
                         } else {
-                          selectedIndex = index;
+                          selectedIndices.add(index);
                         }
                       });
                     },
@@ -87,7 +87,7 @@ class _Onlading12State extends State<Onlading12> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndex == null,
+                isDisabled: selectedIndices.isEmpty,
                 onTap: () {
                   Get.toNamed(AppRoutes.onborading13);
                 },

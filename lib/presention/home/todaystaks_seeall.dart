@@ -24,7 +24,6 @@ class TodaystaksSeeall extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  // Header Row with centered title and left back button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -152,9 +151,8 @@ class TodaystaksSeeall extends StatelessWidget {
             ),
           ),
 
-          // Floating Action Button to Add Task
           Positioned(
-            bottom: 30,
+            bottom: 40,
             right: 20,
             child: GestureDetector(
               onTap: () => _showAddTaskBottomSheet(context, controller),
@@ -560,14 +558,13 @@ class TodaystaksSeeall extends StatelessWidget {
                           );
                           return;
                         }
-                        // Add task with smart category and daily options
                         final priority = selectedPriority.value;
                         final isHigh = priority == 'High';
                         controller.addTask(
                           titleController.text.trim(),
                           priority,
                           isHigh ? 'Health' : (priority == 'Medium' ? 'Learning' : 'Mindfulness'),
-                          isHigh, // show daily switch if priority is High
+                          isHigh,
                         );
                         Get.back();
                       },

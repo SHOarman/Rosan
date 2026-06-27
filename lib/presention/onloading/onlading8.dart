@@ -16,10 +16,10 @@ class Onlading8 extends StatefulWidget {
 }
 
 class _Onlading8State extends State<Onlading8> {
-  int? selectedIndex;
+  final Set<int> selectedIndices = {};
 
   Widget _buildMiniCard(Map<String, String> item, int index) {
-    final isSelected = selectedIndex == index;
+    final isSelected = selectedIndices.contains(index);
     return MiniCard(
       width: double.infinity,
       text: item["text"]!,
@@ -27,10 +27,10 @@ class _Onlading8State extends State<Onlading8> {
       isSelected: isSelected,
       onTap: () {
         setState(() {
-          if (selectedIndex == index) {
-            selectedIndex = null;
+          if (selectedIndices.contains(index)) {
+            selectedIndices.remove(index);
           } else {
-            selectedIndex = index;
+            selectedIndices.add(index);
           }
         });
       },
@@ -119,7 +119,7 @@ class _Onlading8State extends State<Onlading8> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndex == null,
+                isDisabled: selectedIndices.isEmpty,
                 onTap: () {
                   Get.toNamed(AppRoutes.onborading9);
                 },

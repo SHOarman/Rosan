@@ -133,7 +133,6 @@ class _CustomButtonState extends State<CustomButton>
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12.0,
-                vertical: 14.0,
               ),
               child: Center(
                 child: Row(

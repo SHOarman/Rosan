@@ -16,7 +16,7 @@ class Onlading6 extends StatefulWidget {
 }
 
 class _Onlading6State extends State<Onlading6> {
-  int? selectedIndex;
+  final Set<int> selectedIndices = {};
 
   final List<String> options = [
     "Rarely — I'm fairly focused",
@@ -62,13 +62,13 @@ class _Onlading6State extends State<Onlading6> {
                   child: MiniCard(
                     text: options[index],
                     width: double.infinity,
-                    isSelected: selectedIndex == index,
+                    isSelected: selectedIndices.contains(index),
                     onTap: () {
                       setState(() {
-                        if (selectedIndex == index) {
-                          selectedIndex = null;
+                        if (selectedIndices.contains(index)) {
+                          selectedIndices.remove(index);
                         } else {
-                          selectedIndex = index;
+                          selectedIndices.add(index);
                         }
                       });
                     },
@@ -85,7 +85,7 @@ class _Onlading6State extends State<Onlading6> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndex == null,
+                isDisabled: selectedIndices.isEmpty,
                 onTap: () {
                   Get.toNamed(AppRoutes.onborading7);
                 },

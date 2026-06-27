@@ -34,7 +34,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 children: [
                   const SizedBox(height: 60),
                   Text(
-                    "Welcome Back !",
+                    "Welcome Back!",
                     style: AppTextStyles.poppins(
                       fontSize: 28,
                       color: const Color(0xff5E4B8B),
@@ -151,9 +151,8 @@ class _SigninScreenState extends State<SigninScreen> {
                   Obx(
                     () => Center(
                       child: CustomButton(
-                        text: authController.isLoading.value
-                            ? "Signing In..."
-                            : "Continue",
+                        text: "Sign in",
+
                         showIcon: !authController.isLoading.value,
                         isDisabled: authController.isLoading.value,
                         gradientColors: const [
@@ -231,7 +230,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Already have an account?  ",
+                        "Do you not have an account yet?  ",
                         style: AppTextStyles.inter(
                           fontSize: 14,
                           color: const Color(0xFF2E2252),

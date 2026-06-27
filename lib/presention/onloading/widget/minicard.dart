@@ -116,7 +116,7 @@ class _MiniCardState extends State<MiniCard> with SingleTickerProviderStateMixin
             duration: const Duration(milliseconds: 200),
             width: widget.width,
             height: widget.height,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100.0), // Rounded pill shape
               color: widget.isSelected ? null : unselectedColor,

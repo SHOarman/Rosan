@@ -16,7 +16,7 @@ class Onlading5 extends StatefulWidget {
 }
 
 class _Onlading5State extends State<Onlading5> {
-  int? selectedIndex;
+  final Set<int> selectedIndices = {};
 
   final List<Map<String, String>> items = [
     {"text": "Early morning", "emoji": "🌅"},
@@ -66,13 +66,13 @@ class _Onlading5State extends State<Onlading5> {
                         width: double.infinity,
                         text: items[0]["text"]!,
                         emoji: items[0]["emoji"]!,
-                        isSelected: selectedIndex == 0,
+                        isSelected: selectedIndices.contains(0),
                         onTap: () {
                           setState(() {
-                            if (selectedIndex == 0) {
-                              selectedIndex = null;
+                            if (selectedIndices.contains(0)) {
+                              selectedIndices.remove(0);
                             } else {
-                              selectedIndex = 0;
+                              selectedIndices.add(0);
                             }
                           });
                         },
@@ -82,13 +82,13 @@ class _Onlading5State extends State<Onlading5> {
                         width: double.infinity,
                         text: items[2]["text"]!,
                         emoji: items[2]["emoji"]!,
-                        isSelected: selectedIndex == 2,
+                        isSelected: selectedIndices.contains(2),
                         onTap: () {
                           setState(() {
-                            if (selectedIndex == 2) {
-                              selectedIndex = null;
+                            if (selectedIndices.contains(2)) {
+                              selectedIndices.remove(2);
                             } else {
-                              selectedIndex = 2;
+                              selectedIndices.add(2);
                             }
                           });
                         },
@@ -98,13 +98,13 @@ class _Onlading5State extends State<Onlading5> {
                         width: double.infinity,
                         text: items[4]["text"]!,
                         emoji: items[4]["emoji"]!,
-                        isSelected: selectedIndex == 4,
+                        isSelected: selectedIndices.contains(4),
                         onTap: () {
                           setState(() {
-                            if (selectedIndex == 4) {
-                              selectedIndex = null;
+                            if (selectedIndices.contains(4)) {
+                              selectedIndices.remove(4);
                             } else {
-                              selectedIndex = 4;
+                              selectedIndices.add(4);
                             }
                           });
                         },
@@ -120,13 +120,13 @@ class _Onlading5State extends State<Onlading5> {
                         width: double.infinity,
                         text: items[1]["text"]!,
                         emoji: items[1]["emoji"]!,
-                        isSelected: selectedIndex == 1,
+                        isSelected: selectedIndices.contains(1),
                         onTap: () {
                           setState(() {
-                            if (selectedIndex == 1) {
-                              selectedIndex = null;
+                            if (selectedIndices.contains(1)) {
+                              selectedIndices.remove(1);
                             } else {
-                              selectedIndex = 1;
+                              selectedIndices.add(1);
                             }
                           });
                         },
@@ -136,13 +136,13 @@ class _Onlading5State extends State<Onlading5> {
                         width: double.infinity,
                         text: items[3]["text"]!,
                         emoji: items[3]["emoji"]!,
-                        isSelected: selectedIndex == 3,
+                        isSelected: selectedIndices.contains(3),
                         onTap: () {
                           setState(() {
-                            if (selectedIndex == 3) {
-                              selectedIndex = null;
+                            if (selectedIndices.contains(3)) {
+                              selectedIndices.remove(3);
                             } else {
-                              selectedIndex = 3;
+                              selectedIndices.add(3);
                             }
                           });
                         },
@@ -161,7 +161,7 @@ class _Onlading5State extends State<Onlading5> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndex == null,
+                isDisabled: selectedIndices.isEmpty,
                 onTap: () {
                   Get.toNamed(AppRoutes.onborading6);
                 },

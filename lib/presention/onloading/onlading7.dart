@@ -56,7 +56,7 @@ class _Onlading7State extends State<Onlading7> {
             ),
             const SizedBox(height: 8),
             Text(
-              "The one thing that matters most to you.",
+              "The one thing that is constantly on your mind.",
               textAlign: TextAlign.start,
               style: AppTextStyles.plusJakartaSans(
                 color: const Color(0xFF8B7DB5),

@@ -15,14 +15,14 @@ class Onlading4 extends StatefulWidget {
 }
 
 class _Onlading4State extends State<Onlading4> {
-  int? selectedIndex;
+  final Set<int> selectedIndices = {};
 
   void _toggleSelection(int index) {
     setState(() {
-      if (selectedIndex == index) {
-        selectedIndex = null;
+      if (selectedIndices.contains(index)) {
+        selectedIndices.remove(index);
       } else {
-        selectedIndex = index;
+        selectedIndices.add(index);
       }
     });
   }
@@ -75,7 +75,7 @@ class _Onlading4State extends State<Onlading4> {
                     isExpanded: true,
                     text: goals[0]["text"]!,
                     emoji: goals[0]["emoji"]!,
-                    isSelected: selectedIndex == 0,
+                    isSelected: selectedIndices.contains(0),
                     onTap: () => _toggleSelection(0),
                   ),
                 ),
@@ -85,7 +85,7 @@ class _Onlading4State extends State<Onlading4> {
                     isExpanded: true,
                     text: goals[1]["text"]!,
                     emoji: goals[1]["emoji"]!,
-                    isSelected: selectedIndex == 1,
+                    isSelected: selectedIndices.contains(1),
                     onTap: () => _toggleSelection(1),
                   ),
                 ),
@@ -97,28 +97,28 @@ class _Onlading4State extends State<Onlading4> {
             GoalPillCard(
               text: goals[2]["text"]!,
               emoji: goals[2]["emoji"]!,
-              isSelected: selectedIndex == 2,
+              isSelected: selectedIndices.contains(2),
               onTap: () => _toggleSelection(2),
             ),
             const SizedBox(height: 12),
             GoalPillCard(
               text: goals[3]["text"]!,
               emoji: goals[3]["emoji"]!,
-              isSelected: selectedIndex == 3,
+              isSelected: selectedIndices.contains(3),
               onTap: () => _toggleSelection(3),
             ),
             const SizedBox(height: 12),
             GoalPillCard(
               text: goals[4]["text"]!,
               emoji: goals[4]["emoji"]!,
-              isSelected: selectedIndex == 4,
+              isSelected: selectedIndices.contains(4),
               onTap: () => _toggleSelection(4),
             ),
             const SizedBox(height: 12),
             GoalPillCard(
               text: goals[5]["text"]!,
               emoji: goals[5]["emoji"]!,
-              isSelected: selectedIndex == 5,
+              isSelected: selectedIndices.contains(5),
               onTap: () => _toggleSelection(5),
             ),
             
@@ -131,7 +131,7 @@ class _Onlading4State extends State<Onlading4> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndex == null,
+                isDisabled: selectedIndices.isEmpty,
                 onTap: () {
                   Get.toNamed(AppRoutes.onborading5);
                 },

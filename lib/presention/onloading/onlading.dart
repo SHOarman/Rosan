@@ -17,7 +17,7 @@ class _OnladingState extends State<Onlading> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/icon/onlyvideoneee.mp4')
+    _controller = VideoPlayerController.asset('assets/icon/Splash.mp4')
       ..initialize().then((_) {
         setState(() {
           _isInitialized = true;
@@ -25,8 +25,8 @@ class _OnladingState extends State<Onlading> {
         _controller?.setVolume(0.0); // Mute the video to allow autoplay on Chrome (web)
         _controller?.play();
 
-        // Navigate to onboarding 1 after 4 seconds of playback starting
-        Future.delayed(const Duration(seconds: 4), () {
+        // Navigate to onboarding 1 after 8 seconds of playback starting
+        Future.delayed(const Duration(seconds: 8), () {
           Get.offNamed(AppRoutes.onborading1);
         });
       });
