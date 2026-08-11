@@ -8,6 +8,8 @@ import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+import '../../core/services/controller/onboarding_controller.dart';
+
 class Onlading5 extends StatefulWidget {
   const Onlading5({super.key});
 
@@ -163,6 +165,16 @@ class _Onlading5State extends State<Onlading5> {
                 ],
                 isDisabled: selectedIndices.isEmpty,
                 onTap: () {
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  List<String> selectedEnergyTimes = selectedIndices.map((index) {
+                    return items[index]['text']!.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_');
+                  }).toList();
+                  
+                  onboardingController.updateData('energyTimes', selectedEnergyTimes);
+
                   Get.toNamed(AppRoutes.onborading6);
                 },
               ),

@@ -18,7 +18,7 @@ void main() async {
   ]);
   DependencyInjection.bindings();
   runApp(
-      // MyApp()
+
     DevicePreview(
       enabled: !kReleaseMode,
       builder: (context) => const MyApp(),

@@ -7,6 +7,8 @@ import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+import '../../core/services/controller/onboarding_controller.dart';
+
 class Onlading13 extends StatefulWidget {
   const Onlading13({super.key});
 
@@ -115,7 +117,11 @@ class _Onlading13State extends State<Onlading13> {
                 ],
                 isDisabled: !_hasText,
                 onTap: () {
-                  Get.toNamed(AppRoutes.singin);
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  onboardingController.updateData('proudOfText', _controller.text);
+                  Get.toNamed(AppRoutes.singin); // Redirect to sign up/registration
                 },
               ),
             ),

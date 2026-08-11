@@ -6,6 +6,9 @@ import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
+import 'package:rosannalie/core/services/controller/onboarding_controller.dart';
+
+import '../../core/services/controller/onboarding_controller.dart';
 
 class Onlading12 extends StatefulWidget {
   const Onlading12({super.key});
@@ -15,7 +18,7 @@ class Onlading12 extends StatefulWidget {
 }
 
 class _Onlading12State extends State<Onlading12> {
-  final Set<int> selectedIndices = {};
+  int? selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +67,13 @@ class _Onlading12State extends State<Onlading12> {
                   child: MoodPillCard(
                     text: item["text"]!,
                     emoji: item["emoji"]!,
-                    isSelected: selectedIndices.contains(index),
+                    isSelected: selectedIndex == index,
                     onTap: () {
                       setState(() {
-                        if (selectedIndices.contains(index)) {
-                          selectedIndices.remove(index);
+                        if (selectedIndex == index) {
+                          selectedIndex = null;
                         } else {
-                          selectedIndices.add(index);
+                          selectedIndex = index;
                         }
                       });
                     },
@@ -87,9 +90,16 @@ class _Onlading12State extends State<Onlading12> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndices.isEmpty,
+                isDisabled: selectedIndex == null,
                 onTap: () {
-                  Get.toNamed(AppRoutes.onborading13);
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  String mood = moods[selectedIndex!]["text"]!;
+                  onboardingController.updateData('initialMood', mood);
+
+                  Get.toNamed(AppRoutes.createaccount);
                 },
               ),
             ),

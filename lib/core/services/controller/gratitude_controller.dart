@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 class GratitudeEntry {
   final String text;
   final String emoji;
-  final String dateLabel; // e.g. 'Today', 'Yesterday', 'Jun 5'
+  final String dateLabel;
 
   GratitudeEntry({
     required this.text,

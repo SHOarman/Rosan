@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 class GoalItem {
   final String title;
   final String deadline;
-  final String iconType; // 'rocket', 'run', 'book', 'money', 'default'
+  final String iconType;
   final RxDouble progress;
 
   GoalItem({
@@ -58,7 +58,6 @@ class MygoallController extends GetxController {
   }
 
   void addGoal(String title, String deadline) {
-    // Generate a random icon type from our types for fun and variety
     final iconTypes = ['rocket', 'run', 'book', 'money'];
     final iconType = iconTypes[goals.length % iconTypes.length];
     

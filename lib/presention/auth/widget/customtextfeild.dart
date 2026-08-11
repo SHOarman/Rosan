@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rosannalie/utils/appString.dart';
-
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String labelText;

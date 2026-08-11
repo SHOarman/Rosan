@@ -7,6 +7,8 @@ import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+import '../../core/services/controller/onboarding_controller.dart';
+
 class Onlading7 extends StatefulWidget {
   const Onlading7({super.key});
 
@@ -114,6 +116,12 @@ class _Onlading7State extends State<Onlading7> {
                 ],
                 isDisabled: !_hasText,
                 onTap: () {
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  onboardingController.updateData('initialGoalTitle', _controller.text);
+
                   Get.toNamed(AppRoutes.onborading8);
                 },
               ),

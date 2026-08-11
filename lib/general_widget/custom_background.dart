@@ -57,8 +57,8 @@ class CustomBackground extends StatelessWidget {
           ? null 
           : (customGradient ?? const LinearGradient(
               colors: [
-                Color(0xFF9B85CF), // Light purple
-                Color(0xFF5E4B8B), // Dark purple
+                Color(0xFF9B85CF),
+                Color(0xFF5E4B8B),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -70,7 +70,7 @@ class CustomBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let container decoration shine through
+      backgroundColor: Colors.transparent,
       body: Container(
         width: double.infinity,
         height: double.infinity,

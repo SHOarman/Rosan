@@ -7,6 +7,8 @@ import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+import '../../core/services/controller/onboarding_controller.dart';
+
 class Onlading9 extends StatefulWidget {
   const Onlading9({super.key});
 
@@ -89,6 +91,16 @@ class _Onlading9State extends State<Onlading9> {
                 ],
                 isDisabled: selectedIndices.isEmpty,
                 onTap: () {
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  List<String> selectedStyles = selectedIndices.map((index) {
+                    return styles[index]['text']!.toUpperCase().replaceAll(' ', '_').replaceAll('&', 'AND');
+                  }).toList();
+                  
+                  onboardingController.updateData('motivationStyles', selectedStyles);
+
                   Get.toNamed(AppRoutes.onborading10);
                 },
               ),

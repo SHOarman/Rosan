@@ -6,6 +6,9 @@ import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
+import 'package:rosannalie/core/services/controller/onboarding_controller.dart';
+
+import '../../core/services/controller/onboarding_controller.dart';
 
 class Onlading11 extends StatefulWidget {
   const Onlading11({super.key});
@@ -15,7 +18,7 @@ class Onlading11 extends StatefulWidget {
 }
 
 class _Onlading11State extends State<Onlading11> {
-  final Set<int> selectedIndices = {};
+  int? selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +66,13 @@ class _Onlading11State extends State<Onlading11> {
                   child: ReminderPillCard(
                     text: item["text"]!,
                     emoji: item["emoji"]!,
-                    isSelected: selectedIndices.contains(index),
+                    isSelected: selectedIndex == index,
                     onTap: () {
                       setState(() {
-                        if (selectedIndices.contains(index)) {
-                          selectedIndices.remove(index);
+                        if (selectedIndex == index) {
+                          selectedIndex = null;
                         } else {
-                          selectedIndices.add(index);
+                          selectedIndex = index;
                         }
                       });
                     },
@@ -86,8 +89,18 @@ class _Onlading11State extends State<Onlading11> {
                   AppColors.primarygredent2,
                   AppColors.primarygredent1,
                 ],
-                isDisabled: selectedIndices.isEmpty,
+                isDisabled: selectedIndex == null,
                 onTap: () {
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  String option = reminders[selectedIndex!]["text"]!;
+                  String val = option.split(' — ')[0].toUpperCase().replaceAll(' ', '_');
+                  if (val.contains('JUST_ONCE')) val = 'DAILY'; // fallback logic just in case, but SMART is what they want
+                  // Based on JSON ("SMART"), let's extract the first word.
+                  onboardingController.updateData('reminderFrequency', val);
+
                   Get.toNamed(AppRoutes.onborading12);
                 },
               ),

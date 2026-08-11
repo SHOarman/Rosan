@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
 import 'package:rosannalie/presention/auth/widget/customtextfeild.dart';
+import 'package:rosannalie/core/services/controller/onboarding_controller.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 import '../../general_widget/custombutton.dart';
@@ -14,6 +15,13 @@ class CreateAccound extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authController = Get.find<Authcontroller>();
+    
+    if (Get.isRegistered<OnboardingController>()) {
+      final onboardingData = Get.find<OnboardingController>().onboardingData;
+      if (onboardingData.containsKey('firstName') && authController.nameController.text.isEmpty) {
+        authController.nameController.text = onboardingData['firstName'];
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -48,27 +56,31 @@ class CreateAccound extends StatelessWidget {
 
                 const SizedBox(height: 32),
                 
-                const CustomTextField(
+                CustomTextField(
                   labelText: "Full Name",
                   hintText: "Full Name",
+                  controller: authController.nameController,
                 ),
                 const SizedBox(height: 8),
-                const CustomTextField(
+                CustomTextField(
                   labelText: "Email",
                   hintText: "Enter your e-mail",
                   keyboardType: TextInputType.emailAddress,
+                  controller: authController.emailController,
                 ),
                 const SizedBox(height: 8),
-                const CustomTextField(
+                CustomTextField(
                   labelText: "Password",
                   hintText: "********",
                   isPassword: true,
+                  controller: authController.passwordController,
                 ),
                 const SizedBox(height: 8),
-                const CustomTextField(
+                CustomTextField(
                   labelText: "Confirm Password",
                   hintText: "********",
                   isPassword: true,
+                  controller: authController.confirmPasswordController,
                 ),
                 const SizedBox(height: 16),
 
@@ -150,16 +162,18 @@ class CreateAccound extends StatelessWidget {
                 const SizedBox(height: 32),
                 
                 Center(
-                  child: CustomButton(
-                    text: "Sign Up",
-                    gradientColors: const [
-                      AppColors.primarygredent2,
-                      AppColors.primarygredent1,
-                    ],
-                    onTap: () {
-                      Get.toNamed(AppRoutes.singin);
-
-                    },
+                  child: Obx(() => authController.isLoading.value 
+                    ? const CircularProgressIndicator() 
+                    : CustomButton(
+                        text: "Sign Up",
+                        gradientColors: const [
+                          AppColors.primarygredent2,
+                          AppColors.primarygredent1,
+                        ],
+                        onTap: () {
+                          authController.registerUser();
+                        },
+                      ),
                   ),
                 ),
                 const SizedBox(height: 30),

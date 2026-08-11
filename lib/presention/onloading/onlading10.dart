@@ -8,6 +8,8 @@ import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+import '../../core/services/controller/onboarding_controller.dart';
+
 class Onlading10 extends StatefulWidget {
   const Onlading10({super.key});
 
@@ -115,6 +117,16 @@ class _Onlading10State extends State<Onlading10> {
                 ],
                 isDisabled: selectedIndices.isEmpty,
                 onTap: () {
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  List<String> selectedRewards = selectedIndices.map((index) {
+                    return rewards[index]['text']!.toUpperCase().replaceAll(' ', '_').replaceAll('—', '').replaceAll('__', '_');
+                  }).toList();
+                  
+                  onboardingController.updateData('rewardPreferences', selectedRewards);
+
                   Get.toNamed(AppRoutes.onborading11);
                 },
               ),

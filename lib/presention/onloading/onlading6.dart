@@ -8,6 +8,8 @@ import 'package:rosannalie/presention/onloading/widget/onboarding_header.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+import '../../core/services/controller/onboarding_controller.dart';
+
 class Onlading6 extends StatefulWidget {
   const Onlading6({super.key});
 
@@ -87,6 +89,17 @@ class _Onlading6State extends State<Onlading6> {
                 ],
                 isDisabled: selectedIndices.isEmpty,
                 onTap: () {
+                  final onboardingController = Get.isRegistered<OnboardingController>() 
+                      ? Get.find<OnboardingController>() 
+                      : Get.put(OnboardingController());
+                  
+                  List<String> selectedFreqs = selectedIndices.map((index) {
+                    String option = options[index];
+                    return option.split(' — ')[0].toUpperCase().replaceAll(' ', '_');
+                  }).toList();
+                  
+                  onboardingController.updateData('procrastinationFrequencies', selectedFreqs);
+
                   Get.toNamed(AppRoutes.onborading7);
                 },
               ),

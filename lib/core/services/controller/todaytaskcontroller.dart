@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 
 class TaskItem {
   final String title;
-  final String priority; // 'High', 'Medium', 'Low'
-  final String category; // 'Health', 'Work', 'Learning', 'Personal', 'Mindfulness'
+  final String priority;
+  final String category;
   final bool showDailyToggle;
   final RxBool isCompleted;
   final RxBool isDaily;
