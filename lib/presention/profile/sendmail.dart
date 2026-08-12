@@ -2,26 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:rosannalie/core/services/controller/support_controller.dart';
 
-class SendMail extends StatefulWidget {
-  const SendMail({super.key});
+class SendMail extends StatelessWidget {
+  SendMail({super.key});
 
-  @override
-  State<SendMail> createState() => _SendMailState();
-}
-
-class _SendMailState extends State<SendMail> {
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
-
-  @override
-  void dispose() {
-    _subjectController.dispose();
-    _emailController.dispose();
-    _messageController.dispose();
-    super.dispose();
-  }
+  final TextEditingController _categoryController = TextEditingController();
+  final RxBool _isSubmitting = false.obs;
 
   InputDecoration _buildInputDecoration(String hintText) {
     return InputDecoration(
@@ -92,6 +82,40 @@ class _SendMailState extends State<SendMail> {
                 ],
               ),
               const SizedBox(height: 24),
+
+              // Category Input Section Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF9F7FD),
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Category",
+                      style: AppTextStyles.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF161022),
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    TextFormField(
+                      controller: _categoryController,
+                      style: AppTextStyles.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF161022),
+                      ),
+                      decoration: _buildInputDecoration("e.g. Bug Report, Feature Request"),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // Subject Input Section Card
               Container(
@@ -182,8 +206,6 @@ class _SendMailState extends State<SendMail> {
                       ),
                     ),
                     const SizedBox(height: 10.0),
-                    Stack(
-                      children: [
                         TextFormField(
                           controller: _messageController,
                           maxLines: 8,
@@ -193,54 +215,12 @@ class _SendMailState extends State<SendMail> {
                             color: const Color(0xFF161022),
                           ),
                           decoration: _buildInputDecoration("Please explain what happened...").copyWith(
-                            contentPadding: const EdgeInsets.only(
-                              left: 16.0,
-                              right: 16.0,
-                              top: 14.0,
-                              bottom: 70.0, // extra bottom padding for the attach button
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 14.0,
                             ),
                           ),
                         ),
-                        // Plus/Attachment button on bottom left of field
-                        Positioned(
-                          left: 12.0,
-                          bottom: 12.0,
-                          child: InkWell(
-                            onTap: () {
-                              print("Attach file clicked");
-                              Get.snackbar(
-                                "Attachment",
-                                "File selector opened",
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: const Color(0xFFEFE8FF),
-                                colorText: const Color(0xFF7B64B0),
-                                margin: const EdgeInsets.all(20),
-                                borderRadius: 12,
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Container(
-                              width: 44.0,
-                              height: 44.0,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE6DCFA),
-                                borderRadius: BorderRadius.circular(10.0),
-                                border: Border.all(
-                                  color: const Color(0xFFC9B7EB),
-                                  width: 1.0,
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: const Icon(
-                                Icons.add,
-                                color: Color(0xFF7B64B0),
-                                size: 22.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -248,27 +228,71 @@ class _SendMailState extends State<SendMail> {
 
               // Submit Button
               Center(
-                child: CustomButton(
-                  text: "Submit",
+                child: Obx(() => CustomButton(
+                  text: _isSubmitting.value ? "Submitting..." : "Submit",
                   height: 52.0,
-                  showIcon: true,
-                  onTap: () {
-                    print("Submit Support Email. Subject: ${_subjectController.text}, Email: ${_emailController.text}");
-                    Get.snackbar(
-                      "Success",
-                      "Support request sent successfully",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: const Color(0xFFEFE8FF),
-                      colorText: const Color(0xFF7B64B0),
-                      margin: const EdgeInsets.all(20),
-                      borderRadius: 12,
-                      duration: const Duration(seconds: 2),
+                  showIcon: !_isSubmitting.value,
+                  onTap: () async {
+                    if (_isSubmitting.value) return;
+
+                    final subject = _subjectController.text.trim();
+                    final email = _emailController.text.trim();
+                    final message = _messageController.text.trim();
+
+                    final category = _categoryController.text.trim();
+
+                    if (subject.isEmpty || email.isEmpty || message.isEmpty || category.isEmpty) {
+                      Get.snackbar(
+                        "Error",
+                        "Please fill in all fields",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFFFEE2E2),
+                        colorText: const Color(0xFFEF4444),
+                        margin: const EdgeInsets.all(20),
+                        borderRadius: 12,
+                      );
+                      return;
+                    }
+
+                    _isSubmitting.value = true;
+
+                    final supportController = Get.isRegistered<SupportController>() ? Get.find<SupportController>() : Get.put(SupportController());
+                    final success = await supportController.createSupportTicket(
+                      email: email,
+                      subject: subject,
+                      message: message,
+                      category: category,
                     );
-                    Future.delayed(const Duration(seconds: 2), () {
-                      Get.back();
-                    });
+
+                    _isSubmitting.value = false;
+
+                    if (success) {
+                      Get.snackbar(
+                        "Success",
+                        "Support request sent successfully",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFFEFE8FF),
+                        colorText: const Color(0xFF7B64B0),
+                        margin: const EdgeInsets.all(20),
+                        borderRadius: 12,
+                        duration: const Duration(seconds: 2),
+                      );
+                      Future.delayed(const Duration(seconds: 2), () {
+                        Get.back();
+                      });
+                    } else {
+                      Get.snackbar(
+                        "Error",
+                        "Failed to send support request. Please try again.",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFFFEE2E2),
+                        colorText: const Color(0xFFEF4444),
+                        margin: const EdgeInsets.all(20),
+                        borderRadius: 12,
+                      );
+                    }
                   },
-                ),
+                )),
               ),
               const SizedBox(height: 20),
             ],

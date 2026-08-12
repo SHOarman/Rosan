@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rosannalie/core/services/api_services/apiservices.dart';
 class QuoteItem {
   final String id;
   final String text;
@@ -19,78 +22,8 @@ class QuoteItem {
 class QuoteController extends GetxController {
   final RxInt selectedTabIndex = 0.obs;
 
-  final RxList<QuoteItem> quotes = <QuoteItem>[
-    QuoteItem(
-      id: '1',
-      text: 'He who has a why to live can bear almost any how.',
-      author: 'Mark Twain',
-      category: 'Purpose and Perseverance',
-      isSaved: false,
-    ),
-    QuoteItem(
-      id: '2',
-      text: 'What you seek is seeking you.',
-      author: 'Rumi',
-      category: 'Purpose and Perseverance',
-      isSaved: true,
-    ),
-    QuoteItem(
-      id: '3',
-      text: 'A journey of a thousand miles begins with a single step.',
-      author: 'Lao Tzu',
-      category: 'Purpose and Perseverance',
-      isSaved: false,
-    ),
-    QuoteItem(
-      id: '4',
-      text: 'Fall seven times, stand up eight.',
-      author: 'Japanese proverb.',
-      category: 'Purpose and Perseverance',
-      isSaved: true,
-    ),
-    QuoteItem(
-      id: '5',
-      text: 'The best time to plant a tree was twenty years ago. The second best time is now.',
-      author: 'Chinese proverb',
-      category: 'Purpose and Perseverance',
-      isSaved: false,
-    ),
-    QuoteItem(
-      id: '6',
-      text: 'Be present in all things and thankful for all things.',
-      author: 'Maya Angelou',
-      category: 'Gratitude and Mindfulness',
-      isSaved: true,
-    ),
-    QuoteItem(
-      id: '7',
-      text: 'The present moment is filled with joy and happiness. If you are attentive, you will see it.',
-      author: 'Thich Nhat Hanh',
-      category: 'Gratitude and Mindfulness',
-      isSaved: false,
-    ),
-    QuoteItem(
-      id: '8',
-      text: 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
-      author: 'Winston Churchill',
-      category: 'Success and Motivation',
-      isSaved: true,
-    ),
-    QuoteItem(
-      id: '9',
-      text: 'Believe you can and you\'re halfway there.',
-      author: 'Theodore Roosevelt',
-      category: 'Success and Motivation',
-      isSaved: false,
-    ),
-    QuoteItem(
-      id: '10',
-      text: 'Peace comes from within. Do not seek it without.',
-      author: 'Buddha',
-      category: 'Inner Peace and Calm',
-      isSaved: false,
-    ),
-  ].obs;
+  final RxList<QuoteItem> quotes = <QuoteItem>[].obs;
+  final Rx<QuoteItem?> dailyQuote = Rx<QuoteItem?>(null);
 
   // Get only saved quotes
   List<QuoteItem> get savedQuotes => quotes.where((q) => q.isSaved.value).toList();
@@ -107,9 +40,138 @@ class QuoteController extends GetxController {
     return grouped;
   }
 
-  void toggleSave(QuoteItem quote) {
+  @override
+  void onInit() {
+    super.onInit();
+    fetchQuotes();
+    fetchDailyQuote();
+  }
+
+  Future<void> fetchDailyQuote() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('accessToken') ?? '';
+      
+      if (accessToken.isEmpty) {
+        return;
+      }
+
+      print("===== FETCH DAILY QUOTE =====");
+      final url = '${Apiservices.baseUrl}/quotes/daily';
+      print("GET $url");
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print("StatusCode: ${response.statusCode}");
+      print("Body: ${response.body}");
+      print("=============================");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final data = decoded['data'];
+          dailyQuote.value = QuoteItem(
+            id: data['id']?.toString() ?? '',
+            text: data['content'] ?? '',
+            author: data['author'] ?? 'Unknown',
+            category: 'Daily Motivation',
+            isSaved: data['isFavorite'] == true,
+          );
+        }
+      }
+    } catch (e) {
+      print("Error fetching daily quote: $e");
+    }
+  }
+
+  Future<void> fetchQuotes() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('accessToken') ?? '';
+      
+      if (accessToken.isEmpty) {
+        return;
+      }
+
+      print("===== FETCH QUOTES =====");
+      final url = '${Apiservices.baseUrl}/quotes';
+      print("GET $url");
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print("StatusCode: ${response.statusCode}");
+      print("Body: ${response.body}");
+      print("========================");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final data = decoded['data'];
+          
+          if (data is List) {
+            final List<QuoteItem> fetchedQuotes = data.map((q) {
+              return QuoteItem(
+                id: q['id']?.toString() ?? '',
+                text: q['content'] ?? '',
+                author: q['author'] ?? 'Unknown',
+                category: q['category'] ?? 'Daily Motivation',
+                isSaved: q['isFavorite'] == true || q['isSaved'] == true,
+              );
+            }).toList();
+            
+            if (fetchedQuotes.isNotEmpty) {
+               quotes.value = fetchedQuotes;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching quotes: $e");
+    }
+  }
+
+  Future<void> toggleSave(QuoteItem quote) async {
+    // Optimistic UI update
     quote.isSaved.value = !quote.isSaved.value;
     quotes.refresh();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('accessToken') ?? '';
+      
+      if (accessToken.isNotEmpty) {
+        final url = '${Apiservices.baseUrl}/quotes/${quote.id}/save';
+        print("===== SAVE QUOTE =====");
+        print("POST $url");
+        
+        final response = await http.post(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        );
+        
+        print("StatusCode: ${response.statusCode}");
+        print("Body: ${response.body}");
+        print("======================");
+      }
+    } catch (e) {
+      print("Error saving quote: $e");
+      // Revert if API call fails
+      quote.isSaved.value = !quote.isSaved.value;
+      quotes.refresh();
+    }
   }
 
   void changeTab(int index) {

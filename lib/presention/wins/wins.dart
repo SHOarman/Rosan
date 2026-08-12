@@ -7,6 +7,8 @@ import 'package:rosannalie/presention/wins/widget/streak_progress_card.dart';
 import 'package:rosannalie/presention/wins/widget/amazingworkcard.dart';
 import 'package:rosannalie/presention/wins/widget/stackcard.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
 
 class Wins extends StatelessWidget {
   const Wins({super.key});
@@ -47,7 +49,9 @@ class Wins extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // ── Stat cards row ────────────────────────────────────
-                      Row(
+                      Obx(() {
+                        final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
+                        return Row(
                         children: [
                           // Day streak
                           Expanded(
@@ -58,11 +62,11 @@ class Wins extends StatelessWidget {
                                 Color(0xFFFFE0B2),
                               ],
                               icon: SvgPicture.asset(
-                                'assets/icon/Icon (10).svg',
+                                'assets/icon/streak_icon.svg',
                                 width: 28,
                                 height: 28,
                               ),
-                              title: '3',
+                              title: '${controller.dayStreak.value}',
                               subtitle: 'Day streak',
                             ),
                           ),
@@ -75,11 +79,11 @@ class Wins extends StatelessWidget {
                                 Color(0xFFDDD0FF),
                               ],
                               icon: SvgPicture.asset(
-                                'assets/icon/Vector (3).svg',
+                                'assets/icon/points_icon.svg',
                                 width: 28,
                                 height: 28,
                               ),
-                              title: '120',
+                              title: '${controller.pointsToday.value}',
                               subtitle: 'Points today',
                             ),
                           ),
@@ -92,16 +96,17 @@ class Wins extends StatelessWidget {
                                 Color(0xFFC8E6C9),
                               ],
                               icon: SvgPicture.asset(
-                                'assets/icon/Icon (11).svg',
+                                'assets/icon/badge_icon.svg',
                                 width: 28,
                                 height: 28,
                               ),
-                              title: '3',
+                              title: '${controller.unlockedBadgesCount.value}',
                               subtitle: 'Badges',
                             ),
                           ),
                         ],
-                      ),
+                      );
+                      }),
 
                       const SizedBox(height: 24),
 
@@ -124,14 +129,17 @@ class Wins extends StatelessWidget {
 
                       const SizedBox(height: 30),
 
-                      Text(
-                        "Achievements (3/6)",
-                        style: AppTextStyles.plusJakartaSans(
-                          color: const Color(0xff161022),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
+                      Obx(() {
+                        final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
+                        return Text(
+                          "Achievements (${controller.unlockedBadgesCount.value}/${controller.totalBadgesCount.value})",
+                          style: AppTextStyles.plusJakartaSans(
+                            color: const Color(0xff161022),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                          ),
+                        );
+                      }),
                       const SizedBox(height: 10),
 
                       const AchievementsGrid(),

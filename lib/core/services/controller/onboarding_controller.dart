@@ -1,12 +1,11 @@
 import 'package:get/get.dart';
 
 class OnboardingController extends GetxController {
-  // Stores all the data collected during the onboarding flow
   final Map<String, dynamic> onboardingData = {};
 
   void updateData(String key, dynamic value) {
     onboardingData[key] = value;
-    update(); // Notify UI if needed
+    update(); 
   }
 
   void appendToList(String key, dynamic value) {

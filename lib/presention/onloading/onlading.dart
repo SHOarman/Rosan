@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:video_player/video_player.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Onlading extends StatefulWidget {
   const Onlading({super.key});
@@ -25,9 +26,19 @@ class _OnladingState extends State<Onlading> {
         _controller?.setVolume(0.0); // Mute the video to allow autoplay on Chrome (web)
         _controller?.play();
 
-        // Navigate to onboarding 1 after 8 seconds of playback starting
-        Future.delayed(const Duration(seconds: 8), () {
-          Get.offNamed(AppRoutes.onborading1);
+        // Navigate to the correct screen after 8 seconds of playback starting
+        Future.delayed(const Duration(seconds: 8), () async {
+          final prefs = await SharedPreferences.getInstance();
+          final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+          final bool isOnboardingCompleted = prefs.getBool('isOnboardingCompleted') ?? false;
+
+          if (isLoggedIn) {
+            Get.offNamed(AppRoutes.subscriptionPromotion); // Adjust as needed for home
+          } else if (isOnboardingCompleted) {
+            Get.offNamed(AppRoutes.singin);
+          } else {
+            Get.offNamed(AppRoutes.onborading1);
+          }
         });
       });
   }

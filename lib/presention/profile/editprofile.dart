@@ -3,27 +3,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
+import 'package:rosannalie/core/route/app_pages.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
-
-  @override
-  State<EditProfile> createState() => _EditProfileState();
-}
-
-class _EditProfileState extends State<EditProfile> {
-  final TextEditingController _nameController = TextEditingController(text: "Ahmad Karimi");
-  final TextEditingController _emailController = TextEditingController(text: "ahmed@example.com");
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    super.dispose();
+class EditProfile extends StatelessWidget {
+  EditProfile({super.key}) {
+    final authController = Get.find<Authcontroller>();
+    authController.initProfileEditing();
   }
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.find<Authcontroller>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -32,7 +25,6 @@ class _EditProfileState extends State<EditProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Custom Header Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -74,37 +66,95 @@ class _EditProfileState extends State<EditProfile> {
                       height: 110.0,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                        color: Color(0xFFF1EFFF),
                       ),
+                      clipBehavior: Clip.antiAlias,
                       alignment: Alignment.center,
-                      child: Text(
-                        "AK",
-                        style: AppTextStyles.inter(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: Obx(() {
+                        if (authController.selectedImagePath.value.isNotEmpty) {
+                          return kIsWeb
+                              ? Image.network(
+                                  authController.selectedImagePath.value,
+                                  fit: BoxFit.cover,
+                                  width: 110,
+                                  height: 110,
+                                )
+                              : Image.file(
+                                  File(authController.selectedImagePath.value),
+                                  fit: BoxFit.cover,
+                                  width: 110,
+                                  height: 110,
+                                );
+                        } else {
+                          final avatar = authController.userAvatar.value;
+                          if (avatar.isNotEmpty) {
+                            return Image.network(
+                              avatar,
+                              fit: BoxFit.cover,
+                              width: 110,
+                              height: 110,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    authController.initials,
+                                    style: AppTextStyles.inter(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            return Container(
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                authController.initials,
+                                style: AppTextStyles.inter(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      }),
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: Container(
-                        width: 32.0,
-                        height: 32.0,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF7B64B0),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2.0),
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt_outlined,
-                          color: Colors.white,
-                          size: 16.0,
+                      child: GestureDetector(
+                        onTap: authController.pickImage,
+                        child: Container(
+                          width: 32.0,
+                          height: 32.0,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF7B64B0),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2.0),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.white,
+                            size: 16.0,
+                          ),
                         ),
                       ),
                     ),
@@ -124,7 +174,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: _nameController,
+                controller: authController.nameController,
                 style: AppTextStyles.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -175,8 +225,9 @@ class _EditProfileState extends State<EditProfile> {
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: _emailController,
+                controller: authController.emailController,
                 keyboardType: TextInputType.emailAddress,
+                readOnly: true,
                 style: AppTextStyles.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -218,26 +269,25 @@ class _EditProfileState extends State<EditProfile> {
 
               // Save Changes Button
               Center(
-                child: CustomButton(
-                  text: "Save Changes",
-                  height: 52.0,
-                  onTap: () {
-                    print("Save Changes tapped. Name: ${_nameController.text}, Email: ${_emailController.text}");
-                    // Get.snackbar(
-                    //   "Success",
-                    //   "Profile updated successfully",
-                    //   snackPosition: SnackPosition.BOTTOM,
-                    //   backgroundColor: const Color(0xFFEFE8FF),
-                    //   colorText: const Color(0xFF7B64B0),
-                    //   margin: const EdgeInsets.all(20),
-                    //   borderRadius: 12,
-                    //   duration: const Duration(seconds: 2),
-                    // );
-                    Future.delayed(const Duration(seconds: 2), () {
-                      Get.back();
-                    });
-                  },
-                ),
+                child: Obx(() => authController.isLoading.value
+                    ? const CircularProgressIndicator(color: Color(0xFF7B64B0))
+                    : CustomButton(
+                        text: "Save Changes",
+                        height: 52.0,
+                        onTap: () async {
+                          String? imagePath;
+                          if (authController.selectedImagePath.value.isNotEmpty) {
+                            imagePath = authController.selectedImagePath.value;
+                          }
+                          bool success = await authController.updateProfile(
+                            authController.nameController.text,
+                            imagePath,
+                          );
+                          if (success) {
+                            Get.offAllNamed(AppRoutes.home);
+                          }
+                        },
+                      )),
               ),
             ],
           ),

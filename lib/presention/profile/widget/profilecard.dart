@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
 
 class Profilecard extends StatelessWidget {
-  final String name;
-  final String email;
-  final String initials;
+  final String? name;
+  final String? email;
+  final String? initials;
   final VoidCallback? onTap;
 
   const Profilecard({
     super.key,
-    this.name = "Alex Johnson",
-    this.email = "alex@example.com",
-    this.initials = "AX",
+    this.name,
+    this.email,
+    this.initials,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.find<Authcontroller>();
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -49,15 +52,38 @@ class Profilecard extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
               ),
+              clipBehavior: Clip.antiAlias,
               alignment: Alignment.center,
-              child: Text(
-                initials,
-                style: AppTextStyles.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              child: Obx(() {
+                final avatar = authController.userAvatar.value;
+                if (avatar.isNotEmpty) {
+                  return Image.network(
+                    avatar,
+                    fit: BoxFit.cover,
+                    width: 56,
+                    height: 56,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text(
+                        initials ?? authController.initials,
+                        style: AppTextStyles.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  return Text(
+                    initials ?? authController.initials,
+                    style: AppTextStyles.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                }
+              }),
             ),
             const SizedBox(width: 12.0),
             // User Details
@@ -66,23 +92,23 @@ class Profilecard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    name,
+                  Obx(() => Text(
+                    name ?? authController.userName.value,
                     style: AppTextStyles.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF161022),
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 2.0),
-                  Text(
-                    email,
+                  Obx(() => Text(
+                    email ?? authController.userEmail.value,
                     style: AppTextStyles.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: const Color(0xFF8F7DB5),
                     ),
-                  ),
+                  )),
                 ],
               ),
             ),

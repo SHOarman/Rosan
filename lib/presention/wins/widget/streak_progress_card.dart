@@ -2,12 +2,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
 
 class StreakProgressCard extends StatelessWidget {
   const StreakProgressCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
+
     return Container(
       width: double.infinity,
       height: 110.0,
@@ -64,7 +68,7 @@ class StreakProgressCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: SvgPicture.asset(
-                      'assets/icon/Icon (10).svg',
+                      'assets/icon/streak_icon.svg',
                       width: 24,
                       height: 24,
                       colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
@@ -78,23 +82,23 @@ class StreakProgressCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        '3–Day Streak! 🔥',
+                      Obx(() => Text(
+                        controller.streakMotivationTitle.value.isNotEmpty ? controller.streakMotivationTitle.value : '1–Day Streak! 🔥',
                         style: AppTextStyles.plusJakartaSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF161022),
                         ),
-                      ),
+                      )),
                       const SizedBox(height: 4.0),
-                      Text(
-                        'Keep going — 4 more days to your next badge!',
+                      Obx(() => Text(
+                        controller.streakMotivationText.value.isNotEmpty ? controller.streakMotivationText.value : 'Keep going — 6 more days to your next badge!',
                         style: AppTextStyles.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: const Color(0xFF444054),
                         ),
-                      ),
+                      )),
                     ],
                   ),
                 ),

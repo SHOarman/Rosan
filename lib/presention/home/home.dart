@@ -10,9 +10,25 @@ import 'package:rosannalie/presention/home/widget/my_goals_widget.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 import 'package:rosannalie/general_widget/customnav_button.dart';
 import '../../utils/appString.dart';
-
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
+import 'package:rosannalie/core/services/controller/todaytaskcontroller.dart';
+import 'package:rosannalie/core/services/controller/mygoall_controller.dart';
+import 'package:rosannalie/core/services/controller/quote_controller.dart';
 class Home extends StatelessWidget {
   const Home({super.key});
+
+  String getGreeting() {
+    var hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour < 20) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +51,20 @@ class Home extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 40),
-                      Text(
-                        'Good Evening, Alex',
-                        style: AppTextStyles.plusJakartaSans(
-                          fontSize: 20,
-                          color: const Color(0xFF161022),
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
+                      Obx(() {
+                        final authController = Get.find<Authcontroller>();
+                        final firstName = authController.userName.value.isNotEmpty
+                            ? authController.userName.value.trim().split(" ").first
+                            : "User";
+                        return Text(
+                          '${getGreeting()}, $firstName',
+                          style: AppTextStyles.plusJakartaSans(
+                            fontSize: 20,
+                            color: const Color(0xFF161022),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        );
+                      }),
                       const SizedBox(height: 6),
                       Text(
                         "You are amazing!",
@@ -78,37 +100,49 @@ class Home extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Quickaccess(
-                              title: "To Do's",
-                              subtitle: "— 6 tasks",
-                              svgIconPath: "assets/icon/ListIcon.svg",
-                              iconBackgroundColor: Colors.white,
-                              gradientColors: const [
-                                Color(0xFFFFF0E8),
-                                Color(0xFFFFD4B5),
-                              ],
-                              onTap: () {
-                                Get.toNamed(AppRoutes.todaytaks_seeall);
-                              },
-                            ),
+                            child: Obx(() {
+                              final taskController = Get.isRegistered<Todaytaskcontroller>()
+                                  ? Get.find<Todaytaskcontroller>()
+                                  : Get.put(Todaytaskcontroller());
+                              final taskCount = taskController.tasks.length;
+                              return Quickaccess(
+                                title: "To Do's",
+                                subtitle: "— $taskCount tasks",
+                                svgIconPath: "assets/icon/ListIcon.svg",
+                                iconBackgroundColor: Colors.white,
+                                gradientColors: const [
+                                  Color(0xFFFFF0E8),
+                                  Color(0xFFFFD4B5),
+                                ],
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.todaytaks_seeall);
+                                },
+                              );
+                            }),
                           ),
 
                           const SizedBox(width: 16),
 
                           Expanded(
-                            child: Quickaccess(
-                              title: "Goals",
-                              subtitle: "— 6 goals",
-                              svgIconPath: "assets/icon/TargetIcon.svg",
-                              iconBackgroundColor: Colors.white,
-                              gradientColors: const [
-                                Color(0xFFF0E8FF),
-                                Color(0xFFDDD0FF),
-                              ],
-                              onTap: () {
-                                Get.toNamed(AppRoutes.mygoals_seeall);
-                              },
-                            ),
+                            child: Obx(() {
+                              final goalController = Get.isRegistered<MygoallController>()
+                                  ? Get.find<MygoallController>()
+                                  : Get.put(MygoallController());
+                              final goalCount = goalController.activeGoalsCount;
+                              return Quickaccess(
+                                title: "Goals",
+                                subtitle: "— $goalCount goals",
+                                svgIconPath: "assets/icon/TargetIcon.svg",
+                                iconBackgroundColor: Colors.white,
+                                gradientColors: const [
+                                  Color(0xFFF0E8FF),
+                                  Color(0xFFDDD0FF),
+                                ],
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.mygoals_seeall);
+                                },
+                              );
+                            }),
                           ),
                         ],
                       ),
@@ -116,19 +150,25 @@ class Home extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Quickaccess(
-                              title: "Quotes",
-                              subtitle: "— 6 quotes",
-                              svgIconPath: "assets/icon/QuoteIcon (1).svg",
-                              iconBackgroundColor: Colors.white,
-                              gradientColors: const [
-                                Color(0xFFFFF0E8),
-                                Color(0xFFFFD4B5),
-                              ],
-                              onTap: () {
-                                Get.toNamed(AppRoutes.allquotes);
-                              },
-                            ),
+                            child: Obx(() {
+                              final quoteController = Get.isRegistered<QuoteController>()
+                                  ? Get.find<QuoteController>()
+                                  : Get.put(QuoteController());
+                              final quoteCount = quoteController.quotes.length;
+                              return Quickaccess(
+                                title: "Quotes",
+                                subtitle: "— $quoteCount quotes",
+                                svgIconPath: "assets/icon/QuoteIcon (1).svg",
+                                iconBackgroundColor: Colors.white,
+                                gradientColors: const [
+                                  Color(0xFFFFF0E8),
+                                  Color(0xFFFFD4B5),
+                                ],
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.allquotes);
+                                },
+                              );
+                            }),
                           ),
 
                           const SizedBox(width: 16),

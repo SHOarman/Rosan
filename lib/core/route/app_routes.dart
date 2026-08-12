@@ -41,7 +41,7 @@ import '../../presention/subscription_Promotion/subscriptionPromotion.dart';
 import 'app_pages.dart';
 
 class AppPages {
-  static const initial = AppRoutes.onborading;
+  static const initial = AppRoutes.singin;
   static final routes = [
 
     //================================onloding==========================

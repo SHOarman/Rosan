@@ -443,9 +443,51 @@ class TodaystaksSeeall extends StatelessWidget {
     });
   }
 
+  Widget _buildCategoryButton(String category, RxString selectedCategory) {
+    return Obx(() {
+      final isSelected = selectedCategory.value == category;
+      Color bgColor;
+      Color textColor;
+      Border? border;
+
+      if (isSelected) {
+        border = null;
+        bgColor = const Color(0xFFF0F0FF); // Light purple
+        textColor = const Color(0xFF7B64B0);
+      } else {
+        bgColor = Colors.white;
+        border = Border.all(color: const Color(0xFFE2DCF7), width: 1.0);
+        textColor = const Color(0xFF8F7DB5);
+      }
+
+      return GestureDetector(
+        onTap: () => selectedCategory.value = category,
+        child: Container(
+          height: 48,
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(24.0),
+            border: border,
+          ),
+          child: Center(
+            child: Text(
+              category,
+              style: AppTextStyles.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
   void _showAddTaskBottomSheet(BuildContext context, Todaytaskcontroller controller) {
     final titleController = TextEditingController();
     var selectedPriority = 'High'.obs;
+    var selectedCategory = 'Work'.obs;
 
     showModalBottomSheet(
       context: context,
@@ -507,6 +549,15 @@ class TodaystaksSeeall extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Priority Selection Row: High, Medium, Low
+              Text(
+                "Priority",
+                style: AppTextStyles.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2E2252),
+                ),
+              ),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(child: _buildPriorityButton('High', selectedPriority)),
@@ -514,6 +565,27 @@ class TodaystaksSeeall extends StatelessWidget {
                   Expanded(child: _buildPriorityButton('Medium', selectedPriority)),
                   const SizedBox(width: 10),
                   Expanded(child: _buildPriorityButton('Low', selectedPriority)),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Category Selection Row: Work, Health, Personal (or Learning)
+              Text(
+                "Category",
+                style: AppTextStyles.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2E2252),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(child: _buildCategoryButton('Work', selectedCategory)),
+                  const SizedBox(width: 10),
+                  Expanded(child: _buildCategoryButton('Health', selectedCategory)),
+                  const SizedBox(width: 10),
+                  Expanded(child: _buildCategoryButton('Learning', selectedCategory)),
                 ],
               ),
               const SizedBox(height: 24),
@@ -560,11 +632,12 @@ class TodaystaksSeeall extends StatelessWidget {
                         }
                         final priority = selectedPriority.value;
                         final isHigh = priority == 'High';
+                        final category = selectedCategory.value;
                         controller.addTask(
                           titleController.text.trim(),
                           priority,
-                          isHigh ? 'Health' : (priority == 'Medium' ? 'Learning' : 'Mindfulness'),
-                          isHigh,
+                          category,
+                          true,
                         );
                         Get.back();
                       },

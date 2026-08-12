@@ -1,25 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:rosannalie/general_widget/custom_background.dart';
 import 'package:rosannalie/general_widget/customnav_button.dart';
 import 'package:rosannalie/utils/appString.dart';
-
-// ── Data model ──────────────────────────────────────────────────────────────
-
-enum _Sender { ai, user }
-
-class _Message {
-  final _Sender sender;
-  final String text;
-  final String time;
-
-  const _Message({
-    required this.sender,
-    required this.text,
-    required this.time,
-  });
-}
+import 'package:rosannalie/core/services/controller/ai_coach_controller.dart';
 
 // ── Screen ───────────────────────────────────────────────────────────────────
 
@@ -33,32 +19,15 @@ class Aichart extends StatefulWidget {
 class _AichartState extends State<Aichart> {
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final AiCoachController _chatController = Get.isRegistered<AiCoachController>()
+      ? Get.find<AiCoachController>()
+      : Get.put(AiCoachController());
 
   final List<String> _quickStarts = [
     'Help me beat procrastination today',
     'Give me a morning routine',
     "I'm feeling overwhelmed",
     'Celebrate my wins with me',
-  ];
-
-  final List<_Message> _messages = [
-    const _Message(
-      sender: _Sender.ai,
-      text:
-          "Hey there! I'm so glad you're here. 🌟 I'm your Rise AI coach — I'm here to cheer you on, help you think clearly, and keep you moving forward. What's on your mind today?",
-      time: '9:41 AM',
-    ),
-    const _Message(
-      sender: _Sender.user,
-      text: 'Celebrate my wins with me',
-      time: '07:20 PM',
-    ),
-    const _Message(
-      sender: _Sender.ai,
-      text:
-          "Yes! Let's celebrate! 🎉 Tell me what you accomplished — big or small, everything counts. I want to hear it!",
-      time: '07:20 PM',
-    ),
   ];
 
   @override
@@ -71,25 +40,13 @@ class _AichartState extends State<Aichart> {
   void _sendMessage() {
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
-    setState(() {
-      _messages.add(_Message(
-        sender: _Sender.user,
-        text: text,
-        time: _currentTime(),
-      ));
-    });
+    _chatController.sendMessage(text);
     _inputController.clear();
     _scrollToBottom();
   }
 
   void _sendQuickStart(String text) {
-    setState(() {
-      _messages.add(_Message(
-        sender: _Sender.user,
-        text: text,
-        time: _currentTime(),
-      ));
-    });
+    _chatController.sendMessage(text);
     _scrollToBottom();
   }
 
@@ -105,7 +62,7 @@ class _AichartState extends State<Aichart> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          0.0, // Since reverse: true is set, bottom is 0.0
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -290,17 +247,29 @@ class _AichartState extends State<Aichart> {
   // ── Message list ──────────────────────────────────────────────────────────
 
   Widget _buildMessageList() {
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      itemCount: _messages.length,
-      itemBuilder: (context, index) {
-        final msg = _messages[index];
-        return msg.sender == _Sender.ai
-            ? _AiBubble(message: msg)
-            : _UserBubble(message: msg);
-      },
-    );
+    return Obx(() {
+      if (_chatController.isLoading.value && _chatController.messages.isEmpty) {
+        return const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9E6AC3)),
+          ),
+        );
+      }
+
+      final msgs = _chatController.messages;
+      return ListView.builder(
+        controller: _scrollController,
+        reverse: true, // Show last message first (at the bottom)
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        itemCount: msgs.length,
+        itemBuilder: (context, index) {
+          final msg = msgs[index];
+          return msg.isUser
+              ? _UserBubble(message: msg)
+              : _AiBubble(message: msg);
+        },
+      );
+    });
   }
 
   // ── Input bar ─────────────────────────────────────────────────────────────
@@ -442,7 +411,7 @@ class _QuickStartChip extends StatelessWidget {
 
 
 class _AiBubble extends StatelessWidget {
-  final _Message message;
+  final ChatMessage message;
 
   const _AiBubble({required this.message});
 
@@ -537,7 +506,7 @@ class _AiBubble extends StatelessWidget {
 
 
 class _UserBubble extends StatelessWidget {
-  final _Message message;
+  final ChatMessage message;
 
   const _UserBubble({required this.message});
 

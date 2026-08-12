@@ -79,31 +79,35 @@ class StackCard extends StatelessWidget {
             ),
 
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                icon,
-                const SizedBox(height: 6),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    fontSize: titleFontSize ?? 14,
-                    color: titleColor ?? Colors.black87,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  icon,
+                  const SizedBox(height: 6),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      fontSize: titleFontSize ?? 14,
+                      color: titleColor ?? Colors.black87,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.plusJakartaSans(
-                    fontSize: subtitleFontSize ?? 12,
-                    color: subtitleColor ?? const Color(0xFF575B61),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: AppTextStyles.plusJakartaSans(
+                      fontSize: subtitleFontSize ?? 12,
+                      color: subtitleColor ?? const Color(0xFF575B61),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

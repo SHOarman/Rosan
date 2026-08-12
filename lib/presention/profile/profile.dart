@@ -10,6 +10,7 @@ import 'package:rosannalie/presention/profile/widget/myplan.dart';
 import 'package:rosannalie/presention/profile/widget/support_card.dart';
 import 'package:rosannalie/presention/profile/widget/logout_card.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -107,7 +108,7 @@ class Profile extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         Get.back();
-                        Get.offAllNamed(AppRoutes.singin);
+                        Get.find<Authcontroller>().logout();
                       },
                       borderRadius: BorderRadius.circular(12.0),
                       child: Container(

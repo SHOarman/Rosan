@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
 
 class Amazingworkcard extends StatelessWidget {
   final int currentPoints;
@@ -15,11 +17,16 @@ class Amazingworkcard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = currentPoints / totalPoints;
+    final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
+    return Obx(() {
+      final currentPointsVal = controller.progressPoints.value;
+      final totalPointsVal = controller.nextLevelTarget.value;
+      final double progress = totalPointsVal > 0 ? currentPointsVal / totalPointsVal : 0;
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -64,7 +71,7 @@ class Amazingworkcard extends StatelessWidget {
 
           // Title
           Text(
-            'Amazing work today, keep it up!',
+            controller.bannerTitle.value.isNotEmpty ? controller.bannerTitle.value : 'Amazing work today, keep it up!',
             textAlign: TextAlign.center,
             style: AppTextStyles.plusJakartaSans(
               fontSize: 16,
@@ -76,7 +83,9 @@ class Amazingworkcard extends StatelessWidget {
 
           // Subtitle
           Text(
-            "You've earned $currentPoints points and completed $winsCount wins.\nThat's something to be proud of.",
+            controller.bannerSubtitle.value.isNotEmpty 
+                ? controller.bannerSubtitle.value 
+                : "You've earned $currentPointsVal points and completed $winsCount wins.\nThat's something to be proud of.",
             textAlign: TextAlign.center,
             style: AppTextStyles.inter(
               fontSize: 13,
@@ -122,7 +131,9 @@ class Amazingworkcard extends StatelessWidget {
 
           // Progress label
           Text(
-            '$currentPoints/$totalPoints points to next level',
+            controller.progressText.value.isNotEmpty 
+                ? controller.progressText.value 
+                : '$currentPointsVal/$totalPointsVal points to next level',
             style: AppTextStyles.inter(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -132,5 +143,6 @@ class Amazingworkcard extends StatelessWidget {
         ],
       ),
     );
+    });
   }
 }

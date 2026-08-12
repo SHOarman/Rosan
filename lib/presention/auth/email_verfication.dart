@@ -126,26 +126,30 @@ class EmailVerfication extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      GestureDetector(
+                      Obx(() => GestureDetector(
                         onTap: () {
-                          authController.resendOtpCode();
+                          if (authController.resendTimer.value == 0) {
+                            authController.resendOtpCode();
+                            authController.startResendTimer();
+                          }
                         },
                         child: Text(
-                          "Resend code",
+                          authController.resendTimer.value > 0 
+                              ? "Resend code in ${authController.resendTimer.value}s" 
+                              : "Resend code",
                           style: AppTextStyles.inter(
-                            color: const Color(0xFFFF5E5E),
+                            color: authController.resendTimer.value > 0 ? Colors.grey : const Color(0xFFFF5E5E),
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
+                      )),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 48),
 
-                // Next Button
                 Obx(
                   () => Center(
                     child: CustomButton(

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/presention/wins/widget/stackcard.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
+import 'package:intl/intl.dart';
 
 class AchievementItem {
   final String emoji;
@@ -44,9 +47,29 @@ class Achievements extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: _defaultAchievements.map((achievement) {
-        return Padding(
+    final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
+
+    return Obx(() {
+      final achievements = controller.todaysAchievements;
+      if (achievements.isEmpty) {
+        return const Center(child: Text("No achievements today"));
+      }
+
+      return Column(
+        children: achievements.map((achievement) {
+          final title = achievement['title'] ?? '';
+          final points = '+${achievement['points'] ?? 0}';
+          String timeStr = '';
+          try {
+            if (achievement['createdAt'] != null) {
+              final dt = DateTime.parse(achievement['createdAt']).toLocal();
+              timeStr = DateFormat('h:mm a').format(dt);
+            }
+          } catch (_) {}
+          
+          final String emoji = title.toLowerCase().contains('task') ? '💪' : (title.toLowerCase().contains('welcome') ? '👋' : '🏆');
+
+          return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: Container(
             width: double.infinity,
@@ -100,7 +123,7 @@ class Achievements extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            achievement.emoji,
+                            emoji,
                             style: const TextStyle(
                               fontSize: 20.0,
                             ),
@@ -115,7 +138,7 @@ class Achievements extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              achievement.title,
+                              title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.plusJakartaSans(
@@ -126,7 +149,7 @@ class Achievements extends StatelessWidget {
                             ),
                             const SizedBox(height: 2.0),
                             Text(
-                              achievement.time,
+                              timeStr,
                               style: AppTextStyles.plusJakartaSans(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w500,
@@ -149,7 +172,7 @@ class Achievements extends StatelessWidget {
                           )
                         ),
                         child: Text(
-                          achievement.points,
+                          points,
                           style: AppTextStyles.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -170,6 +193,7 @@ class Achievements extends StatelessWidget {
         );
       }).toList(),
     );
+    });
   }
 }
 
@@ -179,6 +203,7 @@ class AchievementGridItem {
   final String subtitle;
   final List<Color> gradientColors;
   final Color? badgeColor;
+  final bool isUnlocked;
 
   const AchievementGridItem({
     required this.icon,
@@ -186,6 +211,7 @@ class AchievementGridItem {
     required this.subtitle,
     required this.gradientColors,
     this.badgeColor,
+    this.isUnlocked = false,
   });
 }
 
@@ -205,7 +231,7 @@ class AchievementsGrid extends StatelessWidget {
     ),
     AchievementGridItem(
       icon: SvgPicture.asset(
-        'assets/icon/Icon (10).svg',
+        'assets/icon/streak_icon.svg',
         width: 24,
         height: 24,
         colorFilter: const ColorFilter.mode(Color(0xFFE67E22), BlendMode.srcIn),
@@ -252,7 +278,7 @@ class AchievementsGrid extends StatelessWidget {
     ),
     AchievementGridItem(
       icon: SvgPicture.asset(
-        'assets/icon/Icon (11).svg',
+        'assets/icon/badge_icon.svg',
         width: 24,
         height: 24,
         colorFilter: const ColorFilter.mode(Color(0xFFD35400), BlendMode.srcIn),
@@ -268,29 +294,68 @@ class AchievementsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(child: _buildCard(_gridItems[0])),
-            const SizedBox(width: 10),
-            Expanded(child: _buildCard(_gridItems[1])),
-            const SizedBox(width: 10),
-            Expanded(child: _buildCard(_gridItems[2])),
-          ],
+    final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
+
+    return Obx(() {
+      final apiAchievements = controller.allAchievements;
+      
+      if (apiAchievements.isEmpty) {
+        return const Center(child: Text("No achievements available"));
+      }
+
+      // Filter out duplicate all-caps ones if there are proper cased ones
+      final uniqueAchievements = <String, dynamic>{};
+      for (var a in apiAchievements) {
+        final title = (a['title'] ?? '').toString();
+        final lowerTitle = title.toLowerCase().replaceAll('_', ' ');
+        // If we already have it, only replace if the new one is properly cased (not all caps) or unlocked
+        if (!uniqueAchievements.containsKey(lowerTitle)) {
+          uniqueAchievements[lowerTitle] = a;
+        } else {
+          final existing = uniqueAchievements[lowerTitle];
+          if (existing['isUnlocked'] == false && a['isUnlocked'] == true) {
+             uniqueAchievements[lowerTitle] = a;
+          } else if (existing['title'] == existing['title'].toString().toUpperCase() && title != title.toUpperCase()) {
+             // prefer proper case
+             if (existing['isUnlocked'] == a['isUnlocked']) {
+                 uniqueAchievements[lowerTitle] = a;
+             }
+          }
+        }
+      }
+
+      final displayItems = uniqueAchievements.values.toList();
+
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.85,
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: _buildCard(_gridItems[3])),
-            const SizedBox(width: 10),
-            Expanded(child: _buildCard(_gridItems[4])),
-            const SizedBox(width: 10),
-            Expanded(child: _buildCard(_gridItems[5])),
-          ],
-        ),
-      ],
-    );
+        itemCount: displayItems.length,
+        itemBuilder: (context, index) {
+          final apiItem = displayItems[index];
+          // Use modulo to cycle through predefined colors/icons if there are more items than defaults
+          final defaultItem = _gridItems[index % _gridItems.length];
+          
+          final String title = apiItem['title']?.toString().replaceAll('_', ' ') ?? defaultItem.title;
+          final String formattedTitle = title.split(' ').map((str) => str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1).toLowerCase()}' : '').join(' ');
+
+          final item = AchievementGridItem(
+            icon: Text(apiItem['icon']?.toString() ?? '🏆', style: const TextStyle(fontSize: 24)),
+            title: formattedTitle,
+            subtitle: apiItem['description'] ?? defaultItem.subtitle,
+            gradientColors: defaultItem.gradientColors,
+            badgeColor: defaultItem.badgeColor ?? const Color(0xFF5DBB80),
+            isUnlocked: apiItem['isUnlocked'] == true,
+          );
+          return _buildCard(item);
+        },
+      );
+    });
   }
 
   Widget _buildCard(AchievementGridItem item) {
@@ -304,7 +369,7 @@ class AchievementsGrid extends StatelessWidget {
       titleFontSize: 13.0,
       subtitleFontSize: 10.0,
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-      trailing: item.badgeColor != null ? _buildCheckBadge(item.badgeColor!) : null,
+      trailing: item.isUnlocked ? _buildCheckBadge(item.badgeColor ?? const Color(0xFF5DBB80)) : null,
     );
   }
 

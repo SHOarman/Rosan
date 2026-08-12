@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/quote_controller.dart';
 
 class DailyMsg extends StatelessWidget {
   const DailyMsg({super.key});
@@ -45,29 +47,36 @@ class DailyMsg extends StatelessWidget {
           ),
           const SizedBox(width: 14.0),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '“He who has a why to live can bear almost any how.”',
-                  style: AppTextStyles.plusJakartaSans(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF2E2252),
+            child: Obx(() {
+              final controller = Get.isRegistered<QuoteController>() ? Get.find<QuoteController>() : Get.put(QuoteController());
+              final dailyQuote = controller.dailyQuote.value;
+              final quoteText = dailyQuote?.text ?? "Loading quote...";
+              final quoteAuthor = dailyQuote?.author ?? "";
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '“$quoteText”',
+                    style: AppTextStyles.plusJakartaSans(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF2E2252),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  '— Friedrich Nietzsche',
-                  style: AppTextStyles.plusJakartaSans(
-                    fontSize: 11.0,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF575B61),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    quoteAuthor.isNotEmpty ? '— $quoteAuthor' : '',
+                    style: AppTextStyles.plusJakartaSans(
+                      fontSize: 11.0,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF575B61),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ),
         ],
       ),

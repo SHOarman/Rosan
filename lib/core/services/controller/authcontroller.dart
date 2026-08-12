@@ -2,102 +2,465 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/core/services/controller/onboarding_controller.dart';
+import 'package:rosannalie/core/services/controller/todaytaskcontroller.dart';
+import 'package:rosannalie/core/services/controller/mygoall_controller.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
+import 'package:rosannalie/core/services/controller/quote_controller.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Authcontroller extends GetxController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController forgotPasswordEmailController = TextEditingController();
+  final TextEditingController forgotPasswordEmailController =
+      TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
-  
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
   //========================emailverifcarion ===========
-  final List<TextEditingController> otpControllers = List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> otpControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
 
   final RxBool isLoading = false.obs;
   final RxBool rememberMe = false.obs;
   final RxBool agreeToTerms = false.obs;
 
+  final RxInt resendTimer = 0.obs;
+  Timer? _timer;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadSession();
+  }
+
+  Future<void> _loadSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    accessToken = prefs.getString('accessToken') ?? '';
+    if (accessToken.isNotEmpty) {
+      await fetchUserProfile();
+    }
+  }
+
+  void startResendTimer() {
+    resendTimer.value = 30;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (resendTimer.value > 0) {
+        resendTimer.value--;
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
+  }
+
   Future<void> registerUser() async {
-    if (nameController.text.isEmpty || emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar("Error", "Please fill all fields", backgroundColor: Colors.red, colorText: Colors.white);
+    if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Please fill all fields",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
     if (!agreeToTerms.value) {
-      Get.snackbar("Error", "Please agree to terms and privacy", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Please agree to terms and privacy",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
     isLoading.value = true;
-    final onboardingController = Get.isRegistered<OnboardingController>() 
-        ? Get.find<OnboardingController>() 
+    final onboardingController = Get.isRegistered<OnboardingController>()
+        ? Get.find<OnboardingController>()
         : Get.put(OnboardingController());
 
     try {
+      final obData = onboardingController.onboardingData;
+
       final Map<String, dynamic> requestBody = {
         "name": nameController.text,
         "email": emailController.text,
         "password": passwordController.text,
-        "onboarding": onboardingController.onboardingData,
+        "onboarding": {
+          "proudOfText": obData["initialGoalTitle"] ?? "",
+          "useCases": obData["useCases"] ?? [],
+          "personalities": obData["personalities"] ?? [],
+          "energyTimes": obData["energyTimes"] ?? [],
+          "procrastinationFrequencies":
+              obData["procrastinationFrequencies"] ?? [],
+          "habitsToBuild": obData["habitsToBuild"] ?? [],
+          "motivationStyles": obData["motivationStyles"] ?? [],
+          "rewardPreferences": obData["rewardPreferences"] ?? [],
+          "reminderFrequency": obData["reminderFrequency"] ?? "SMART",
+          "personalityDescription": obData["initialMood"] ?? "",
+          "focuses": obData["focuses"] ?? [],
+          "initialGoalTitle": obData["initialGoalTitle"] ?? "",
+          "initialHabitName": obData["initialHabitName"] ?? "",
+          "initialMood": obData["initialMood"] ?? "",
+        },
       };
-      
+
       print("===== REGISTER PAYLOAD =====");
       print(jsonEncode(requestBody));
       print("============================");
 
       final response = await http.post(
         Uri.parse(Apiservices.register),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
         body: jsonEncode(requestBody),
       );
 
       isLoading.value = false;
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Get.snackbar("Success", "Account created! Please verify your email.", backgroundColor: const Color(0xff5E4B8B), colorText: Colors.white);
-        Get.toNamed(AppRoutes.verificationcode); // Assuming this is where OTP input is
+        Get.snackbar(
+          "Success",
+          "Account created! Please verify your email.",
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+        Get.toNamed(AppRoutes.verificationcode);
       } else {
         String errorMsg = response.body;
-        if (errorMsg.length > 100) errorMsg = "${errorMsg.substring(0, 100)}...";
-        Get.snackbar("Error", "Failed to register. $errorMsg", backgroundColor: Colors.red, colorText: Colors.white);
+        if (errorMsg.length > 100)
+          errorMsg = "${errorMsg.substring(0, 100)}...";
+        Get.snackbar(
+          "Error",
+          "Failed to register. $errorMsg",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", "An error occurred: $e", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "An error occurred: $e",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  void signIn(GlobalKey<FormState> formKey) {
-    if (!formKey.currentState!.validate()) return;
+  final RxString userName = 'User'.obs;
+  final RxString userEmail = 'user@example.com'.obs;
+  final RxString userAvatar = ''.obs;
+  String accessToken = '';
 
-    isLoading.value = true;
-    
-    // Simulate API call for login
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      isLoading.value = false;
-      Get.offAllNamed(AppRoutes.subscriptionPromotion);
-    });
+  final RxString selectedImagePath = ''.obs;
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImagePath.value = image.path;
+    }
   }
 
-  void sendForgotPasswordCode(GlobalKey<FormState> formKey) {
+  void initProfileEditing() {
+    nameController.text = userName.value;
+    emailController.text = userEmail.value;
+    selectedImagePath.value = '';
+  }
+
+  String get initials {
+    if (userName.value.isEmpty) return "U";
+    List<String> names = userName.value.trim().split(" ");
+    if (names.length >= 2) {
+      return "${names[0][0].toUpperCase()}${names[1][0].toUpperCase()}";
+    }
+    return userName.value[0].toUpperCase();
+  }
+
+  Future<void> fetchUserProfile() async {
+    try {
+      final response = await http.get(
+        Uri.parse(Apiservices.get_profile),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        final data = decoded['data'];
+        if (data != null) {
+          userName.value = data['name'] ?? 'User';
+          userEmail.value = data['email'] ?? 'user@example.com';
+          userAvatar.value = data['avatar'] ?? '';
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile: $e");
+    }
+  }
+
+  Future<bool> updateProfile(String newName, String? imagePath) async {
+    isLoading.value = true;
+    try {
+      String? base64Image;
+      if (imagePath != null && imagePath.isNotEmpty) {
+        if (kIsWeb) {
+          // On web, imagePath is a blob URL, we need to fetch it to get bytes
+          final response = await http.get(Uri.parse(imagePath));
+          base64Image =
+              "data:image/png;base64,${base64Encode(response.bodyBytes)}";
+        } else {
+          final bytes = await File(imagePath).readAsBytes();
+          base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+        }
+      }
+
+      final Map<String, dynamic> requestBody = {"name": newName};
+      if (base64Image != null) {
+        requestBody["avatar"] = base64Image;
+      }
+
+      http.Response response = await http.patch(
+        Uri.parse(Apiservices.update_profile),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      print("===== UPDATE PROFILE RESPONSE =====");
+      print(response.body);
+      print("===================================");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        final data = decoded['data'];
+        if (data != null) {
+          userName.value = data['name'] ?? userName.value;
+          userAvatar.value = data['avatar'] ?? userAvatar.value;
+        }
+        selectedImagePath.value = ''; // Clear selected image
+        Get.snackbar(
+          "Success",
+          "Profile updated successfully",
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+        return true;
+      } else {
+        String errorMsg = "Failed to update profile";
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['message'] != null) errorMsg = decoded['message'];
+        } catch (_) {}
+        Get.snackbar(
+          "Error",
+          errorMsg,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "An error occurred: $e",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> signIn(GlobalKey<FormState> formKey) async {
     if (!formKey.currentState!.validate()) return;
 
     isLoading.value = true;
 
-    // Simulate API call to send reset code
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    try {
+      final Map<String, dynamic> requestBody = {
+        "email": emailController.text,
+        "password": passwordController.text,
+      };
+
+      print("===== LOGIN PAYLOAD =====");
+      print(jsonEncode(requestBody));
+      print("=========================");
+
+      final response = await http.post(
+        Uri.parse(Apiservices.login),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode(requestBody),
+      );
+
       isLoading.value = false;
-      Get.toNamed(AppRoutes.verificationcode);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['data'] != null &&
+              decoded['data']['accessToken'] != null) {
+            accessToken = decoded['data']['accessToken'];
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('accessToken', accessToken);
+            await prefs.setBool('isLoggedIn', true);
+            await prefs.setBool('isOnboardingCompleted', true);
+          }
+        } catch (_) {}
+
+        await fetchUserProfile();
+
+        try {
+          if (Get.isRegistered<Todaytaskcontroller>()) {
+            Get.find<Todaytaskcontroller>().fetchTasks();
+          }
+          if (Get.isRegistered<MygoallController>()) {
+            Get.find<MygoallController>().fetchGoals();
+          } else {
+            Get.put(MygoallController()).fetchGoals();
+          }
+          if (Get.isRegistered<WinsController>()) {
+            Get.find<WinsController>().fetchWinsDashboard();
+          } else {
+            Get.put(WinsController()).fetchWinsDashboard();
+          }
+          if (Get.isRegistered<QuoteController>()) {
+            Get.find<QuoteController>().fetchQuotes();
+            Get.find<QuoteController>().fetchDailyQuote();
+          } else {
+            Get.put(QuoteController()).fetchQuotes();
+            Get.find<QuoteController>().fetchDailyQuote();
+          }
+        } catch (_) {}
+
+        Get.snackbar(
+          "Success",
+          "Logged in successfully",
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+        Get.offAllNamed(AppRoutes.subscriptionPromotion);
+      } else {
+        String errorMsg = response.body;
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['message'] != null) {
+            errorMsg = decoded['message'];
+          }
+        } catch (_) {}
+        if (errorMsg.length > 100)
+          errorMsg = "${errorMsg.substring(0, 100)}...";
+        Get.snackbar(
+          "Error",
+          "Failed to login. $errorMsg",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      isLoading.value = false;
       Get.snackbar(
-        "Success",
-        "Verification code sent to ${forgotPasswordEmailController.text} successfully!",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xff5E4B8B),
+        "Error",
+        "An error occurred: $e",
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-    });
+    }
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+    await prefs.setBool('isLoggedIn', false);
+    accessToken = '';
+    userName.value = 'User';
+    userEmail.value = 'user@example.com';
+    Get.offAllNamed(AppRoutes.singin);
+  }
+
+  Future<void> sendForgotPasswordCode(GlobalKey<FormState> formKey) async {
+    if (!formKey.currentState!.validate()) return;
+
+    isLoading.value = true;
+    try {
+      final Map<String, dynamic> requestBody = {
+        "email": forgotPasswordEmailController.text,
+      };
+
+      final response = await http.post(
+        Uri.parse(Apiservices.forgot_password),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      isLoading.value = false;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        startResendTimer();
+        Get.toNamed(AppRoutes.verificationcode);
+        Get.snackbar(
+          "Success",
+          "Verification code sent to ${forgotPasswordEmailController.text} successfully!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          "Error",
+          "Failed to send code. ${response.body}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar(
+        "Error",
+        "An error occurred: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   //========================emailverifcarion ===========
@@ -115,10 +478,35 @@ class Authcontroller extends GetxController {
     }
 
     isLoading.value = true;
-    
+    final String emailToVerify = emailController.text.isNotEmpty
+        ? emailController.text
+        : forgotPasswordEmailController.text;
+
+    if (emailToVerify.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Email address not found. Please try the process from the beginning.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      isLoading.value = false;
+      return;
+    }
+
+    bool isForgotPassword =
+        forgotPasswordEmailController.text.isNotEmpty &&
+        emailController.text.isEmpty;
+
+    if (isForgotPassword) {
+      isLoading.value = false;
+      Get.toNamed(AppRoutes.resetpassword);
+      return;
+    }
+
     try {
       final Map<String, dynamic> requestBody = {
-        "email": emailController.text,
+        "email": emailToVerify,
         "code": otp,
       };
 
@@ -128,7 +516,11 @@ class Authcontroller extends GetxController {
 
       final response = await http.post(
         Uri.parse(Apiservices.verify_otp),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
         body: jsonEncode(requestBody),
       );
 
@@ -137,35 +529,97 @@ class Authcontroller extends GetxController {
         for (var controller in otpControllers) {
           controller.clear();
         }
-        Get.toNamed(AppRoutes.resetpassword); // Change route if needed after verification
-        Get.snackbar("Success", "Email verified successfully!", snackPosition: SnackPosition.BOTTOM, backgroundColor: const Color(0xff5E4B8B), colorText: Colors.white);
+        Get.toNamed(AppRoutes.singin);
+        Get.snackbar(
+          "Success",
+          "Email verified successfully!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
       } else {
         String errorMsg = response.body;
-        if (errorMsg.length > 100) errorMsg = "${errorMsg.substring(0, 100)}...";
-        Get.snackbar("Error", "Verification failed. $errorMsg", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+        if (errorMsg.length > 100)
+          errorMsg = "${errorMsg.substring(0, 100)}...";
+        Get.snackbar(
+          "Error",
+          "Verification failed. $errorMsg",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", "An error occurred: $e", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
-    }
-  }
-//===========================resendotp_code====================================================
-
-  void resendOtpCode() {
-    isLoading.value = true;
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      isLoading.value = false;
       Get.snackbar(
-        "Code Resent",
-        "A new verification code has been sent to your email.",
+        "Error",
+        "An error occurred: $e",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xff5E4B8B),
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-    });
+    }
+  }
+  //===========================resendotp_code====================================================
+
+  Future<void> resendOtpCode() async {
+    isLoading.value = true;
+    try {
+      bool isForgotPassword =
+          emailController.text.isEmpty &&
+          forgotPasswordEmailController.text.isNotEmpty;
+
+      final Map<String, dynamic> requestBody = {
+        "email": isForgotPassword
+            ? forgotPasswordEmailController.text
+            : emailController.text,
+      };
+
+      final String endpoint = isForgotPassword
+          ? Apiservices.forgot_password
+          : Apiservices.resend_otp;
+
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      isLoading.value = false;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar(
+          "Code Resent",
+          "A new verification code has been sent to your email.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          "Error",
+          "Failed to resend code. ${response.body}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar(
+        "Error",
+        "An error occurred: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
-  void createNewPassword(GlobalKey<FormState> formKey) {
+  Future<void> createNewPassword(GlobalKey<FormState> formKey) async {
     if (!formKey.currentState!.validate()) return;
 
     if (newPasswordController.text != confirmPasswordController.text) {
@@ -179,19 +633,59 @@ class Authcontroller extends GetxController {
       return;
     }
 
+    String otp = otpControllers.map((controller) => controller.text).join();
     isLoading.value = true;
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    try {
+      final Map<String, dynamic> requestBody = {
+        "email": forgotPasswordEmailController.text,
+        "code": otp,
+        "newPassword": newPasswordController.text,
+      };
+
+      final response = await http.post(
+        Uri.parse(Apiservices.reset_password),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode(requestBody),
+      );
+
       isLoading.value = false;
-      newPasswordController.clear();
-      confirmPasswordController.clear();
-      Get.offAllNamed(AppRoutes.resetsuccess);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        emailController.text = forgotPasswordEmailController.text;
+        passwordController.text = newPasswordController.text;
+
+        newPasswordController.clear();
+        confirmPasswordController.clear();
+        for (var controller in otpControllers) controller.clear();
+        Get.offAllNamed(AppRoutes.resetsuccess);
+        Get.snackbar(
+          "Success",
+          "Password changed successfully!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          "Error",
+          "Failed to reset password. ${response.body}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      isLoading.value = false;
       Get.snackbar(
-        "Success",
-        "Password changed successfully!",
+        "Error",
+        "An error occurred: $e",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xff5E4B8B),
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-    });
+    }
   }
 }
