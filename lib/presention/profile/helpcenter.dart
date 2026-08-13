@@ -153,7 +153,7 @@ class HelpCenter extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
 
-                // FREQUENTLY ASKED QUESTIONS header
+
                 Text(
                   "FREQUENTLY ASKED QUESTIONS",
                   style: AppTextStyles.inter(

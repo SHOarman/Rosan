@@ -20,7 +20,7 @@ class Onlading1 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 40),
-            // Logo in the center
+
             Center(
               child: Container(
                 width: 100.0,

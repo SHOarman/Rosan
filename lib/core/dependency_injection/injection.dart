@@ -5,7 +5,9 @@ import 'package:rosannalie/core/services/controller/mygoall_controller.dart';
 import 'package:rosannalie/core/services/controller/quote_controller.dart';
 import 'package:rosannalie/core/services/controller/gratitude_controller.dart';
 import 'package:rosannalie/core/services/controller/wins_controller.dart';
-import 'package:rosannalie/core/services/controller/ai_coach_controller.dart';
+import 'package:rosannalie/core/services/controller/future_me_controller.dart';
+
+import '../services/controller/ai_coach_controller.dart';
 
 class DependencyInjection {
   static void bindings() {
@@ -30,5 +32,8 @@ class DependencyInjection {
 
     //========================aicoachcontroller=====================================
     Get.put(AiCoachController(), permanent: true);
+
+    //========================futuremecontroller=====================================
+    Get.put(FutureMeController(), permanent: true);
   }
 }

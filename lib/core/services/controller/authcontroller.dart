@@ -49,6 +49,7 @@ class Authcontroller extends GetxController {
     accessToken = prefs.getString('accessToken') ?? '';
     if (accessToken.isNotEmpty) {
       await fetchUserProfile();
+      await fetchDashboard();
     }
   }
 
@@ -175,6 +176,18 @@ class Authcontroller extends GetxController {
 
   final RxString selectedImagePath = ''.obs;
 
+  // ── Dashboard Stats ──────────────────────────────────────────────
+  final RxInt dashboardStreak = 0.obs;
+  final RxInt dashboardGoals = 0.obs;
+  final RxInt dashboardGratitude = 0.obs;
+  final RxInt dashboardWins = 0.obs;
+  final RxBool isDashboardLoading = false.obs;
+
+  // ── Subscription ─────────────────────────────────────────────────
+  final RxString subscriptionPlan = 'FREE'.obs;
+  final RxString subscriptionBadge = 'Free'.obs;
+  final RxString subscriptionStatus = 'INACTIVE'.obs;
+
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -198,6 +211,56 @@ class Authcontroller extends GetxController {
     return userName.value[0].toUpperCase();
   }
 
+  final RxString currentMood = 'good'.obs;
+
+  Future<void> updateUserMood(String mood) async {
+    final String cleanMood = mood.trim().toLowerCase();
+    currentMood.value = cleanMood;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken') ?? accessToken;
+
+      if (token.isEmpty) return;
+
+      final body = jsonEncode({
+        "mood": cleanMood,
+      });
+
+      print("===== UPDATE USER MOOD =====");
+      print("URL: ${Apiservices.mode}");
+      print("Body: $body");
+
+      final response = await http.post(
+        Uri.parse(Apiservices.mode),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: body,
+      );
+
+      print("StatusCode: ${response.statusCode}");
+      print("Body: ${response.body}");
+      print("============================");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar(
+          "Mood Updated",
+          "Feeling updated to ${cleanMood.capitalizeFirst}!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFF7B64B0),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      }
+    } catch (e) {
+      print("Error updating user mood: $e");
+    }
+  }
+
   Future<void> fetchUserProfile() async {
     try {
       final response = await http.get(
@@ -216,10 +279,69 @@ class Authcontroller extends GetxController {
           userName.value = data['name'] ?? 'User';
           userEmail.value = data['email'] ?? 'user@example.com';
           userAvatar.value = data['avatar'] ?? '';
+          if (data['mood'] != null) {
+            currentMood.value = data['mood'].toString().toLowerCase();
+          }
         }
       }
     } catch (e) {
       print("Error fetching profile: $e");
+    }
+  }
+
+  // ── Fetch Dashboard Stats ─────────────────────────────────────
+  Future<void> fetchDashboard() async {
+    try {
+      isDashboardLoading.value = true;
+      final response = await http.get(
+        Uri.parse(Apiservices.profile_dashboard),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+      );
+
+      print("===== FETCH DASHBOARD =====");
+      print("StatusCode: ${response.statusCode}");
+      print("Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final data = decoded['data'];
+
+          // Parse user info
+          if (data['user'] != null) {
+            final user = data['user'];
+            userName.value = user['name'] ?? userName.value;
+            userEmail.value = user['email'] ?? userEmail.value;
+            userAvatar.value = user['avatar'] ?? userAvatar.value;
+          }
+
+          // Parse stats
+          if (data['stats'] != null) {
+            final stats = data['stats'];
+            dashboardStreak.value = stats['streak'] ?? 0;
+            dashboardGoals.value = stats['goals'] ?? 0;
+            dashboardGratitude.value = stats['gratitude'] ?? 0;
+            dashboardWins.value = stats['wins'] ?? 0;
+          }
+
+          // Parse subscription
+          if (data['subscription'] != null) {
+            final sub = data['subscription'];
+            subscriptionPlan.value = sub['plan'] ?? 'FREE';
+            subscriptionBadge.value = sub['badgeLabel'] ?? 'Free';
+            subscriptionStatus.value = sub['status'] ?? 'INACTIVE';
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching dashboard: $e");
+    } finally {
+      isDashboardLoading.value = false;
     }
   }
 
@@ -343,6 +465,7 @@ class Authcontroller extends GetxController {
         } catch (_) {}
 
         await fetchUserProfile();
+        await fetchDashboard();
 
         try {
           if (Get.isRegistered<Todaytaskcontroller>()) {

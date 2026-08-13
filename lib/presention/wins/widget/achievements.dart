@@ -1,58 +1,37 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/presention/wins/widget/stackcard.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/core/services/controller/wins_controller.dart';
 import 'package:intl/intl.dart';
 
-class AchievementItem {
-  final String emoji;
-  final String title;
-  final String time;
-  final String points;
-
-  const AchievementItem({
-    required this.emoji,
-    required this.title,
-    required this.time,
-    required this.points,
-  });
-}
-
 class Achievements extends StatelessWidget {
-  const Achievements({super.key});
-
-  static const List<AchievementItem> _defaultAchievements = [
-    AchievementItem(
-      emoji: '💪',
-      title: 'Completed morning workout',
-      time: '7:30 AM',
-      points: '+50',
-    ),
-    AchievementItem(
-      emoji: '💧',
-      title: 'Drank 8 glasses of water',
-      time: '4:00 PM',
-      points: '+30',
-    ),
-    AchievementItem(
-      emoji: '📚',
-      title: 'Read for 20 minutes',
-      time: '9:00 PM',
-      points: '+40',
-    ),
-  ];
+  final int? limit;
+  const Achievements({super.key, this.limit});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
 
     return Obx(() {
-      final achievements = controller.todaysAchievements;
+      List<dynamic> achievements = List.from(controller.todaysAchievements);
       if (achievements.isEmpty) {
         return const Center(child: Text("No achievements today"));
+      }
+
+      // Sort newest achievements first (descending by createdAt)
+      achievements.sort((a, b) {
+        final aTime = a['createdAt'] != null ? DateTime.tryParse(a['createdAt'].toString()) : null;
+        final bTime = b['createdAt'] != null ? DateTime.tryParse(b['createdAt'].toString()) : null;
+        if (aTime == null && bTime == null) return 0;
+        if (aTime == null) return 1;
+        if (bTime == null) return -1;
+        return bTime.compareTo(aTime);
+      });
+
+      if (limit != null && limit! > 0 && achievements.length > limit!) {
+        achievements = achievements.take(limit!).toList();
       }
 
       return Column(
@@ -67,7 +46,7 @@ class Achievements extends StatelessWidget {
             }
           } catch (_) {}
           
-          final String emoji = title.toLowerCase().contains('task') ? '💪' : (title.toLowerCase().contains('welcome') ? '👋' : '🏆');
+          final String emoji = achievement['icon']?.toString() ?? '🏆';
 
           return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
@@ -218,78 +197,22 @@ class AchievementGridItem {
 class AchievementsGrid extends StatelessWidget {
   const AchievementsGrid({super.key});
 
-  static final List<AchievementGridItem> _gridItems = [
-    AchievementGridItem(
-      icon: const Text('🌱', style: TextStyle(fontSize: 24)),
-      title: 'First Step',
-      subtitle: 'Completed your first task',
-      gradientColors: const [
-        Color(0xFFA1E7B9),
-        Color(0xFFB5F2CC),
-      ],
-      badgeColor: const Color(0xFF5DBB80),
-    ),
-    AchievementGridItem(
-      icon: SvgPicture.asset(
-        'assets/icon/streak_icon.svg',
-        width: 24,
-        height: 24,
-        colorFilter: const ColorFilter.mode(Color(0xFFE67E22), BlendMode.srcIn),
-      ),
-      title: 'On a Roll',
-      subtitle: '3-day streak',
-      gradientColors: const [
-        Color(0xFFFFDF9F),
-        Color(0xFFFFC374),
-      ],
-      badgeColor: const Color(0xFFFFB33A),
-    ),
-    AchievementGridItem(
-      icon: SvgPicture.asset(
-        'assets/icon/TargetIcon.svg',
-        width: 24,
-        height: 24,
-      ),
-      title: 'Goal Setter',
-      subtitle: 'Created your first goal',
-      gradientColors: const [
-        Color(0xFFC4C1E0),
-        Color(0xFFAB9FD5),
-      ],
-      badgeColor: const Color(0xFF7E57C2),
-    ),
-    AchievementGridItem(
-      icon: const Text('🙏', style: TextStyle(fontSize: 24)),
-      title: 'Gratitude Pro',
-      subtitle: '7 gratitude entries',
-      gradientColors: const [
-        Color(0xFFCBD6E2),
-        Color(0xFFA9BCCF),
-      ],
-    ),
-    AchievementGridItem(
-      icon: const Text('⭐', style: TextStyle(fontSize: 24)),
-      title: 'Habit Builder',
-      subtitle: '14-day streak',
-      gradientColors: const [
-        Color(0xFFECC1DD),
-        Color(0xFFDB95C7),
-      ],
-    ),
-    AchievementGridItem(
-      icon: SvgPicture.asset(
-        'assets/icon/badge_icon.svg',
-        width: 24,
-        height: 24,
-        colorFilter: const ColorFilter.mode(Color(0xFFD35400), BlendMode.srcIn),
-      ),
-      title: 'Champion',
-      subtitle: 'Complete a big goal',
-      gradientColors: const [
-        Color(0xFFECA3A3),
-        Color(0xFFD57474),
-      ],
-    ),
+  static const List<List<Color>> _colorPalette = [
+    [Color(0xFFA1E7B9), Color(0xFFB5F2CC)],
+    [Color(0xFFFFDF9F), Color(0xFFFFC374)],
+    [Color(0xFFC4C1E0), Color(0xFFAB9FD5)],
+    [Color(0xFFCBD6E2), Color(0xFFA9BCCF)],
+    [Color(0xFFECC1DD), Color(0xFFDB95C7)],
+    [Color(0xFFECA3A3), Color(0xFFD57474)],
+  ];
+
+  static const List<Color> _badgePalette = [
+    Color(0xFF5DBB80),
+    Color(0xFFFFB33A),
+    Color(0xFF7E57C2),
+    Color(0xFF5A9FBF),
+    Color(0xFFC2579A),
+    Color(0xFFD35400),
   ];
 
   @override
@@ -303,12 +226,10 @@ class AchievementsGrid extends StatelessWidget {
         return const Center(child: Text("No achievements available"));
       }
 
-      // Filter out duplicate all-caps ones if there are proper cased ones
       final uniqueAchievements = <String, dynamic>{};
       for (var a in apiAchievements) {
         final title = (a['title'] ?? '').toString();
         final lowerTitle = title.toLowerCase().replaceAll('_', ' ');
-        // If we already have it, only replace if the new one is properly cased (not all caps) or unlocked
         if (!uniqueAchievements.containsKey(lowerTitle)) {
           uniqueAchievements[lowerTitle] = a;
         } else {
@@ -316,7 +237,6 @@ class AchievementsGrid extends StatelessWidget {
           if (existing['isUnlocked'] == false && a['isUnlocked'] == true) {
              uniqueAchievements[lowerTitle] = a;
           } else if (existing['title'] == existing['title'].toString().toUpperCase() && title != title.toUpperCase()) {
-             // prefer proper case
              if (existing['isUnlocked'] == a['isUnlocked']) {
                  uniqueAchievements[lowerTitle] = a;
              }
@@ -338,18 +258,19 @@ class AchievementsGrid extends StatelessWidget {
         itemCount: displayItems.length,
         itemBuilder: (context, index) {
           final apiItem = displayItems[index];
-          // Use modulo to cycle through predefined colors/icons if there are more items than defaults
-          final defaultItem = _gridItems[index % _gridItems.length];
           
-          final String title = apiItem['title']?.toString().replaceAll('_', ' ') ?? defaultItem.title;
+          final String title = apiItem['title']?.toString().replaceAll('_', ' ') ?? 'Achievement';
           final String formattedTitle = title.split(' ').map((str) => str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1).toLowerCase()}' : '').join(' ');
+
+          final colors = _colorPalette[index % _colorPalette.length];
+          final badgeColor = _badgePalette[index % _badgePalette.length];
 
           final item = AchievementGridItem(
             icon: Text(apiItem['icon']?.toString() ?? '🏆', style: const TextStyle(fontSize: 24)),
             title: formattedTitle,
-            subtitle: apiItem['description'] ?? defaultItem.subtitle,
-            gradientColors: defaultItem.gradientColors,
-            badgeColor: defaultItem.badgeColor ?? const Color(0xFF5DBB80),
+            subtitle: apiItem['description']?.toString() ?? '',
+            gradientColors: colors,
+            badgeColor: badgeColor,
             isUnlocked: apiItem['isUnlocked'] == true,
           );
           return _buildCard(item);

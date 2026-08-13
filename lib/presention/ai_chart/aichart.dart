@@ -23,12 +23,20 @@ class _AichartState extends State<Aichart> {
       ? Get.find<AiCoachController>()
       : Get.put(AiCoachController());
 
+  bool _isQuickStartExpanded = true;
+
   final List<String> _quickStarts = [
     'Help me beat procrastination today',
     'Give me a morning routine',
     "I'm feeling overwhelmed",
     'Celebrate my wins with me',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _chatController.fetchChatHistory(isRefresh: true);
+  }
 
   @override
   void dispose() {
@@ -42,20 +50,18 @@ class _AichartState extends State<Aichart> {
     if (text.isEmpty) return;
     _chatController.sendMessage(text);
     _inputController.clear();
+    setState(() {
+      _isQuickStartExpanded = false;
+    });
     _scrollToBottom();
   }
 
   void _sendQuickStart(String text) {
     _chatController.sendMessage(text);
+    setState(() {
+      _isQuickStartExpanded = false;
+    });
     _scrollToBottom();
-  }
-
-  String _currentTime() {
-    final now = DateTime.now();
-    final h = now.hour % 12 == 0 ? 12 : now.hour % 12;
-    final m = now.minute.toString().padLeft(2, '0');
-    final period = now.hour >= 12 ? 'PM' : 'AM';
-    return '$h:$m $period';
   }
 
   void _scrollToBottom() {
@@ -114,41 +120,19 @@ class _AichartState extends State<Aichart> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          // Back button
-          // GestureDetector(
-          //   onTap: () => Navigator.maybePop(context),
-          //   child: Container(
-          //     width: 36,
-          //     height: 36,
-          //     decoration: BoxDecoration(
-          //       color: Colors.white.withValues(alpha: 0.25),
-          //       shape: BoxShape.circle,
-          //       border: Border.all(
-          //         color: Colors.white.withValues(alpha: 0.4),
-          //         width: 1,
-          //       ),
-          //     ),
-          //     child: const Icon(
-          //       Icons.arrow_back_ios_new_rounded,
-          //       size: 16,
-          //       color: Colors.white,
-          //     ),
-          //   ),
-          // ),
           const SizedBox(width: 12),
 
           // Avatar
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [Color(0xFF9E6AC3), Color(0xFFC9698E)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              // border: Border.all(color: Colors.white, width: 2),
             ),
             child: Center(
               child: SvgPicture.asset(
@@ -212,33 +196,70 @@ class _AichartState extends State<Aichart> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Title
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Quick start ',
-                style: AppTextStyles.plusJakartaSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF666370),
+          // Toggle button row
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isQuickStartExpanded = !_isQuickStartExpanded;
+              });
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFFC5B8E8).withValues(alpha: 0.5),
+                  width: 1,
                 ),
               ),
-              const Text('✨', style: TextStyle(fontSize: 13)),
-            ],
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Quick start ',
+                    style: AppTextStyles.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF666370),
+                    ),
+                  ),
+                  const Text('✨ ', style: TextStyle(fontSize: 12)),
+                  Icon(
+                    _isQuickStartExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                    size: 18,
+                    color: const Color(0xFF7B64B0),
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 12),
-          // Chips — Wrap so they flow into rows like the design
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: _quickStarts.map((label) => _QuickStartChip(
-              label: label,
-              onTap: () => _sendQuickStart(label),
-            )).toList(),
+
+          // Animated sliding container for quick start chips
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _isQuickStartExpanded
+                ? Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _quickStarts.map((label) => _QuickStartChip(
+                          label: label,
+                          onTap: () => _sendQuickStart(label),
+                        )).toList(),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  )
+                : const SizedBox(height: 4),
           ),
-          const SizedBox(height: 12),
         ],
       ),
     );
@@ -257,17 +278,31 @@ class _AichartState extends State<Aichart> {
       }
 
       final msgs = _chatController.messages;
-      return ListView.builder(
-        controller: _scrollController,
-        reverse: true, // Show last message first (at the bottom)
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        itemCount: msgs.length,
-        itemBuilder: (context, index) {
-          final msg = msgs[index];
-          return msg.isUser
-              ? _UserBubble(message: msg)
-              : _AiBubble(message: msg);
-        },
+      final isSending = _chatController.isSending.value;
+      final totalCount = isSending ? msgs.length + 1 : msgs.length;
+
+      return RefreshIndicator(
+        color: const Color(0xFF9E6AC3),
+        onRefresh: () => _chatController.fetchChatHistory(isRefresh: true),
+        child: ListView.builder(
+          controller: _scrollController,
+          reverse: true, // Show last message first (at the bottom)
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          itemCount: totalCount,
+          itemBuilder: (context, index) {
+            if (isSending && index == 0) {
+              return const _TypingBubble();
+            }
+            final msgIndex = isSending ? index - 1 : index;
+            final msg = msgs[msgIndex];
+            return msg.isUser
+                ? _UserBubble(message: msg)
+                : _AiBubble(message: msg);
+          },
+        ),
       );
     });
   }
@@ -415,6 +450,51 @@ class _AiBubble extends StatelessWidget {
 
   const _AiBubble({required this.message});
 
+  Widget _buildFormattedText(String text) {
+    final List<InlineSpan> spans = [];
+    final RegExp exp = RegExp(r'\*\*(.*?)\*\*');
+    int lastMatchEnd = 0;
+
+    for (final Match match in exp.allMatches(text)) {
+      if (match.start > lastMatchEnd) {
+        spans.add(TextSpan(
+          text: text.substring(lastMatchEnd, match.start),
+          style: AppTextStyles.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xFF2E2252),
+          ).copyWith(height: 1.5),
+        ));
+      }
+
+      spans.add(TextSpan(
+        text: match.group(1),
+        style: AppTextStyles.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF161022),
+        ).copyWith(height: 1.5),
+      ));
+
+      lastMatchEnd = match.end;
+    }
+
+    if (lastMatchEnd < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(lastMatchEnd),
+        style: AppTextStyles.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF2E2252),
+        ).copyWith(height: 1.5),
+      ));
+    }
+
+    return RichText(
+      text: TextSpan(children: spans),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -474,14 +554,7 @@ class _AiBubble extends StatelessWidget {
                           width: 1,
                         ),
                       ),
-                      child: Text(
-                        message.text,
-                        style: AppTextStyles.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF2E2252),
-                        ).copyWith(height: 1.5),
-                      ),
+                      child: _buildFormattedText(message.text),
                     ),
                   ),
                 ),
@@ -559,6 +632,80 @@ class _UserBubble extends StatelessWidget {
               fontSize: 10,
               fontWeight: FontWeight.w400,
               color: const Color(0xFF9E9AA8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TypingBubble extends StatelessWidget {
+  const _TypingBubble();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Color(0xFF9B7FD4), Color(0xFF5E4B8B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/images/SparkleIcon (1).svg',
+                width: 14,
+                height: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.65),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+                bottomRight: Radius.circular(18),
+                bottomLeft: Radius.circular(4),
+              ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.8),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9E6AC3)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Thinking...',
+                  style: AppTextStyles.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF8F7DB5),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

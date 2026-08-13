@@ -23,17 +23,17 @@ class _OnladingState extends State<Onlading> {
         setState(() {
           _isInitialized = true;
         });
-        _controller?.setVolume(0.0); // Mute the video to allow autoplay on Chrome (web)
+        _controller?.setVolume(0.0);
         _controller?.play();
 
-        // Navigate to the correct screen after 8 seconds of playback starting
+
         Future.delayed(const Duration(seconds: 8), () async {
           final prefs = await SharedPreferences.getInstance();
           final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
           final bool isOnboardingCompleted = prefs.getBool('isOnboardingCompleted') ?? false;
 
           if (isLoggedIn) {
-            Get.offNamed(AppRoutes.subscriptionPromotion); // Adjust as needed for home
+            Get.offNamed(AppRoutes.subscriptionPromotion);
           } else if (isOnboardingCompleted) {
             Get.offNamed(AppRoutes.singin);
           } else {
@@ -52,7 +52,7 @@ class _OnladingState extends State<Onlading> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Clean black background
+      backgroundColor: Colors.black,
       body: _isInitialized && _controller != null
           ? SizedBox.expand(
               child: FittedBox(

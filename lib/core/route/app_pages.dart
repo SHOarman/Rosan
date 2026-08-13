@@ -44,5 +44,6 @@ class AppRoutes {
   static const String subscriptionPromotion = '/subscriptionPromotion';
   static const String inbox = '/inbox';
   static const String wins = '/wins';
+  static const String wins_seeall = '/wins_seeall';
   static const String gratitude = '/gratitude';
 }

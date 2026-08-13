@@ -31,59 +31,77 @@ class SavedQuotesTab extends StatelessWidget {
       final savedQuotes = controller.savedQuotes;
 
       if (savedQuotes.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        return RefreshIndicator(
+          color: const Color(0xFF7B64B0),
+          onRefresh: () => controller.fetchQuotes(page: 1, pageSize: 10),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.6),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFE2DCF7),
-                    width: 1.5,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.favorite_border,
-                  color: Color(0xFF8F7DB5),
-                  size: 32,
+              const SizedBox(height: 60),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFFE2DCF7),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.favorite_border,
+                        color: Color(0xFF8F7DB5),
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "No saved quotes yet",
+                      style: AppTextStyles.plusJakartaSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF2E2252),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Tap the ❤️ icon on any quote to save it here",
+                      style: AppTextStyles.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF8F7DB5),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                "No saved quotes yet",
-                style: AppTextStyles.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E2252),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Tap the ❤️ icon on any quote to save it here",
-                style: AppTextStyles.inter(
-                  fontSize: 12,
-                  color: const Color(0xFF8F7DB5),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
             ],
           ),
         );
       }
 
-      return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
-        itemCount: savedQuotes.length,
-        itemBuilder: (context, index) {
-          final quote = savedQuotes[index];
-          return _buildSavedQuoteCard(quote, controller, index);
-        },
+      return RefreshIndicator(
+        color: const Color(0xFF7B64B0),
+        onRefresh: () => controller.fetchQuotes(page: 1, pageSize: 10),
+        child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: const EdgeInsets.only(bottom: 24),
+          itemCount: savedQuotes.length,
+          itemBuilder: (context, index) {
+            final quote = savedQuotes[index];
+            return _buildSavedQuoteCard(quote, controller, index);
+          },
+        ),
       );
     });
   }

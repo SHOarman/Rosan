@@ -8,6 +8,7 @@ import 'package:rosannalie/presention/wins/widget/amazingworkcard.dart';
 import 'package:rosannalie/presention/wins/widget/stackcard.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:get/get.dart';
+import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/core/services/controller/wins_controller.dart';
 
 class Wins extends StatelessWidget {
@@ -115,17 +116,45 @@ class Wins extends StatelessWidget {
 
                       const SizedBox(height: 30),
 
-                      Text(
-                        "Today's achievements",
-                        style: AppTextStyles.plusJakartaSans(
-                          color: const Color(0xff161022),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Today's achievements",
+                            style: AppTextStyles.plusJakartaSans(
+                              color: const Color(0xff161022),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.toNamed(AppRoutes.wins_seeall);
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  "See all",
+                                  style: AppTextStyles.plusJakartaSans(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF7B64B0),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 12,
+                                  color: Color(0xFF7B64B0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
 
-                      const Achievements(),
+                      const Achievements(limit: 3),
 
                       const SizedBox(height: 30),
 

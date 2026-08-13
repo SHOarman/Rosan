@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/core/services/controller/gratitude_controller.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
 import 'package:rosannalie/general_widget/custom_background.dart';
 import 'package:rosannalie/general_widget/customnav_button.dart';
 import 'package:rosannalie/presention/Gratitude/widget/gratitudecard.dart';
@@ -14,6 +15,13 @@ class Gratitude extends StatelessWidget {
     final GratitudeController controller = Get.isRegistered<GratitudeController>()
         ? Get.find<GratitudeController>()
         : Get.put(GratitudeController());
+    final Authcontroller authController = Get.find<Authcontroller>();
+
+    // Refresh dashboard stats and gratitude entries when gratitude page opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchGratitudeEntries();
+      authController.fetchDashboard();
+    });
 
     return CustomBackground(
       useSafeArea: false,
@@ -27,89 +35,103 @@ class Gratitude extends StatelessWidget {
             bottom: 40.0,
             child: SafeArea(
               bottom: false,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 40),
+              child: RefreshIndicator(
+                color: const Color(0xFF7B64B0),
+                onRefresh: () async {
+                  await controller.fetchGratitudeEntries();
+                  await authController.fetchDashboard();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 40),
 
-                      // Title
-                      Center(
-                        child: Text(
-                          'Gratitude',
-                          style: AppTextStyles.plusJakartaSans(
-                            fontSize: 20,
-                            color: const Color(0xFF161022),
-                            fontWeight: FontWeight.w800,
+                        Center(
+                          child: Text(
+                            'Gratitude',
+                            style: AppTextStyles.plusJakartaSans(
+                              fontSize: 20,
+                              color: const Color(0xFF161022),
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // Gratitude prompt card
-                      Gratitudecard(
-                        onAddTap: () => _showAddEntrySheet(context, controller),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Stats row
-                      Obx(() => _buildStatsRow(controller)),
-
-                      const SizedBox(height: 28),
-
-                      // Recent Entries header
-                      Text(
-                        'Recent entries',
-                        style: AppTextStyles.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF161022),
+                        // Gratitude prompt card
+                        Gratitudecard(
+                          onAddTap: () => _showAddEntrySheet(context, controller, authController),
                         ),
-                      ),
 
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 24),
 
-                      // Entries list
-                      Obx(() {
-                        if (controller.entries.isEmpty) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 30),
-                              child: Text(
-                                'No entries yet. Add your first!',
-                                style: AppTextStyles.inter(
-                                  color: const Color(0xFF8F7DB5),
-                                  fontSize: 14,
+
+                        Obx(() => _buildStatsRow(controller, authController)),
+
+                        const SizedBox(height: 28),
+
+                        Text(
+                          'Recent entries',
+                          style: AppTextStyles.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF161022),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Entries list
+                        Obx(() {
+                          if (controller.isLoading.value && controller.entries.isEmpty) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF7B64B0),
                                 ),
                               ),
-                            ),
+                            );
+                          }
+
+                          if (controller.entries.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 30),
+                                child: Text(
+                                  'No entries yet. Add your first!',
+                                  style: AppTextStyles.inter(
+                                    color: const Color(0xFF8F7DB5),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: controller.entries.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              final entry = controller.entries[index];
+                              return _buildEntryCard(entry, controller);
+                            },
                           );
-                        }
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: controller.entries.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final entry = controller.entries[index];
-                            return _buildEntryCard(entry, controller);
-                          },
-                        );
-                      }),
+                        }),
 
-                      const SizedBox(height: 10),
-
-                      // A note from Rise
-                      _buildRiseNoteCard(),
-
-                      const SizedBox(height: 80),
-                    ],
+                        const SizedBox(height: 80),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -129,12 +151,12 @@ class Gratitude extends StatelessWidget {
   }
 
   // ── Stats Row ──────────────────────────────────────────────────
-  Widget _buildStatsRow(GratitudeController c) {
+  Widget _buildStatsRow(GratitudeController c, Authcontroller auth) {
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
-            value: '${c.totalEntries}',
+            value: '${auth.dashboardGratitude.value}',
             label: 'Total',
             emoji: '🗒️',
           ),
@@ -142,7 +164,7 @@ class Gratitude extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
-            value: '${c.dayStreak}',
+            value: '${auth.dashboardStreak.value}',
             label: 'Day streak',
             emoji: '🔥',
           ),
@@ -210,8 +232,9 @@ class Gratitude extends StatelessWidget {
 
   // ── Entry Card ─────────────────────────────────────────────────
   Widget _buildEntryCard(GratitudeEntry entry, GratitudeController controller) {
+    final keyString = entry.id ?? (entry.text + entry.dateLabel);
     return Dismissible(
-      key: ValueKey(entry.text + entry.dateLabel),
+      key: ValueKey(keyString),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
@@ -285,53 +308,9 @@ class Gratitude extends StatelessWidget {
     );
   }
 
-  // ── A note from Rise ───────────────────────────────────────────
-  Widget _buildRiseNoteCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEDE8FB).withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFC5B8E8).withValues(alpha: 0.5),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Text('❤️', style: TextStyle(fontSize: 14)),
-              const SizedBox(width: 6),
-              Text(
-                'A note from Rise',
-                style: AppTextStyles.plusJakartaSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF3D2E6B),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '"Gratitude doesn\'t change the scenery — it washes clean the glass you look through so you can see the colors in the same world. Keep noticing, fvbb."',
-            style: AppTextStyles.playfairDisplay(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: const Color(0xFF8F7DB5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ── Add Entry Dialog ───────────────────────────────────────────
   void _showAddEntrySheet(
-      BuildContext context, GratitudeController controller) {
+      BuildContext context, GratitudeController controller, Authcontroller authController) {
     final textController = TextEditingController();
 
     showDialog(
@@ -473,52 +452,71 @@ class Gratitude extends StatelessWidget {
                     const SizedBox(width: 12),
                     // Save
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          final text = textController.text.trim();
-                          if (text.isEmpty) return;
-                          controller.addEntry(text, '✨');
-                          Navigator.of(ctx).pop();
-                        },
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFF8F7DB5),
-                                Color(0xFF7B64B0),
+                      child: Obx(() {
+                        final isSaving = controller.isSaving.value;
+                        return GestureDetector(
+                          onTap: isSaving
+                              ? null
+                              : () async {
+                                  final text = textController.text.trim();
+                                  if (text.isEmpty) return;
+                                  final success = await controller.addGratitudeEntry(text, emoji: '✨');
+                                  if (success) {
+                                    authController.fetchDashboard();
+                                    if (ctx.mounted) {
+                                      Navigator.of(ctx).pop();
+                                    }
+                                  }
+                                },
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF8F7DB5),
+                                  Color(0xFF7B64B0),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF7B64B0)
+                                      .withValues(alpha: 0.35),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
                               ],
                             ),
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF7B64B0)
-                                    .withValues(alpha: 0.35),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            alignment: Alignment.center,
+                            child: isSaving
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Save ',
+                                        style: AppTextStyles.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const Text('💛',
+                                          style: TextStyle(fontSize: 14)),
+                                    ],
+                                  ),
                           ),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Save ',
-                                style: AppTextStyles.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const Text('💛',
-                                  style: TextStyle(fontSize: 14)),
-                            ],
-                          ),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                   ],
                 ),

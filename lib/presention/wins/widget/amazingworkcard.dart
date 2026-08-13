@@ -98,7 +98,6 @@ class Amazingworkcard extends StatelessWidget {
           // Progress bar
           Stack(
             children: [
-              // Background track
               Container(
                 width: double.infinity,
                 height: 8,
@@ -107,7 +106,6 @@ class Amazingworkcard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),
-              // Filled portion
               FractionallySizedBox(
                 widthFactor: progress.clamp(0.0, 1.0),
                 child: Container(

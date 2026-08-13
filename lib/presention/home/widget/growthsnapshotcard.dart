@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/future_me_controller.dart';
 import 'package:rosannalie/utils/appString.dart';
 
 class Growthsnapshotcard extends StatelessWidget {
@@ -6,6 +8,10 @@ class Growthsnapshotcard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FutureMeController controller = Get.isRegistered<FutureMeController>()
+        ? Get.find<FutureMeController>()
+        : Get.put(FutureMeController());
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18.0),
@@ -49,12 +55,12 @@ class Growthsnapshotcard extends StatelessWidget {
           ),
           const SizedBox(height: 18.0),
           // Metrics Row
-          Row(
+          Obx(() => Row(
             children: [
               Expanded(
                 child: _buildMetricItem(
                   emoji: "📅",
-                  value: "2",
+                  value: controller.daysActive.value.toString(),
                   label: "Days active",
                 ),
               ),
@@ -62,7 +68,7 @@ class Growthsnapshotcard extends StatelessWidget {
               Expanded(
                 child: _buildMetricItem(
                   emoji: "✅",
-                  value: "4",
+                  value: controller.tasksDone.value.toString(),
                   label: "Tasks done",
                 ),
               ),
@@ -70,12 +76,12 @@ class Growthsnapshotcard extends StatelessWidget {
               Expanded(
                 child: _buildMetricItem(
                   emoji: "🎯",
-                  value: "1",
+                  value: controller.goalsSet.value.toString(),
                   label: "Goals set",
                 ),
               ),
             ],
-          ),
+          )),
         ],
       ),
     );

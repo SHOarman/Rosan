@@ -28,52 +28,78 @@ class AllQuotesTab extends StatelessWidget {
     final QuoteController controller = Get.find<QuoteController>();
 
     return Obx(() {
-      final groupedQuotes = controller.quotesByCategory;
-      final categories = groupedQuotes.keys.toList();
-
-      if (categories.isEmpty) {
-        return Center(
-          child: Text(
-            "No quotes available.",
-            style: AppTextStyles.inter(
-              color: const Color(0xFF8F7DB5),
-              fontSize: 14,
-            ),
+      if (controller.isLoading.value && controller.quotes.isEmpty) {
+        return const Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF7B64B0),
           ),
         );
       }
 
-      return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final categoryName = categories[index];
-          final categoryQuotes = groupedQuotes[categoryName] ?? [];
+      final groupedQuotes = controller.quotesByCategory;
+      final categories = groupedQuotes.keys.toList();
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      if (categories.isEmpty) {
+        return RefreshIndicator(
+          color: const Color(0xFF7B64B0),
+          onRefresh: () => controller.fetchQuotes(page: 1, pageSize: 10),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+              const SizedBox(height: 100),
+              Center(
                 child: Text(
-                  categoryName,
-                  style: AppTextStyles.plusJakartaSans(
-                    color: const Color(0xFF161022),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
+                  "No quotes available.",
+                  style: AppTextStyles.inter(
+                    color: const Color(0xFF8F7DB5),
+                    fontSize: 14,
                   ),
                 ),
               ),
-              ...categoryQuotes.asMap().entries.map((entry) {
-                final quoteIndex = entry.key;
-                final quote = entry.value;
-                return _buildQuoteCard(quote, controller, quoteIndex);
-              }),
-              const SizedBox(height: 16),
             ],
-          );
-        },
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        color: const Color(0xFF7B64B0),
+        onRefresh: () => controller.fetchQuotes(page: 1, pageSize: 10),
+        child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: const EdgeInsets.only(bottom: 24),
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final categoryName = categories[index];
+            final categoryQuotes = groupedQuotes[categoryName] ?? [];
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                  child: Text(
+                    categoryName,
+                    style: AppTextStyles.plusJakartaSans(
+                      color: const Color(0xFF161022),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                ...categoryQuotes.asMap().entries.map((entry) {
+                  final quoteIndex = entry.key;
+                  final quote = entry.value;
+                  return _buildQuoteCard(quote, controller, quoteIndex);
+                }),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
+        ),
       );
     });
   }

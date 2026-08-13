@@ -38,4 +38,17 @@ class Apiservices {
   //============================================ai_coach========================================================
   static const String aiHistory = "$baseUrl/ai/history";
   static const String aiChat = "$baseUrl/ai/chat";
+
+  //============================================profile_dashboard========================================================
+  static const String profile_dashboard = "$baseUrl/users/profile/dashboard";
+
+  //===============================================gratitude============================================
+  static const String get_gratitude = "$baseUrl/gratitude";
+  static const String add_gratitude = "$baseUrl/gratitude";
+
+  static const String mode="$baseUrl/users/me/mood";
+
+  //============================================future_me========================================================
+  static const String futureMeDashboard = "$baseUrl/future-me/dashboard";
+  static const String futureMeLetters = "$baseUrl/future-me/letters";
 }

@@ -1,43 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:rosannalie/core/services/controller/future_me_controller.dart';
 import 'package:rosannalie/utils/appString.dart';
 
 class Myjourneycard extends StatelessWidget {
   const Myjourneycard({super.key});
 
+  Widget _getIconWidget(String iconType) {
+    switch (iconType.toUpperCase()) {
+      case 'CHECK':
+        return const Icon(Icons.check, color: Colors.white, size: 16);
+      case 'FLAME':
+        return const Text("🔥", style: TextStyle(fontSize: 14));
+      case 'STAR':
+        return const Text("⭐", style: TextStyle(fontSize: 14));
+      case 'TROPHY':
+        return const Text("🏆", style: TextStyle(fontSize: 14));
+      default:
+        return const Icon(Icons.check, color: Colors.white, size: 16);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final items = [
-      _TimelineItemData(
-        icon: const Icon(Icons.check, color: Colors.white, size: 16),
-        title: "Started my journey",
-        subtitle: "Jun 2026",
-        isCompleted: true,
-      ),
-      _TimelineItemData(
-        icon: const Icon(Icons.check, color: Colors.white, size: 16),
-        title: "First big goal set",
-        subtitle: "Jun 2026",
-        isCompleted: true,
-      ),
-      _TimelineItemData(
-        icon: const Text("🔥", style: TextStyle(fontSize: 14)),
-        title: "7–day streak",
-        subtitle: "Upcoming",
-        isCompleted: false,
-      ),
-      _TimelineItemData(
-        icon: const Text("⭐", style: TextStyle(fontSize: 14)),
-        title: "30–day milestone",
-        subtitle: "Jul 2026",
-        isCompleted: false,
-      ),
-      _TimelineItemData(
-        icon: const Text("🏆", style: TextStyle(fontSize: 14)),
-        title: "First goal complete",
-        subtitle: "Aug 2026",
-        isCompleted: false,
-      ),
-    ];
+    final FutureMeController controller = Get.isRegistered<FutureMeController>()
+        ? Get.find<FutureMeController>()
+        : Get.put(FutureMeController());
 
     return Container(
       width: double.infinity,
@@ -84,92 +72,108 @@ class Myjourneycard extends StatelessWidget {
           ),
           const SizedBox(height: 24.0),
           // Timeline List
-          Column(
-            children: List.generate(items.length, (index) {
-              final item = items[index];
-              final isLast = index == items.length - 1;
-
-              return IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Timeline indicator column (Circle + vertical line)
-                    Column(
-                      children: [
-                        // Circle
-                        Container(
-                          width: 32.0,
-                          height: 32.0,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: item.isCompleted
-                                ? const Color(0xFF7B64B0)
-                                : const Color(0xFF7B64B0).withValues(alpha: 0.1),
-                          ),
-                          alignment: Alignment.center,
-                          child: item.icon,
-                        ),
-                        // Connector line (drawn if not last item)
-                        if (!isLast)
-                          Expanded(
-                            child: Container(
-                              width: 2.0,
-                              color: const Color(0xFF7B64B0).withValues(alpha: 0.15),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: 16.0),
-                    // Text details column
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4.0), // vertical alignment offset
-                          Text(
-                            item.title,
-                            style: AppTextStyles.plusJakartaSans(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
-                              color: item.isCompleted
-                                  ? const Color(0xFF2E2252)
-                                  : const Color(0xFF8F7DB5),
-                            ),
-                          ),
-                          const SizedBox(height: 2.0),
-                          Text(
-                            item.subtitle,
-                            style: AppTextStyles.inter(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF8F7DB5).withValues(alpha: 0.7),
-                            ),
-                          ),
-                          if (!isLast) const SizedBox(height: 20.0),
-                        ],
-                      ),
-                    ),
-                  ],
+          Obx(() {
+            if (controller.isLoading.value && controller.journeyList.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF7B64B0)),
+                  ),
                 ),
               );
-            }),
-          ),
+            }
+
+            final items = controller.journeyList;
+
+            if (items.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  "No journey milestones found",
+                  style: AppTextStyles.inter(
+                    fontSize: 13.0,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF8F7DB5),
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: List.generate(items.length, (index) {
+                final item = items[index];
+                final isLast = index == items.length - 1;
+                final bool isCompleted = item.status.toUpperCase() == 'COMPLETED';
+
+                return IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Timeline indicator column (Circle + vertical line)
+                      Column(
+                        children: [
+                          // Circle
+                          Container(
+                            width: 32.0,
+                            height: 32.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isCompleted
+                                  ? const Color(0xFF7B64B0)
+                                  : const Color(0xFF7B64B0).withValues(alpha: 0.1),
+                            ),
+                            alignment: Alignment.center,
+                            child: _getIconWidget(item.icon),
+                          ),
+                          // Connector line (drawn if not last item)
+                          if (!isLast)
+                            Expanded(
+                              child: Container(
+                                width: 2.0,
+                                color: const Color(0xFF7B64B0).withValues(alpha: 0.15),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(width: 16.0),
+                      // Text details column
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4.0),
+                            Text(
+                              item.title,
+                              style: AppTextStyles.plusJakartaSans(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                                color: isCompleted
+                                    ? const Color(0xFF2E2252)
+                                    : const Color(0xFF8F7DB5),
+                              ),
+                            ),
+                            const SizedBox(height: 2.0),
+                            Text(
+                              item.date,
+                              style: AppTextStyles.inter(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF8F7DB5).withValues(alpha: 0.7),
+                              ),
+                            ),
+                            if (!isLast) const SizedBox(height: 20.0),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            );
+          }),
         ],
       ),
     );
   }
-}
-
-class _TimelineItemData {
-  final Widget icon;
-  final String title;
-  final String subtitle;
-  final bool isCompleted;
-
-  _TimelineItemData({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.isCompleted,
-  });
 }

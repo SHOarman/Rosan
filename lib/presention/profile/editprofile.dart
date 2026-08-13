@@ -163,7 +163,6 @@ class EditProfile extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Full Name Label & Field
               Text(
                 "Full Name",
                 style: AppTextStyles.inter(
@@ -214,7 +213,6 @@ class EditProfile extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Email Label & Field
               Text(
                 "Email",
                 style: AppTextStyles.inter(
@@ -267,7 +265,6 @@ class EditProfile extends StatelessWidget {
               ),
               const SizedBox(height: 160),
 
-              // Save Changes Button
               Center(
                 child: Obx(() => authController.isLoading.value
                     ? const CircularProgressIndicator(color: Color(0xFF7B64B0))

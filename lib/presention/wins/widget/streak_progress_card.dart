@@ -10,7 +10,9 @@ class StreakProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
+    final controller = Get.isRegistered<WinsController>()
+        ? Get.find<WinsController>()
+        : Get.put(WinsController());
 
     return Container(
       width: double.infinity,
@@ -55,15 +57,13 @@ class StreakProgressCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Flame Icon Container
                 Container(
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                   gradient:LinearGradient(colors: [
-                     Color(0xffFFB74D),
-                     Color(0xffFF8A65)
-                   ]),
+                    gradient: LinearGradient(
+                      colors: [Color(0xffFFB74D), Color(0xffFF8A65)],
+                    ),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(
@@ -71,34 +71,44 @@ class StreakProgressCard extends StatelessWidget {
                       'assets/icon/streak_icon.svg',
                       width: 24,
                       height: 24,
-                      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 16.0),
-                // Title and Subtitle Text Column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Obx(() => Text(
-                        controller.streakMotivationTitle.value.isNotEmpty ? controller.streakMotivationTitle.value : '1–Day Streak! 🔥',
-                        style: AppTextStyles.plusJakartaSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF161022),
+                      Obx(
+                        () => Text(
+                          controller.streakMotivationTitle.value.isNotEmpty
+                              ? controller.streakMotivationTitle.value
+                              : '1–Day Streak! 🔥',
+                          style: AppTextStyles.plusJakartaSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF161022),
+                          ),
                         ),
-                      )),
+                      ),
                       const SizedBox(height: 4.0),
-                      Obx(() => Text(
-                        controller.streakMotivationText.value.isNotEmpty ? controller.streakMotivationText.value : 'Keep going — 6 more days to your next badge!',
-                        style: AppTextStyles.plusJakartaSans(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF444054),
+                      Obx(
+                        () => Text(
+                          controller.streakMotivationText.value.isNotEmpty
+                              ? controller.streakMotivationText.value
+                              : 'Keep going — 6 more days to your next badge!',
+                          style: AppTextStyles.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF444054),
+                          ),
                         ),
-                      )),
+                      ),
                     ],
                   ),
                 ),

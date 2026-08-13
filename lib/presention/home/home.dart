@@ -14,6 +14,8 @@ import 'package:rosannalie/core/services/controller/authcontroller.dart';
 import 'package:rosannalie/core/services/controller/todaytaskcontroller.dart';
 import 'package:rosannalie/core/services/controller/mygoall_controller.dart';
 import 'package:rosannalie/core/services/controller/quote_controller.dart';
+import 'package:rosannalie/core/services/controller/future_me_controller.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -174,19 +176,25 @@ class Home extends StatelessWidget {
                           const SizedBox(width: 16),
 
                           Expanded(
-                            child: Quickaccess(
-                              title: "Future Me",
-                              subtitle: "— 6 future's",
-                              svgIconPath: "assets/icon/ImageIcon (1).svg",
-                              iconBackgroundColor: Colors.white,
-                              gradientColors: const [
-                                Color(0xFFF0E8FF),
-                                Color(0xFFDDD0FF),
-                              ],
-                              onTap: () {
-                                Get.toNamed(AppRoutes.futureme);
-                              },
-                            ),
+                            child: Obx(() {
+                              final futureMeController = Get.isRegistered<FutureMeController>()
+                                  ? Get.find<FutureMeController>()
+                                  : Get.put(FutureMeController());
+                              final completedCount = futureMeController.completedJourneyCount;
+                              return Quickaccess(
+                                title: "Future Me",
+                                subtitle: "— $completedCount completed",
+                                svgIconPath: "assets/icon/ImageIcon (1).svg",
+                                iconBackgroundColor: Colors.white,
+                                gradientColors: const [
+                                  Color(0xFFF0E8FF),
+                                  Color(0xFFDDD0FF),
+                                ],
+                                onTap: () {
+                                  Get.toNamed(AppRoutes.futureme);
+                                },
+                              );
+                            }),
                           ),
                         ],
                       ),

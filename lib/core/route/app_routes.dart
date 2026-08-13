@@ -23,6 +23,7 @@ import 'package:rosannalie/presention/profile/privacy_Policy.dart';
 import 'package:rosannalie/presention/profile/termsof_Service.dart';
 import 'package:rosannalie/presention/profile/myplan.dart';
 import 'package:rosannalie/presention/wins/wins.dart';
+import 'package:rosannalie/presention/wins/achievements_see_all.dart';
 
 import '../../presention/onloading/onlading10.dart';
 import '../../presention/onloading/onlading11.dart';
@@ -41,7 +42,7 @@ import '../../presention/subscription_Promotion/subscriptionPromotion.dart';
 import 'app_pages.dart';
 
 class AppPages {
-  static const initial = AppRoutes.singin;
+  static const initial = AppRoutes.onborading;
   static final routes = [
 
     //================================onloding==========================
@@ -91,6 +92,7 @@ class AppPages {
     //===========================================wins================================================
 
     GetPage(name: AppRoutes.wins, page: ()=>Wins(),  transitionDuration: Duration.zero,),
+    GetPage(name: AppRoutes.wins_seeall, page: ()=>const WinsSeeAll()),
     //===========================================profile================================================
 
     GetPage(name: AppRoutes.profile, page: ()=>Profile(),  transitionDuration: Duration.zero,),

@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:rosannalie/core/dependency_injection/injection.dart';
 import 'package:rosannalie/core/route/app_routes.dart';
+import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
 void main() async {
@@ -16,18 +18,26 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  DependencyInjection.bindings();
-  runApp(
 
+  final prefs = await SharedPreferences.getInstance();
+  final String savedToken = prefs.getString('accessToken') ?? '';
+  final bool isLoggedIn = savedToken.isNotEmpty || (prefs.getBool('isLoggedIn') ?? false);
+
+  final String initialRoute = isLoggedIn ? AppRoutes.home : AppRoutes.singin;
+
+  DependencyInjection.bindings();
+
+  runApp(
     DevicePreview(
       enabled: !kReleaseMode,
-      builder: (context) => const MyApp(),
+      builder: (context) => MyApp(initialRoute: initialRoute),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +64,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: AppPages.initial,
+      initialRoute: initialRoute,
       getPages: AppPages.routes,
     );
   }
