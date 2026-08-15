@@ -16,7 +16,6 @@ class StreakProgressCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: 110.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -83,6 +82,7 @@ class StreakProgressCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Obx(
                         () => Text(

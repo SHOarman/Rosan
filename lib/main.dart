@@ -23,15 +23,25 @@ void main() async {
   final String savedToken = prefs.getString('accessToken') ?? '';
   final bool isLoggedIn = savedToken.isNotEmpty || (prefs.getBool('isLoggedIn') ?? false);
 
-  final String initialRoute = isLoggedIn ? AppRoutes.home : AppRoutes.singin;
+  final bool isOnboardingCompleted = prefs.getBool('isOnboardingCompleted') ?? false;
+
+  String initialRoute;
+  if (isLoggedIn) {
+    initialRoute = AppRoutes.subscriptionPromotion;
+  } else if (isOnboardingCompleted) {
+    initialRoute = AppRoutes.singin;
+  } else {
+    initialRoute = AppRoutes.onborading;
+  }
 
   DependencyInjection.bindings();
 
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => MyApp(initialRoute: initialRoute),
-    ),
+    // DevicePreview(
+    //   enabled: !kReleaseMode,
+    //   builder: (context) => MyApp(initialRoute: initialRoute),
+    // ),
+      MyApp(initialRoute: initialRoute)
   );
 }
 

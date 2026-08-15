@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
 class GoalItem {
   final String? id;
   final String title;
@@ -23,6 +25,17 @@ class MygoallController extends GetxController {
   final RxList<GoalItem> goals = <GoalItem>[].obs;
   final RxInt totalGoalsCount = 0.obs;
   final RxBool isLoading = false.obs;
+
+  void _triggerDashboardUpdates() {
+    try {
+      if (Get.isRegistered<WinsController>()) {
+        Get.find<WinsController>().fetchWinsDashboard();
+      }
+      if (Get.isRegistered<Authcontroller>()) {
+        Get.find<Authcontroller>().fetchDashboard();
+      }
+    } catch (_) {}
+  }
 
   @override
   void onInit() {
@@ -164,6 +177,7 @@ class MygoallController extends GetxController {
           print("StatusCode: ${response.statusCode}");
           print("Body: ${response.body}");
           print("===========================================");
+          _triggerDashboardUpdates();
         } else {
           print("===== INCREMENT GOAL PROGRESS ERROR =====");
           print("StatusCode: ${response.statusCode}");
@@ -272,6 +286,10 @@ class MygoallController extends GetxController {
       print(response.body);
       print("================================");
 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _triggerDashboardUpdates();
+      }
+
     } catch (e) {
       print("Error creating goal: $e");
     }
@@ -315,6 +333,7 @@ class MygoallController extends GetxController {
         print("===== DELETE GOAL SUCCESS =====");
         print("Goal deleted successfully on server.");
         print("===============================");
+        _triggerDashboardUpdates();
       } else {
         print("===== DELETE GOAL ERROR =====");
         print("StatusCode: ${response.statusCode}");

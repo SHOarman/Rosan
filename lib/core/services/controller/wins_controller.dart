@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -93,6 +94,7 @@ class WinsController extends GetxController {
 
           if (data['achievements'] != null) {
             allAchievements.value = data['achievements'];
+            _checkAndCelebrateAchievements(data['achievements']);
           } else {
             allAchievements.clear();
           }
@@ -110,5 +112,93 @@ class WinsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> _checkAndCelebrateAchievements(List<dynamic> achievements) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> celebrated = prefs.getStringList('celebrated_achievements') ?? [];
+    
+    for (var ach in achievements) {
+      if (ach is Map<String, dynamic>) {
+        bool isUnlocked = ach['isUnlocked'] == true || ach['unlocked'] == true || ach['completed'] == true;
+        
+        if (!isUnlocked && ach['progress'] != null) {
+          isUnlocked = (ach['progress'].toString() == '100' || ach['progress'].toString() == '100.0');
+        }
+        
+        String achId = ach['id']?.toString() ?? ach['title']?.toString() ?? '';
+        
+        if (isUnlocked && achId.isNotEmpty && !celebrated.contains(achId)) {
+          String title = ach['title']?.toString() ?? 'New Achievement';
+          String emoji = '🎉';
+          final titleLower = title.toLowerCase();
+          
+          if (titleLower.contains('roll')) emoji = '🔥';
+          else if (titleLower.contains('step')) emoji = '🌱';
+          else if (titleLower.contains('setter')) emoji = '🎯';
+          else if (titleLower.contains('gratitude') || titleLower.contains('pro')) emoji = '🙏';
+          else if (titleLower.contains('habit')) emoji = '⭐';
+          else if (titleLower.contains('champion')) emoji = '🏆';
+          
+          _showCelebration(emoji, title);
+          
+          celebrated.add(achId);
+          await prefs.setStringList('celebrated_achievements', celebrated);
+          
+          await Future.delayed(const Duration(milliseconds: 2500));
+        }
+      }
+    }
+  }
+
+  void _showCelebration(String emoji, String title) {
+    if (Get.context == null) return;
+    Get.dialog(
+      TweenAnimationBuilder(
+        tween: Tween<double>(begin: 0.1, end: 1.0),
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.elasticOut,
+        builder: (context, val, child) {
+          return Transform.scale(
+            scale: val,
+            child: AlertDialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(emoji, style: const TextStyle(fontSize: 110), textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Unlocked:\n$title!",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 15.0,
+                          color: Colors.black87,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+    );
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+    });
   }
 }

@@ -6,6 +6,7 @@ import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class EditProfile extends StatelessWidget {
@@ -88,51 +89,25 @@ class EditProfile extends StatelessWidget {
                         } else {
                           final avatar = authController.userAvatar.value;
                           if (avatar.isNotEmpty) {
+                            if (avatar.startsWith('data:image')) {
+                              final base64String = avatar.substring(avatar.indexOf(',') + 1);
+                              return Image.memory(
+                                base64Decode(base64String),
+                                fit: BoxFit.cover,
+                                width: 110,
+                                height: 110,
+                                errorBuilder: (context, error, stackTrace) => _buildInitialsAvatar(authController.initials),
+                              );
+                            }
                             return Image.network(
                               avatar,
                               fit: BoxFit.cover,
                               width: 110,
                               height: 110,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    authController.initials,
-                                    style: AppTextStyles.inter(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                );
-                              },
+                              errorBuilder: (context, error, stackTrace) => _buildInitialsAvatar(authController.initials),
                             );
                           } else {
-                            return Container(
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                authController.initials,
-                                style: AppTextStyles.inter(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            );
+                            return _buildInitialsAvatar(authController.initials);
                           }
                         }
                       }),
@@ -288,6 +263,27 @@ class EditProfile extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInitialsAvatar(String initials) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        initials,
+        style: AppTextStyles.inter(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
       ),
     );

@@ -9,6 +9,7 @@ class Apiservices {
   static const String register = "$baseUrl/auth/register";
   static const String resend_otp = "$baseUrl/auth/resend-otp";
   static const String verify_otp = "$baseUrl/auth/verify-otp";
+  static const String verify_reset_otp = "$baseUrl/auth/verify-reset-otp";
   static const String forgot_password = "$baseUrl/auth/forgot-password";
   static const String reset_password = "$baseUrl/auth/reset-password";
   static const String change_password = "$baseUrl/auth/change-password";

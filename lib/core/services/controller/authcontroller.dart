@@ -13,22 +13,22 @@ import 'dart:async';
 import 'dart:io';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 
 class Authcontroller extends GetxController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController forgotPasswordEmailController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
 
   //========================emailverifcarion ===========
   final List<TextEditingController> otpControllers = List.generate(
     6,
-    (_) => TextEditingController(),
+        (_) => TextEditingController(),
   );
 
   final RxBool isLoading = false.obs;
@@ -47,6 +47,10 @@ class Authcontroller extends GetxController {
   Future<void> _loadSession() async {
     final prefs = await SharedPreferences.getInstance();
     accessToken = prefs.getString('accessToken') ?? '';
+    userName.value = prefs.getString('userName') ?? 'User';
+    userEmail.value = prefs.getString('userEmail') ?? 'user@example.com';
+    userAvatar.value = prefs.getString('userAvatar') ?? '';
+
     if (accessToken.isNotEmpty) {
       await fetchUserProfile();
       await fetchDashboard();
@@ -111,7 +115,7 @@ class Authcontroller extends GetxController {
           "personalities": obData["personalities"] ?? [],
           "energyTimes": obData["energyTimes"] ?? [],
           "procrastinationFrequencies":
-              obData["procrastinationFrequencies"] ?? [],
+          obData["procrastinationFrequencies"] ?? [],
           "habitsToBuild": obData["habitsToBuild"] ?? [],
           "motivationStyles": obData["motivationStyles"] ?? [],
           "rewardPreferences": obData["rewardPreferences"] ?? [],
@@ -138,7 +142,6 @@ class Authcontroller extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      isLoading.value = false;
       if (response.statusCode == 201 || response.statusCode == 200) {
         Get.snackbar(
           "Success",
@@ -149,23 +152,33 @@ class Authcontroller extends GetxController {
         Get.toNamed(AppRoutes.verificationcode);
       } else {
         String errorMsg = response.body;
-        if (errorMsg.length > 100)
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['message'] != null) {
+            errorMsg = decoded['message'];
+          }
+        } catch (_) {}
+
+        if (errorMsg.length > 100) {
           errorMsg = "${errorMsg.substring(0, 100)}...";
+        }
+
         Get.snackbar(
           "Error",
-          "Failed to register. $errorMsg",
+          errorMsg,
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
       }
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar(
         "Error",
         "An error occurred: $e",
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -190,7 +203,12 @@ class Authcontroller extends GetxController {
 
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50,
+      maxWidth: 800,
+      maxHeight: 800,
+    );
     if (image != null) {
       selectedImagePath.value = image.path;
     }
@@ -273,7 +291,7 @@ class Authcontroller extends GetxController {
         },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decoded = jsonDecode(response.body);
+        final decoded = await compute(jsonDecode, response.body);
         final data = decoded['data'];
         if (data != null) {
           userName.value = data['name'] ?? 'User';
@@ -282,6 +300,10 @@ class Authcontroller extends GetxController {
           if (data['mood'] != null) {
             currentMood.value = data['mood'].toString().toLowerCase();
           }
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userName', userName.value);
+          await prefs.setString('userEmail', userEmail.value);
+          await prefs.setString('userAvatar', userAvatar.value);
         }
       }
     } catch (e) {
@@ -308,7 +330,7 @@ class Authcontroller extends GetxController {
       print("Body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decoded = jsonDecode(response.body);
+        final decoded = await compute(jsonDecode, response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           final data = decoded['data'];
 
@@ -318,6 +340,11 @@ class Authcontroller extends GetxController {
             userName.value = user['name'] ?? userName.value;
             userEmail.value = user['email'] ?? userEmail.value;
             userAvatar.value = user['avatar'] ?? userAvatar.value;
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('userName', userName.value);
+            await prefs.setString('userEmail', userEmail.value);
+            await prefs.setString('userAvatar', userAvatar.value);
           }
 
           // Parse stats
@@ -354,7 +381,7 @@ class Authcontroller extends GetxController {
           // On web, imagePath is a blob URL, we need to fetch it to get bytes
           final response = await http.get(Uri.parse(imagePath));
           base64Image =
-              "data:image/png;base64,${base64Encode(response.bodyBytes)}";
+          "data:image/png;base64,${base64Encode(response.bodyBytes)}";
         } else {
           final bytes = await File(imagePath).readAsBytes();
           base64Image = "data:image/png;base64,${base64Encode(bytes)}";
@@ -425,7 +452,10 @@ class Authcontroller extends GetxController {
 
   Future<void> signIn(GlobalKey<FormState> formKey) async {
     if (!formKey.currentState!.validate()) return;
+    await signInWithoutValidation();
+  }
 
+  Future<void> signInWithoutValidation() async {
     isLoading.value = true;
 
     try {
@@ -447,8 +477,6 @@ class Authcontroller extends GetxController {
         },
         body: jsonEncode(requestBody),
       );
-
-      isLoading.value = false;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         try {
@@ -515,23 +543,28 @@ class Authcontroller extends GetxController {
         );
       }
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar(
         "Error",
         "An error occurred: $e",
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');
+    await prefs.remove('userName');
+    await prefs.remove('userEmail');
+    await prefs.remove('userAvatar');
     await prefs.setBool('isLoggedIn', false);
     accessToken = '';
     userName.value = 'User';
     userEmail.value = 'user@example.com';
+    userAvatar.value = '';
     Get.offAllNamed(AppRoutes.singin);
   }
 
@@ -554,7 +587,6 @@ class Authcontroller extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      isLoading.value = false;
       if (response.statusCode == 200 || response.statusCode == 201) {
         startResendTimer();
         Get.toNamed(AppRoutes.verificationcode);
@@ -575,7 +607,6 @@ class Authcontroller extends GetxController {
         );
       }
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar(
         "Error",
         "An error occurred: $e",
@@ -583,6 +614,8 @@ class Authcontroller extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -619,13 +652,11 @@ class Authcontroller extends GetxController {
 
     bool isForgotPassword =
         forgotPasswordEmailController.text.isNotEmpty &&
-        emailController.text.isEmpty;
+            emailController.text.isEmpty;
 
-    if (isForgotPassword) {
-      isLoading.value = false;
-      Get.toNamed(AppRoutes.resetpassword);
-      return;
-    }
+    final String endpoint = isForgotPassword
+        ? Apiservices.verify_reset_otp
+        : Apiservices.verify_otp;
 
     try {
       final Map<String, dynamic> requestBody = {
@@ -635,10 +666,11 @@ class Authcontroller extends GetxController {
 
       print("===== VERIFY OTP PAYLOAD =====");
       print(jsonEncode(requestBody));
+      print("Endpoint: $endpoint");
       print("==============================");
 
       final response = await http.post(
-        Uri.parse(Apiservices.verify_otp),
+        Uri.parse(endpoint),
         headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
@@ -647,19 +679,29 @@ class Authcontroller extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      isLoading.value = false;
       if (response.statusCode == 200 || response.statusCode == 201) {
-        for (var controller in otpControllers) {
-          controller.clear();
+        if (isForgotPassword) {
+          Get.toNamed(AppRoutes.resetpassword);
+          Get.snackbar(
+            "Success",
+            "Code verified successfully!",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: const Color(0xff5E4B8B),
+            colorText: Colors.white,
+          );
+        } else {
+          for (var controller in otpControllers) {
+            controller.clear();
+          }
+          Get.snackbar(
+            "Success",
+            "Email verified! Logging you in...",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: const Color(0xff5E4B8B),
+            colorText: Colors.white,
+          );
+          await signInWithoutValidation();
         }
-        Get.toNamed(AppRoutes.singin);
-        Get.snackbar(
-          "Success",
-          "Email verified successfully!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xff5E4B8B),
-          colorText: Colors.white,
-        );
       } else {
         String errorMsg = response.body;
         if (errorMsg.length > 100)
@@ -673,7 +715,6 @@ class Authcontroller extends GetxController {
         );
       }
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar(
         "Error",
         "An error occurred: $e",
@@ -681,6 +722,8 @@ class Authcontroller extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
   //===========================resendotp_code====================================================
@@ -690,7 +733,7 @@ class Authcontroller extends GetxController {
     try {
       bool isForgotPassword =
           emailController.text.isEmpty &&
-          forgotPasswordEmailController.text.isNotEmpty;
+              forgotPasswordEmailController.text.isNotEmpty;
 
       final Map<String, dynamic> requestBody = {
         "email": isForgotPassword
@@ -712,7 +755,6 @@ class Authcontroller extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      isLoading.value = false;
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.snackbar(
           "Code Resent",
@@ -731,7 +773,6 @@ class Authcontroller extends GetxController {
         );
       }
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar(
         "Error",
         "An error occurred: $e",
@@ -739,6 +780,8 @@ class Authcontroller extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -763,6 +806,7 @@ class Authcontroller extends GetxController {
         "email": forgotPasswordEmailController.text,
         "code": otp,
         "newPassword": newPasswordController.text,
+        "confirmPassword": confirmPasswordController.text,
       };
 
       final response = await http.post(
@@ -775,7 +819,6 @@ class Authcontroller extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      isLoading.value = false;
       if (response.statusCode == 200 || response.statusCode == 201) {
         emailController.text = forgotPasswordEmailController.text;
         passwordController.text = newPasswordController.text;
@@ -801,7 +844,6 @@ class Authcontroller extends GetxController {
         );
       }
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar(
         "Error",
         "An error occurred: $e",
@@ -809,6 +851,8 @@ class Authcontroller extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 }

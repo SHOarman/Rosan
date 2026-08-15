@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
+import 'package:rosannalie/core/services/controller/wins_controller.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
 
 class TaskItem {
   final String? id;
@@ -27,6 +29,17 @@ class TaskItem {
 
 class Todaytaskcontroller extends GetxController {
   final RxList<TaskItem> tasks = <TaskItem>[].obs;
+
+  void _triggerDashboardUpdates() {
+    try {
+      if (Get.isRegistered<WinsController>()) {
+        Get.find<WinsController>().fetchWinsDashboard();
+      }
+      if (Get.isRegistered<Authcontroller>()) {
+        Get.find<Authcontroller>().fetchDashboard();
+      }
+    } catch (_) {}
+  }
 
   @override
   void onInit() {
@@ -129,6 +142,8 @@ class Todaytaskcontroller extends GetxController {
         task.isCompleted.value = !task.isCompleted.value;
         tasks.refresh();
         print("Failed to update status: ${response.body}");
+      } else {
+        _triggerDashboardUpdates();
       }
     } catch (e) {
       task.isCompleted.value = !task.isCompleted.value;
@@ -175,6 +190,8 @@ class Todaytaskcontroller extends GetxController {
         task.isDaily.value = !task.isDaily.value;
         tasks.refresh();
         print("Failed to update daily status: ${response.body}");
+      } else {
+        _triggerDashboardUpdates();
       }
     } catch (e) {
       task.isDaily.value = !task.isDaily.value;
@@ -230,6 +247,7 @@ class Todaytaskcontroller extends GetxController {
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchTasks();
+        _triggerDashboardUpdates();
       }
     } catch (e) {
       print("Error creating task: $e");
@@ -267,6 +285,8 @@ class Todaytaskcontroller extends GetxController {
       if (response.statusCode != 200 && response.statusCode != 204) {
         tasks.add(task);
         print("Failed to delete task: ${response.body}");
+      } else {
+        _triggerDashboardUpdates();
       }
     } catch (e) {
       tasks.add(task);

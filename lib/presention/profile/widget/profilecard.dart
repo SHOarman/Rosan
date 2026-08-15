@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:get/get.dart';
+import 'dart:convert';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
 
 class Profilecard extends StatelessWidget {
@@ -57,6 +58,25 @@ class Profilecard extends StatelessWidget {
               child: Obx(() {
                 final avatar = authController.userAvatar.value;
                 if (avatar.isNotEmpty) {
+                  if (avatar.startsWith('data:image')) {
+                    final base64String = avatar.substring(avatar.indexOf(',') + 1);
+                    return Image.memory(
+                      base64Decode(base64String),
+                      fit: BoxFit.cover,
+                      width: 56,
+                      height: 56,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text(
+                          initials ?? authController.initials,
+                          style: AppTextStyles.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
+                    );
+                  }
                   return Image.network(
                     avatar,
                     fit: BoxFit.cover,

@@ -52,7 +52,7 @@ class StackCard extends StatelessWidget {
 
     return Container(
       width: width,
-      height: height ?? 110,
+      height: height,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -114,4 +114,4 @@ class StackCard extends StatelessWidget {
       ),
     );
   }
-}
+}

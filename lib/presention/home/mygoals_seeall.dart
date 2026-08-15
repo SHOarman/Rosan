@@ -127,12 +127,49 @@ class MygoalsSeeall extends StatelessWidget {
 
                   if (goals.isEmpty) {
                     return Center(
-                      child: Text(
-                        "No goals set yet!",
-                        style: AppTextStyles.inter(
-                          color: const Color(0xFF8F7DB5),
-                          fontSize: 14,
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "No goals set yet!",
+                            style: AppTextStyles.inter(
+                              color: const Color(0xFF8F7DB5),
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          GestureDetector(
+                            onTap: () => _showAddGoalBottomSheet(context, controller),
+                            child: Container(
+                              width: 200,
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(24.0),
+                                border: Border.all(color: const Color(0xFFE2DCF7), width: 1.0),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.add,
+                                    color: Color(0xFF7B64B0),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Add Goal",
+                                    style: AppTextStyles.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF7B64B0),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }
