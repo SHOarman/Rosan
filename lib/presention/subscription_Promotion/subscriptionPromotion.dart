@@ -206,7 +206,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
 
                         // Subtitle
                         Text(
-                          "Commit to your future self today.",
+                          "Stop procrastinating & winning today!",
                           style: AppTextStyles.inter(
                             fontSize: 15,
                             color: const Color(0xFF8F7DB5),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -38,11 +39,13 @@ class FutureMeController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isSavingLetter = false.obs;
 
-  final RxString vision = "In 5 years, I am living with freedom, health, and purpose.".obs;
+  final RxString vision = "".obs;
+  final TextEditingController visionController = TextEditingController();
+  Timer? _debounce;
+
   final RxMap<String, dynamic> latestLetter = <String, dynamic>{}.obs;
   final RxList<FutureJourneyItem> journeyList = <FutureJourneyItem>[].obs;
 
-  // Growth Snapshot Metrics
   final RxInt daysActive = 0.obs;
   final RxInt tasksDone = 0.obs;
   final RxInt goalsSet = 0.obs;
@@ -56,7 +59,55 @@ class FutureMeController extends GetxController {
     fetchDashboard();
   }
 
-  // ── GET /future-me/dashboard ───────────────────────────────────
+  @override
+  void onClose() {
+    _debounce?.cancel();
+    visionController.dispose();
+    super.onClose();
+  }
+
+  void onVisionChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1500), () {
+      updateVision(value);
+    });
+  }
+
+  Future<void> updateVision(String newVision) async {
+    if (newVision.trim() == vision.value) return; 
+    
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('accessToken') ?? '';
+      
+      if (accessToken.isEmpty) return;
+
+      final body = jsonEncode({
+        "vision": newVision.trim(),
+      });
+
+      final response = await http.patch(
+        Uri.parse(Apiservices.futureMeDashboard),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        vision.value = newVision.trim();
+        print("Vision updated successfully");
+      } else {
+        print("Failed to update vision: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Error updating vision: $e");
+    }
+  }
+
   Future<void> fetchDashboard() async {
     try {
       isLoading.value = true;
@@ -92,16 +143,17 @@ class FutureMeController extends GetxController {
           // Parse vision
           if (data['vision'] != null && data['vision'].toString().isNotEmpty) {
             vision.value = data['vision'].toString();
+            if (visionController.text != vision.value) {
+              visionController.text = vision.value;
+            }
           }
 
-          // Parse latestLetter
           if (data['latestLetter'] != null && data['latestLetter'] is Map) {
             latestLetter.value = Map<String, dynamic>.from(data['latestLetter']);
           } else {
             latestLetter.clear();
           }
 
-          // Parse journey list
           if (data['journey'] != null && data['journey'] is List) {
             final List jList = data['journey'];
             journeyList.value = jList

@@ -183,7 +183,7 @@ class Home extends StatelessWidget {
                               final completedCount = futureMeController.completedJourneyCount;
                               return Quickaccess(
                                 title: "Future Me",
-                                subtitle: "— $completedCount completed",
+                                subtitle: "— $completedCount locked in",
                                 svgIconPath: "assets/icon/ImageIcon (1).svg",
                                 iconBackgroundColor: Colors.white,
                                 gradientColors: const [

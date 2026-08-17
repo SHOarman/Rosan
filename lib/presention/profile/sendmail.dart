@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/core/services/controller/support_controller.dart';
+import 'package:rosannalie/core/route/app_pages.dart';
 
 class SendMail extends StatelessWidget {
   SendMail({super.key});
@@ -278,7 +279,7 @@ class SendMail extends StatelessWidget {
                         duration: const Duration(seconds: 2),
                       );
                       Future.delayed(const Duration(seconds: 2), () {
-                        Get.back();
+                        Get.offAllNamed(AppRoutes.home);
                       });
                     } else {
                       Get.snackbar(

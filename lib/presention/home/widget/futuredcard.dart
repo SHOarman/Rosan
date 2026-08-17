@@ -62,7 +62,7 @@ class Futuredcard extends StatelessWidget {
           const SizedBox(height: 12.0),
           // Futured Title
           Text(
-            "Futured ✨",
+            "Glow-UP ✨",
             style: AppTextStyles.plusJakartaSans(
               fontSize: 20.0,
               fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
+import 'package:rosannalie/core/services/controller/authcontroller.dart';
 
 class DeleteAccountPage extends StatefulWidget {
   const DeleteAccountPage({super.key});
@@ -258,20 +259,33 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 height: 52.0,
                 child: ElevatedButton(
                   onPressed: _canDelete
-                      ? () {
-                          print("Account Permanently Deleted");
-                          Get.snackbar(
-                            "Account Deleted",
-                            "Your account has been deleted successfully",
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: const Color(0xFFFEE2E2),
-                            colorText: const Color(0xFFEF4444),
-                            margin: const EdgeInsets.all(20),
-                            borderRadius: 12,
-                          );
-                          Future.delayed(const Duration(seconds: 2), () {
-                            Get.offAllNamed(AppRoutes.singin);
-                          });
+                      ? () async {
+                          final authController = Get.isRegistered<Authcontroller>()
+                              ? Get.find<Authcontroller>()
+                              : Get.put(Authcontroller());
+                          bool success = await authController.deleteAccount();
+                          if (success) {
+                            Get.snackbar(
+                              "Account Deleted",
+                              "Your account has been deleted successfully",
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: const Color(0xFFEFE8FF),
+                              colorText: const Color(0xFF7B64B0),
+                              margin: const EdgeInsets.all(20),
+                              borderRadius: 12,
+                            );
+                            await authController.resetAppAndLogout();
+                          } else {
+                            Get.snackbar(
+                              "Error",
+                              "Failed to delete account. Please try again.",
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: const Color(0xFFFEE2E2),
+                              colorText: const Color(0xFFEF4444),
+                              margin: const EdgeInsets.all(20),
+                              borderRadius: 12,
+                            );
+                          }
                         }
                       : null,
                   style: ElevatedButton.styleFrom(

@@ -22,23 +22,11 @@ class Onlading1 extends StatelessWidget {
             const SizedBox(height: 40),
 
             Center(
-              child: Container(
+              child: Image.asset(
+                "assets/images/LOGO (2) 2 (2).png",
                 width: 100.0,
                 height: 100.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF7B64B0).withValues(alpha: 0.2),
-                      blurRadius: 20.0,
-                      spreadRadius: 2.0,
-                    ),
-                  ],
-                ),
-                child: Image.asset(
-                  "assets/icon/LOGO (2) 1.png",
-                  fit: BoxFit.cover,
-                ),
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 30),
@@ -63,7 +51,6 @@ class Onlading1 extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
-            // Feature list cards
             CustomCard(
               imageAsset: "assets/icon/geail.png",
               text: "Build goals that stick",

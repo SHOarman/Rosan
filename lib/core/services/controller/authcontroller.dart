@@ -76,6 +76,8 @@ class Authcontroller extends GetxController {
   }
 
   Future<void> registerUser() async {
+    if (isLoading.value) return;
+
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty) {
@@ -87,6 +89,17 @@ class Authcontroller extends GetxController {
       );
       return;
     }
+    
+    if (passwordController.text != confirmPasswordController.text) {
+      Get.snackbar(
+        "Error",
+        "Passwords do not match",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     if (!agreeToTerms.value) {
       Get.snackbar(
         "Error",
@@ -151,6 +164,11 @@ class Authcontroller extends GetxController {
         );
         Get.toNamed(AppRoutes.verificationcode);
       } else {
+        print("===== REGISTER RESPONSE ERR =====");
+        print("Status: ${response.statusCode}");
+        print("Body: ${response.body}");
+        print("=================================");
+
         String errorMsg = response.body;
         try {
           final decoded = jsonDecode(response.body);
@@ -159,8 +177,8 @@ class Authcontroller extends GetxController {
           }
         } catch (_) {}
 
-        if (errorMsg.length > 100) {
-          errorMsg = "${errorMsg.substring(0, 100)}...";
+        if (errorMsg.length > 150) {
+          errorMsg = "${errorMsg.substring(0, 150)}...";
         }
 
         Get.snackbar(
@@ -188,15 +206,11 @@ class Authcontroller extends GetxController {
   String accessToken = '';
 
   final RxString selectedImagePath = ''.obs;
-
-  // ── Dashboard Stats ──────────────────────────────────────────────
   final RxInt dashboardStreak = 0.obs;
   final RxInt dashboardGoals = 0.obs;
   final RxInt dashboardGratitude = 0.obs;
   final RxInt dashboardWins = 0.obs;
   final RxBool isDashboardLoading = false.obs;
-
-  // ── Subscription ─────────────────────────────────────────────────
   final RxString subscriptionPlan = 'FREE'.obs;
   final RxString subscriptionBadge = 'Free'.obs;
   final RxString subscriptionStatus = 'INACTIVE'.obs;
@@ -228,17 +242,13 @@ class Authcontroller extends GetxController {
     }
     return userName.value[0].toUpperCase();
   }
-
   final RxString currentMood = 'good'.obs;
-
   Future<void> updateUserMood(String mood) async {
     final String cleanMood = mood.trim().toLowerCase();
     currentMood.value = cleanMood;
-
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken') ?? accessToken;
-
       if (token.isEmpty) return;
 
       final body = jsonEncode({
@@ -568,6 +578,16 @@ class Authcontroller extends GetxController {
     Get.offAllNamed(AppRoutes.singin);
   }
 
+  Future<void> resetAppAndLogout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Complete clear for fresh start
+    accessToken = '';
+    userName.value = 'User';
+    userEmail.value = 'user@example.com';
+    userAvatar.value = '';
+    Get.offAllNamed(AppRoutes.onborading);
+  }
+
   Future<void> sendForgotPasswordCode(GlobalKey<FormState> formKey) async {
     if (!formKey.currentState!.validate()) return;
 
@@ -851,6 +871,38 @@ class Authcontroller extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<bool> deleteAccount() async {
+    isLoading.value = true;
+    try {
+      final response = await http.delete(
+        Uri.parse(Apiservices.get_profile), // uses $baseUrl/users/me
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode({
+          "confirmationText": "DELETE",
+        }),
+      );
+      print("===== DELETE ACCOUNT RESPONSE =====");
+      print("Status Code: ${response.statusCode}");
+      print("Body: ${response.body}");
+      print("===================================");
+
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print("Delete account error: $e");
+      return false;
     } finally {
       isLoading.value = false;
     }

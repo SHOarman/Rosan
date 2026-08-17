@@ -1,8 +1,7 @@
 class Apiservices {
   Apiservices._();
 
-  static const String baseUrl =
-      'https://convergence-arg-breeds-genetics.trycloudflare.com/api/v1';
+  static const String baseUrl = "https://api.gorise.app/api/v1";
 
   //========================================================Auth_=======================================
 
@@ -16,6 +15,8 @@ class Apiservices {
   static const String login = "$baseUrl/auth/login";
   static const String get_profile = "$baseUrl/users/me";
   static const String update_profile = "$baseUrl/users/me";
+  static const String delete_account = "$baseUrl/users/me/delete";
+  static const String deactivate_account = "$baseUrl/users/me/deactivate";
   static const String goggle_login = "$baseUrl/auth/google";
   static const String apple_login = "$baseUrl/auth/apple";
   static const String logout = "$baseUrl/auth/logout";

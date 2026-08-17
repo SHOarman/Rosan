@@ -57,10 +57,11 @@ class Myvisioncard extends StatelessWidget {
           ),
           const SizedBox(height: 16.0),
           // Vision Text (Italicized)
-          Obx(() => Text(
-            controller.vision.value.isEmpty
-                ? "In 5 years, I am living with freedom, health, and purpose."
-                : controller.vision.value,
+          TextField(
+            controller: controller.visionController,
+            onChanged: controller.onVisionChanged,
+            maxLines: null,
+            textInputAction: TextInputAction.done,
             style: AppTextStyles.plusJakartaSans(
               fontSize: 15.0,
               fontWeight: FontWeight.w500,
@@ -69,7 +70,21 @@ class Myvisioncard extends StatelessWidget {
               fontStyle: FontStyle.italic,
               height: 1.5,
             ),
-          )),
+            decoration: InputDecoration(
+              hintText: "Add something...",
+              hintStyle: AppTextStyles.plusJakartaSans(
+                fontSize: 15.0,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF7A68A6).withValues(alpha: 0.6),
+              ).copyWith(
+                fontStyle: FontStyle.italic,
+                height: 1.5,
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
         ],
       ),
     );

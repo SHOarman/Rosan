@@ -287,7 +287,10 @@ class MygoallController extends GetxController {
       print("================================");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        await fetchGoals();
         _triggerDashboardUpdates();
+      } else {
+        await fetchGoals(); // Sync back if creation failed
       }
 
     } catch (e) {
