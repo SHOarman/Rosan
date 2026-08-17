@@ -6,6 +6,8 @@ GoRise (Rosannalie) is a highly visual, comprehensive Flutter-based mobile appli
 Based on the app's interfaces, here is what a user experiences:
 
 *   **🏠 Master Dashboard (Home):**
+    
+    ![Home Screen](screenshots/home.png)
     *   **Personalized Greeting:** Welcomes the user by name.
     *   **Daily Quote:** A prominently displayed motivational quote (e.g., "Fall seven times, stand up eight.").
     *   **Mood Tracker:** Users can log their current feelings ("How are you feeling right now?") using expressive emojis (Amazing, Good, Okay, Low, Drained).
@@ -13,19 +15,27 @@ Based on the app's interfaces, here is what a user experiences:
     *   **Persistent Navigation:** A smooth, floating bottom navigation bar providing easy access to Home, Gratitude, AI Coach, Wins, and Profile.
 
 *   **✅ Task & Goal Management:**
+    
+    ![Task Management](screenshots/tasks.png)
     *   **Today's Tasks:** A dedicated screen featuring a progress bar that fills up as tasks are completed.
     *   **Task Details:** Tasks have category/priority tags (e.g., "High", "Health"), an interactive checkbox for completion, easy deletion, and a toggle to "Set for daily" recurrence.
 
 *   **✨ Future Me:**
+    
+    ![Future Me](screenshots/futureme.png)
     *   **Vision & Journey Timeline:** A visually rich workspace showing the user's "Glow-UP" progress.
     *   It contains an editable **My Vision** text area and a **My Journey** timeline tracking milestones like "First big goal set", "7-day streak", "30-day milestone", and "First goal complete".
 
 *   **💖 Gratitude Journal:**
+    
+    ![Gratitude](screenshots/gratitude.png)
     *   **Moment of Gratitude:** Prompts the user with "What are you grateful for right now?"
     *   **Statistics:** Displays engaging stats like Total gratitude notes, Day streak, and Days logged this month.
     *   **Recent Entries:** Shows a historical log of recent gratitude diary entries.
 
 *   **🤖 Rise AI Coach:**
+    
+    ![AI Coach](screenshots/aicoach.png)
     *   **Conversational Chat UI:** A beautiful, responsive chat interface where users interact with "Rise AI" — a personal productivity and mindfulness coach.
     *   It guides users, providing positive reinforcement and prompting them to maintain momentum on their goals. Includes a "Quick start" action button for easy prompts.
 
