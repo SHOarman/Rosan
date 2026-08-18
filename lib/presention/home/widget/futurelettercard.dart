@@ -18,7 +18,7 @@ class Futurelettercard extends StatelessWidget {
         builder: (context, setModalState) {
           return Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
+              bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
             ),
             child: Container(
               padding: const EdgeInsets.all(24.0),

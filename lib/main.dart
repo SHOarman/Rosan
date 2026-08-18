@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
           surface: Colors.white,
           brightness: Brightness.light,
         ),
-        textTheme: GoogleFonts.playfairDisplayTextTheme(
+        textTheme: GoogleFonts.plusJakartaSansTextTheme(
           ThemeData.light().textTheme,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(

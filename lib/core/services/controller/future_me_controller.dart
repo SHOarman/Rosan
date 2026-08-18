@@ -224,6 +224,7 @@ class FutureMeController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         vision.value = content.trim();
+        isSavingLetter.value = false;
         Get.snackbar(
           "Success",
           "Letter created for your future self! ✉️",
@@ -232,7 +233,7 @@ class FutureMeController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
-        await fetchDashboard();
+        fetchDashboard(); // update in background
         return true;
       } else {
         Get.snackbar(

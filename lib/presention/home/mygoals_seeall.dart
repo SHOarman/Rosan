@@ -176,7 +176,7 @@ class MygoalsSeeall extends StatelessWidget {
 
                   return ListView.builder(
                     physics: const BouncingScrollPhysics(),
-                    itemCount: goals.length + 1, // +1 for the "+ Add a new goal" button
+                    itemCount: goals.length + 1,
                     itemBuilder: (context, index) {
                       if (index == goals.length) {
                         // Return the Add a new goal button at the end
@@ -457,7 +457,7 @@ class MygoalsSeeall extends StatelessWidget {
             top: 24,
             left: 24,
             right: 24,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 24,
           ),
           decoration: const BoxDecoration(
             color: Color(0xFFF6F5FB),

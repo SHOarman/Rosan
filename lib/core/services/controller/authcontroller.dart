@@ -54,6 +54,7 @@ class Authcontroller extends GetxController {
     if (accessToken.isNotEmpty) {
       await fetchUserProfile();
       await fetchDashboard();
+      await fetchUserMood();
     }
   }
 
@@ -243,23 +244,64 @@ class Authcontroller extends GetxController {
     return userName.value[0].toUpperCase();
   }
   final RxString currentMood = 'good'.obs;
+
+  Future<void> fetchUserMood() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken') ?? accessToken;
+      if (token.isEmpty) return;
+
+      final response = await http.get(
+        Uri.parse(Apiservices.mode),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+      );
+
+      print("===== GET USER MOOD =====");
+      print("StatusCode: ${response.statusCode}");
+      print("Body: ${response.body}");
+      print("=========================");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          if (decoded['data']['mood'] != null) {
+            currentMood.value = decoded['data']['mood'].toString().toLowerCase();
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching user mood: $e");
+    }
+  }
+
   Future<void> updateUserMood(String mood) async {
     final String cleanMood = mood.trim().toLowerCase();
+    final String capitalizedMood = cleanMood.isEmpty 
+        ? '' 
+        : "${cleanMood[0].toUpperCase()}${cleanMood.substring(1)}";
+        
     currentMood.value = cleanMood;
+    
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken') ?? accessToken;
       if (token.isEmpty) return;
 
       final body = jsonEncode({
-        "mood": cleanMood,
+        "mood": capitalizedMood,
+        "source": "APP_HEADER"
       });
 
-      print("===== UPDATE USER MOOD =====");
+      print("===== UPDATE USER MOOD PATCH =====");
       print("URL: ${Apiservices.mode}");
       print("Body: $body");
 
-      final response = await http.post(
+      final response = await http.patch(
         Uri.parse(Apiservices.mode),
         headers: {
           'Content-Type': 'application/json',
@@ -277,12 +319,13 @@ class Authcontroller extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.snackbar(
           "Mood Updated",
-          "Feeling updated to ${cleanMood.capitalizeFirst}!",
+          "Feeling updated to $capitalizedMood!",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFF7B64B0),
           colorText: Colors.white,
           duration: const Duration(seconds: 2),
         );
+        await fetchUserMood();
       }
     } catch (e) {
       print("Error updating user mood: $e");
@@ -504,6 +547,7 @@ class Authcontroller extends GetxController {
 
         await fetchUserProfile();
         await fetchDashboard();
+        await fetchUserMood();
 
         try {
           if (Get.isRegistered<Todaytaskcontroller>()) {

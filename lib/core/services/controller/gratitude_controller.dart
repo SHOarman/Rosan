@@ -235,6 +235,7 @@ class GratitudeController extends GetxController {
       print("Body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        isSaving.value = false;
         Get.snackbar(
           'Success',
           'Gratitude logged successfully! (+15 XP)',
@@ -243,7 +244,7 @@ class GratitudeController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
-        await fetchGratitudeEntries();
+        fetchGratitudeEntries(); // run in background
         return true;
       } else {
         Get.snackbar(

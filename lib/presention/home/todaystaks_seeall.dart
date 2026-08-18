@@ -499,7 +499,7 @@ class TodaystaksSeeall extends StatelessWidget {
             top: 24,
             left: 24,
             right: 24,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 24,
           ),
           decoration: const BoxDecoration(
             color: Color(0xFFF6F5FB),
@@ -585,7 +585,7 @@ class TodaystaksSeeall extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(child: _buildCategoryButton('Health', selectedCategory)),
                   const SizedBox(width: 10),
-                  Expanded(child: _buildCategoryButton('Learning', selectedCategory)),
+                  Expanded(child: _buildCategoryButton('Personal Life', selectedCategory)),
                 ],
               ),
               const SizedBox(height: 24),

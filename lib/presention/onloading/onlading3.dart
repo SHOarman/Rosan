@@ -53,7 +53,7 @@ class _Onlading3State extends State<Onlading3> {
             ),
             const SizedBox(height: 8),
             Text(
-              "No judgment — we're all figuring it out.",
+              "No judgement — we're all figuring it out.",
               textAlign: TextAlign.start,
               style: AppTextStyles.plusJakartaSans(
                 color: const Color(0xFF8B7DB5),

@@ -28,7 +28,7 @@ class Home extends StatelessWidget {
     } else if (hour < 20) {
       return 'Good Evening';
     } else {
-      return 'Good Night';
+      return 'Good Evening';
     }
   }
 

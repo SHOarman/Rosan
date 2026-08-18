@@ -118,7 +118,7 @@ class EmailVerfication extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        "Don't receive code ?",
+                        "Didn't receive the code?",
                         style: AppTextStyles.inter(
                           color: const Color(0xFF2E2252),
                           fontSize: 14,
