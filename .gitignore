@@ -46,3 +46,7 @@ app.*.map.json
 
 # Large video assets
 assets/icon/302098.mp4
+
+# Firebase Configuration Files
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
