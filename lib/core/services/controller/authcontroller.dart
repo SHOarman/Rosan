@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +43,45 @@ class Authcontroller extends GetxController {
   void onInit() {
     super.onInit();
     _loadSession();
+
+    // Foreground Notification Listener
+    if (!kIsWeb) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print("🔔 FCM Foreground Message Arrived!");
+        print("Data Payload: ${message.data}");
+        print("Notification Payload: ${message.notification?.title}");
+
+        String title = message.notification?.title ?? message.data['title'] ?? 'Rise Productivity';
+        String body = message.notification?.body ?? message.data['body'] ?? message.data['message'] ?? 'You have a new message.';
+
+        Get.snackbar(
+          title,
+          body,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.white,
+          colorText: const Color(0xFF3D2E6B),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 16.0,
+          icon: const Icon(Icons.notifications_active, color: Color(0xFF7B64B0)),
+          duration: const Duration(seconds: 4),
+          boxShadows: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20.0,
+              offset: const Offset(0, 10),
+            ),
+          ],
+          mainButton: TextButton(
+            onPressed: () {
+              if (Get.isSnackbarOpen) {
+                Get.closeCurrentSnackbar();
+              }
+            },
+            child: const Text('Close', style: TextStyle(color: Color(0xFF7B64B0))),
+          ),
+        );
+      });
+    }
   }
 
   Future<void> _loadSession() async {
@@ -55,6 +95,7 @@ class Authcontroller extends GetxController {
       await fetchUserProfile();
       await fetchDashboard();
       await fetchUserMood();
+      await sendFCMTokenToBackend();
     }
   }
 
@@ -548,6 +589,7 @@ class Authcontroller extends GetxController {
         await fetchUserProfile();
         await fetchDashboard();
         await fetchUserMood();
+        await sendFCMTokenToBackend();
 
         try {
           if (Get.isRegistered<Todaytaskcontroller>()) {
@@ -949,6 +991,58 @@ class Authcontroller extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> sendFCMTokenToBackend() async {
+    if (kIsWeb) {
+      print("Skipping FCM token generation on Web/Chrome to avoid configuration errors during testing.");
+      return;
+    }
+
+    try {
+      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+        
+        if (fcmToken != null) {
+          print("FCM Token: $fcmToken");
+
+          var url = Uri.parse(Apiservices.register_token);
+          final prefs = await SharedPreferences.getInstance();
+          final token = prefs.getString('accessToken') ?? accessToken;
+
+          if (token.isEmpty) return;
+
+          var response = await http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'ngrok-skip-browser-warning': 'true',
+              'bypass-tunnel-reminder': 'true',
+            },
+            body: jsonEncode({
+              "fcmToken": fcmToken,
+            }),
+          );
+
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            print("FCM Token successfully registered!");
+          } else {
+            print("Failed to register token: ${response.statusCode} - ${response.body}");
+          }
+        }
+      } else {
+        print('User declined notification permission');
+      }
+    } catch (e) {
+      print("Error sending FCM token: $e");
     }
   }
 }

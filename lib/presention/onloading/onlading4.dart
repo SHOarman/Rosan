@@ -276,20 +276,23 @@ class _GoalPillCardState extends State<GoalPillCard> with SingleTickerProviderSt
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  widget.emoji,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    height: 1.2,
+                if (false) ...[
+                  Text(
+                    widget.emoji,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      height: 1.2,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8.0),
+                  const SizedBox(width: 8.0),
+                ],
                 if (widget.isExpanded)
                   Expanded(
-                    child: Text(
-                      widget.text,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.text,
                       style: AppTextStyles.inter(
                         fontSize: 14.0,
                         fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
@@ -298,18 +301,25 @@ class _GoalPillCardState extends State<GoalPillCard> with SingleTickerProviderSt
                             : const Color(0xFF8F7DB5), // Softer purple for inactive state
                       ),
                     ),
-                  )
+                  ),
+                )
                 else
-                  Text(
-                    widget.text,
-                    style: AppTextStyles.inter(
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.text,
+                        style: AppTextStyles.inter(
                       fontSize: 14.0,
                       fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
                       color: widget.isSelected 
                           ? const Color(0xFF3D2E6B) // Dark purple for active state
                           : const Color(0xFF8F7DB5), // Softer purple for inactive state
+                      ),
                     ),
                   ),
+                ),
               ],
             ),
           ),

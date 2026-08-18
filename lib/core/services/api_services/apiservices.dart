@@ -53,4 +53,9 @@ class Apiservices {
   //============================================future_me========================================================
   static const String futureMeDashboard = "$baseUrl/future-me/dashboard";
   static const String futureMeLetters = "$baseUrl/future-me/letters";
+
+  //============================================notifications========================================================
+  static const String register_token = "$baseUrl/notifications/register-token";
+  static const String notification_settings = "$baseUrl/notifications/settings";
 }
+

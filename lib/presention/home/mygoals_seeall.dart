@@ -125,44 +125,64 @@ class MygoalsSeeall extends StatelessWidget {
                 child: Obx(() {
                   final goals = controller.goals;
 
+                  if (controller.isLoading.value && goals.isEmpty) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF7B64B0),
+                      ),
+                    );
+                  }
+                  
                   if (goals.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    return RefreshIndicator(
+                      color: const Color(0xFF7B64B0),
+                      onRefresh: () => controller.fetchGoals(),
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                         children: [
-                          Text(
-                            "No goals set yet!",
-                            style: AppTextStyles.inter(
-                              color: const Color(0xFF8F7DB5),
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          GestureDetector(
-                            onTap: () => _showAddGoalBottomSheet(context, controller),
-                            child: Container(
-                              width: 200,
-                              padding: const EdgeInsets.symmetric(vertical: 12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(24.0),
-                                border: Border.all(color: const Color(0xFFE2DCF7), width: 1.0),
-                              ),
-                              child: Row(
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: Center(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.add,
-                                    color: Color(0xFF7B64B0),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
                                   Text(
-                                    "Add Goal",
+                                    "No goals set yet!",
                                     style: AppTextStyles.inter(
+                                      color: const Color(0xFF8F7DB5),
                                       fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF7B64B0),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  GestureDetector(
+                                    onTap: () => _showAddGoalBottomSheet(context, controller),
+                                    child: Container(
+                                      width: 200,
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.6),
+                                        borderRadius: BorderRadius.circular(24.0),
+                                        border: Border.all(color: const Color(0xFFE2DCF7), width: 1.0),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.add,
+                                            color: Color(0xFF7B64B0),
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Add Goal",
+                                            style: AppTextStyles.inter(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xFF7B64B0),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -174,52 +194,77 @@ class MygoalsSeeall extends StatelessWidget {
                     );
                   }
 
-                  return ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: goals.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == goals.length) {
-                        // Return the Add a new goal button at the end
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: GestureDetector(
-                            onTap: () => _showAddGoalBottomSheet(context, controller),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(24.0),
-                                border: Border.all(color: const Color(0xFFE2DCF7), width: 1.0),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.add,
-                                    color: Color(0xFF7B64B0),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    "Add a new goal",
-                                    style: AppTextStyles.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF7B64B0),
+                  return RefreshIndicator(
+                    color: const Color(0xFF7B64B0),
+                    onRefresh: () => controller.fetchGoals(),
+                    child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      if (!controller.isLoadingMore.value && 
+                          controller.hasMoreData && 
+                          scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
+                        controller.loadMoreGoals();
+                        return true;
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      itemCount: goals.length + 1 + (controller.hasMoreData ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == goals.length) {
+                          // Return the Add a new goal button at the end
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: GestureDetector(
+                              onTap: () => _showAddGoalBottomSheet(context, controller),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(24.0),
+                                  border: Border.all(color: const Color(0xFFE2DCF7), width: 1.0),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.add,
+                                      color: Color(0xFF7B64B0),
+                                      size: 18,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Add a new goal",
+                                      style: AppTextStyles.inter(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF7B64B0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }
+                          );
+                        }
+                        if (index == goals.length + 1) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF7B64B0),
+                              ),
+                            ),
+                          );
+                        }
 
-                      final goal = goals[index];
-                      return _buildGoalCard(context, goal, controller);
-                    },
-                  );
+                        final goal = goals[index];
+                        return _buildGoalCard(context, goal, controller);
+                      },
+                    ),
+                  ),
+                );
                 }),
               ),
             ],
@@ -264,13 +309,13 @@ class MygoalsSeeall extends StatelessWidget {
     Color mainColor;
     switch (goal.iconType) {
       case 'rocket':
-        mainColor = const Color(0xFF7B64B0); // purple
+        mainColor = const Color(0xFF7B64B0);
         break;
       case 'run':
-        mainColor = const Color(0xFFFFB300); // orange
+        mainColor = const Color(0xFFFFB300); 
         break;
       case 'book':
-        mainColor = const Color(0xFF2ECC71); // green
+        mainColor = const Color(0xFF2ECC71); 
         break;
       case 'money':
         mainColor = const Color(0xFFFF5A79); // pink/magenta
@@ -377,20 +422,33 @@ class MygoalsSeeall extends StatelessWidget {
             // +10% Progress pill button
             GestureDetector(
               onTap: () => controller.incrementProgress(goal),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.symmetric(
+                  horizontal: goal.isLoading.value ? 16.0 : 12.0, 
+                  vertical: 6.0
+                ),
                 decoration: BoxDecoration(
                   color: mainColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16.0),
                 ),
-                child: Text(
-                  "+10% Progress",
-                  style: AppTextStyles.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: mainColor,
-                  ),
-                ),
+                child: goal.isLoading.value
+                    ? SizedBox(
+                        width: 14.0,
+                        height: 14.0,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          color: mainColor,
+                        ),
+                      )
+                    : Text(
+                        "+10% Progress",
+                        style: AppTextStyles.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: mainColor,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -558,56 +616,68 @@ class MygoalsSeeall extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (titleController.text.trim().isEmpty) {
-                          Get.snackbar(
-                            "Error",
-                            "Please enter what you want to achieve.",
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.redAccent,
-                            colorText: Colors.white,
-                          );
-                          return;
-                        }
-                        final deadline = deadlineController.text.trim().isEmpty 
-                            ? 'Dec 2026' 
-                            : deadlineController.text.trim();
-                        controller.addGoal(
-                          titleController.text.trim(),
-                          deadline,
-                        );
-                        Get.back();
-                      },
+                    child: Obx(() => GestureDetector(
+                      onTap: controller.isCreatingGoal.value 
+                        ? null 
+                        : () async {
+                            if (titleController.text.trim().isEmpty) {
+                              Get.snackbar(
+                                "Error",
+                                "Title cannot be empty",
+                                backgroundColor: Colors.redAccent,
+                                colorText: Colors.white,
+                              );
+                              return;
+                            }
+                            final success = await controller.addGoal(
+                              titleController.text.trim(),
+                              deadlineController.text.trim(),
+                            );
+                            if (success) {
+                              Get.back();
+                            } else {
+                              Get.snackbar(
+                                "Error",
+                                "Failed to create goal",
+                                backgroundColor: Colors.redAccent,
+                                colorText: Colors.white,
+                              );
+                            }
+                          },
                       child: Container(
                         height: 48,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF8F7DB5), Color(0xFF7B64B0)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: const Color(0xFF7B64B0),
                           borderRadius: BorderRadius.circular(24.0),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF7B64B0).withOpacity(0.3),
-                              blurRadius: 12,
+                              color: const Color(0xFF7B64B0).withValues(alpha: 0.3),
+                              blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
                           ],
                         ),
                         child: Center(
-                          child: Text(
-                            "Set Goal",
-                            style: AppTextStyles.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                          child: controller.isCreatingGoal.value
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  "Set Goal",
+                                  style: AppTextStyles.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
-                    ),
+                    )),
                   ),
                 ],
               ),

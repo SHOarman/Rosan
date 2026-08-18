@@ -131,16 +131,18 @@ class _MiniCardState extends State<MiniCard> with SingleTickerProviderStateMixin
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: Text(
-                      widget.text,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.inter(
-                        fontSize: 14.0,
-                        fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: widget.isSelected 
-                            ? const Color(0xFF3D2E6B) // Dark purple for active state
-                            : const Color(0xFF8F7DB5), // Softer purple for inactive state
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.text,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.inter(
+                          fontSize: 14.0,
+                          fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
+                          color: widget.isSelected 
+                              ? const Color(0xFF3D2E6B) // Dark purple for active state
+                              : const Color(0xFF8F7DB5), // Softer purple for inactive state
+                        ),
                       ),
                     ),
                   ),
@@ -155,7 +157,7 @@ class _MiniCardState extends State<MiniCard> with SingleTickerProviderStateMixin
                       height: 16.0,
                       fit: BoxFit.contain,
                     ),
-                  ] else if (widget.emoji != null) ...[
+                  ] else if (widget.emoji != null && false) ...[
                     const SizedBox(width: 8.0),
                     Text(
                       widget.emoji!,

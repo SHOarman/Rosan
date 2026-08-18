@@ -107,7 +107,7 @@ class _CustomCardState extends State<CustomCard> with SingleTickerProviderStateM
               fit: BoxFit.contain,
             ),
             const SizedBox(width: 12.0),
-          ] else if (widget.emoji != null) ...[
+          ] else if (widget.emoji != null && false) ...[
             Text(
               widget.emoji!,
               style: const TextStyle(

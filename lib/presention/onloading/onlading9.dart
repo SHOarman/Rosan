@@ -230,17 +230,23 @@ class _MotivatedPillCardState extends State<MotivatedPillCard> with SingleTicker
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  widget.emoji,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    height: 1.2,
+                if (false) ...[
+                  Text(
+                    widget.emoji,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      height: 1.2,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8.0),
-                Text(
-                  widget.text,
-                  style: AppTextStyles.inter(
+                  const SizedBox(width: 8.0),
+                ],
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.text,
+                      style: AppTextStyles.inter(
                     fontSize: 14.0,
                     fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
                     color: widget.isSelected 
@@ -248,7 +254,9 @@ class _MotivatedPillCardState extends State<MotivatedPillCard> with SingleTicker
                         : const Color(0xFF8F7DB5), // Softer purple for inactive state
                   ),
                 ),
-              ],
+              ),
+            ),
+          ],
             ),
           ),
         ),

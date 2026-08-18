@@ -195,7 +195,7 @@ class Profile extends StatelessWidget {
                           Get.toNamed(AppRoutes.editprofile);
                         },
                         onTapNotifications: () {
-                          print("Notifications Clicked from Profile Screen");
+                          Get.toNamed(AppRoutes.notificationsettings);
                         },
                       ),
                       const SizedBox(height: 30),

@@ -58,7 +58,7 @@ class TodaystaksSeeall extends StatelessWidget {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      // Empty placeholder to balance the back button alignment
+
                       const SizedBox(width: 40),
                     ],
                   ),
@@ -124,26 +124,69 @@ class TodaystaksSeeall extends StatelessWidget {
                   Expanded(
                     child: Obx(() {
                       final tasks = controller.tasks;
-                      if (tasks.isEmpty) {
-                        return Center(
-                          child: Text(
-                            "No tasks for today!",
-                            style: AppTextStyles.inter(
-                              color: const Color(0xFF8F7DB5),
-                              fontSize: 14,
-                            ),
+                      if (controller.isLoadingTasks.value && tasks.isEmpty) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF7B64B0),
                           ),
                         );
                       }
-                      return ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 80.0),
-                        itemCount: tasks.length,
-                        itemBuilder: (context, index) {
-                          final task = tasks[index];
-                          return _buildTaskCard(context, task, controller);
+                      if (tasks.isEmpty) {
+                        return RefreshIndicator(
+                          color: const Color(0xFF7B64B0),
+                          onRefresh: () => controller.fetchTasks(),
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.4,
+                                child: Center(
+                                  child: Text(
+                                    "No tasks for today!",
+                                    style: AppTextStyles.inter(
+                                      color: const Color(0xFF8F7DB5),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return RefreshIndicator(
+                        color: const Color(0xFF7B64B0),
+                        onRefresh: () => controller.fetchTasks(),
+                        child: NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (!controller.isLoadingMore.value && 
+                              controller.hasMoreData && 
+                              scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
+                            controller.loadMoreTasks();
+                            return true;
+                          }
+                          return false;
                         },
-                      );
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                          padding: const EdgeInsets.only(bottom: 80.0),
+                          itemCount: tasks.length + (controller.hasMoreData ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == tasks.length) {
+                              return const Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFF7B64B0),
+                                  ),
+                                ),
+                              );
+                            }
+                            final task = tasks[index];
+                            return _buildTaskCard(context, task, controller);
+                          },
+                        ),
+                        ));
                     }),
                   ),
                 ],
@@ -152,7 +195,7 @@ class TodaystaksSeeall extends StatelessWidget {
           ),
 
           Positioned(
-            bottom: 40,
+            bottom: 40 + MediaQuery.of(context).padding.bottom,
             right: 20,
             child: GestureDetector(
               onTap: () => _showAddTaskBottomSheet(context, controller),
@@ -235,13 +278,22 @@ class TodaystaksSeeall extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                     alignment: Alignment.center,
-                    child: task.isCompleted.value
-                        ? const Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 14.0,
+                    child: task.isLoading.value
+                        ? const SizedBox(
+                            width: 12.0,
+                            height: 12.0,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
+                              color: Color(0xFF7B64B0),
+                            ),
                           )
-                        : null,
+                        : (task.isCompleted.value
+                            ? const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 14.0,
+                              )
+                            : null),
                   ),
                 ),
                 const SizedBox(width: 12.0),

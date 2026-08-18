@@ -70,7 +70,7 @@ class _Onlading3State extends State<Onlading3> {
                     child: MiniCard(
                       width: double.infinity,
                       text: item["text"]!,
-                      emoji: item["emoji"]!,
+
                       isSelected: selectedIndices.contains(index),
                       onTap: () {
                         setState(() {

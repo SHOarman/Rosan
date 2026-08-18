@@ -23,12 +23,12 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
             width: 24,
             height: 24,
             decoration: const BoxDecoration(
-              color: Color(0xFFE3F5EC), // Soft green circle background
+              color: Color(0xFFE3F5EC),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.check_rounded,
-              color: Color(0xFF2FA870), // Beautiful deep green checkmark
+              color: Color(0xFF2FA870),
               size: 14.0,
             ),
           ),

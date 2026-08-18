@@ -15,6 +15,8 @@ class TaskItem {
   final RxBool isCompleted;
   final RxBool isDaily;
 
+  final RxBool isLoading;
+
   TaskItem({
     this.id,
     required this.title,
@@ -23,12 +25,21 @@ class TaskItem {
     this.showDailyToggle = false,
     bool isCompleted = false,
     bool isDaily = false,
+    bool isLoading = false,
   })  : isCompleted = isCompleted.obs,
-        isDaily = isDaily.obs;
+        isDaily = isDaily.obs,
+        isLoading = isLoading.obs;
 }
 
 class Todaytaskcontroller extends GetxController {
   final RxList<TaskItem> tasks = <TaskItem>[].obs;
+  
+  // Pagination
+  final RxBool isLoadingTasks = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  int currentPage = 1;
+  final int pageSize = 15;
+  bool hasMoreData = true;
 
   void _triggerDashboardUpdates() {
     try {
@@ -47,17 +58,31 @@ class Todaytaskcontroller extends GetxController {
     fetchTasks();
   }
 
-  Future<void> fetchTasks() async {
+  Future<void> fetchTasks({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      if (isLoadingMore.value || !hasMoreData) return;
+      isLoadingMore.value = true;
+      currentPage++;
+    } else {
+      if (tasks.isEmpty) isLoadingTasks.value = true;
+      currentPage = 1;
+      hasMoreData = true;
+      // Do not clear immediately to avoid UI blinking empty
+      // tasks.clear();
+    }
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final accessToken = prefs.getString('accessToken') ?? '';
       
       if (accessToken.isEmpty) {
-        return; // Don't fetch if not logged in
+        isLoadingTasks.value = false;
+        isLoadingMore.value = false;
+        return;
       }
 
       final response = await http.get(
-        Uri.parse('${Apiservices.taks}?pageSize=100'),
+        Uri.parse('${Apiservices.taks}?page=$currentPage&pageSize=$pageSize'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -67,14 +92,18 @@ class Todaytaskcontroller extends GetxController {
       );
       
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print("===== FETCH TASKS RESPONSE =====");
-        print(response.body);
-        print("================================");
-        
         final decoded = jsonDecode(response.body);
-        final dataList = decoded['data'] as List;
+        final data = decoded['data'];
+        final List dataList = (data is Map) ? (data['tasks'] as List? ?? []) : (data as List? ?? []);
         
-        tasks.clear();
+        if (!isLoadMore) {
+          tasks.clear();
+        }
+
+        if (dataList.length < pageSize) {
+          hasMoreData = false;
+        }
+
         for (var item in dataList) {
           tasks.add(TaskItem(
             id: item['id'],
@@ -91,7 +120,14 @@ class Todaytaskcontroller extends GetxController {
       }
     } catch (e) {
       print("Error fetching tasks: $e");
+    } finally {
+      isLoadingTasks.value = false;
+      isLoadingMore.value = false;
     }
+  }
+
+  void loadMoreTasks() {
+    fetchTasks(isLoadMore: true);
   }
 
   String _capitalize(String text) {
@@ -104,23 +140,19 @@ class Todaytaskcontroller extends GetxController {
   double get progressPercentage => tasks.isEmpty ? 0.0 : doneCount / tasks.length;
 
   Future<void> toggleTask(TaskItem task) async {
-    task.isCompleted.value = !task.isCompleted.value;
-    tasks.refresh();
+    if (task.id == null || task.isLoading.value) return;
 
-    if (task.id == null) return;
+    task.isLoading.value = true;
+    tasks.refresh();
 
     try {
       final prefs = await SharedPreferences.getInstance();
       final accessToken = prefs.getString('accessToken') ?? '';
 
-      final newStatus = task.isCompleted.value ? 'COMPLETED' : 'TODO';
+      final newStatus = !task.isCompleted.value ? 'COMPLETED' : 'TODO';
       final Map<String, dynamic> requestBody = {
         "status": newStatus,
       };
-
-      print("===== TOGGLE STATUS PAYLOAD =====");
-      print(jsonEncode(requestBody));
-      print("=================================");
 
       final response = await http.patch(
         Uri.parse('${Apiservices.baseUrl}/tasks/${task.id}/status'),
@@ -133,22 +165,17 @@ class Todaytaskcontroller extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      print("===== TOGGLE STATUS RESPONSE =====");
-      print("StatusCode: ${response.statusCode}");
-      print(response.body);
-      print("==================================");
-
-      if (response.statusCode != 200 && response.statusCode != 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         task.isCompleted.value = !task.isCompleted.value;
-        tasks.refresh();
-        print("Failed to update status: ${response.body}");
-      } else {
         _triggerDashboardUpdates();
+      } else {
+        print("Failed to update status: ${response.body}");
       }
     } catch (e) {
-      task.isCompleted.value = !task.isCompleted.value;
-      tasks.refresh();
       print("Error updating status: $e");
+    } finally {
+      task.isLoading.value = false;
+      tasks.refresh();
     }
   }
 

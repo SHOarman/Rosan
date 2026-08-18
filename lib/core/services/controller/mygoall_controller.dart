@@ -11,6 +11,7 @@ class GoalItem {
   final String deadline;
   final String iconType;
   final RxDouble progress;
+  final RxBool isLoading;
 
   GoalItem({
     this.id,
@@ -18,13 +19,22 @@ class GoalItem {
     required this.deadline,
     required this.iconType,
     double progress = 0.0,
-  }) : progress = progress.obs;
+    bool isLoading = false,
+  }) : progress = progress.obs,
+       isLoading = isLoading.obs;
 }
 
 class MygoallController extends GetxController {
   final RxList<GoalItem> goals = <GoalItem>[].obs;
   final RxInt totalGoalsCount = 0.obs;
   final RxBool isLoading = false.obs;
+
+  // Pagination
+  final RxBool isLoadingMore = false.obs;
+  final RxBool isCreatingGoal = false.obs;
+  int currentPage = 1;
+  final int pageSize = 15;
+  bool hasMoreData = true;
 
   void _triggerDashboardUpdates() {
     try {
@@ -51,19 +61,31 @@ class MygoallController extends GetxController {
 
   int get activeGoalsCount => totalGoalsCount.value > 0 ? totalGoalsCount.value : goals.length;
 
-  Future<void> fetchGoals() async {
+  Future<void> fetchGoals({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      if (isLoadingMore.value || !hasMoreData) return;
+      isLoadingMore.value = true;
+      currentPage++;
+    } else {
+      if (goals.isEmpty) isLoading.value = true;
+      currentPage = 1;
+      hasMoreData = true;
+      // Do not clear immediately to avoid UI blinking empty
+      // goals.clear(); 
+    }
+
     try {
-      isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       final accessToken = prefs.getString('accessToken') ?? '';
 
       if (accessToken.isEmpty) {
         isLoading.value = false;
-        return; // Don't fetch if not logged in
+        isLoadingMore.value = false;
+        return;
       }
 
       final response = await http.get(
-        Uri.parse(Apiservices.listgetgoals),
+        Uri.parse('${Apiservices.listgetgoals}?page=$currentPage&pageSize=$pageSize'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -72,24 +94,27 @@ class MygoallController extends GetxController {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final decodedData = jsonDecode(response.body);
-        print("===== GET GOALS RESPONSE =====");
-        print("StatusCode: ${response.statusCode}");
-        print("Body: ${response.body}");
-        print("================================");
         if (decodedData['success'] == true) {
-          final List dataList = decodedData['data'] ?? [];
-          final meta = decodedData['meta'];
+          final dataOrList = decodedData['data'];
+          final List dataList = (dataOrList is Map) ? (dataOrList['goals'] as List? ?? []) : (dataOrList as List? ?? []);
           
-          if (meta != null && meta['total'] != null) {
-            totalGoalsCount.value = meta['total'] as int;
-          } else {
-             totalGoalsCount.value = dataList.length;
+          if (dataList.length < pageSize) {
+            hasMoreData = false;
           }
 
-          goals.clear();
+          final meta = decodedData['meta'] ?? (dataOrList is Map ? dataOrList['meta'] : null);
           
+          if (!isLoadMore) {
+            goals.clear();
+            if (meta != null && meta['total'] != null) {
+              totalGoalsCount.value = meta['total'] as int;
+            } else {
+               totalGoalsCount.value = dataList.length;
+            }
+          }
+
           final iconTypes = ['rocket', 'run', 'book', 'money'];
 
           for (int i = 0; i < dataList.length; i++) {
@@ -123,27 +148,27 @@ class MygoallController extends GetxController {
           }
         }
       } else {
-        print("===== GET GOALS ERROR =====");
         print("Error fetching goals: ${response.statusCode}");
-        print("Body: ${response.body}");
-        print("===========================");
       }
     } catch (e) {
       print("Error fetching goals: $e");
     } finally {
       isLoading.value = false;
+      isLoadingMore.value = false;
     }
   }
 
+  void loadMoreGoals() {
+    fetchGoals(isLoadMore: true);
+  }
+
   Future<void> incrementProgress(GoalItem goal) async {
-    if (goal.id == null || goal.id!.isEmpty) {
-      print("Error: Cannot increment progress, goal ID is missing.");
+    if (goal.id == null || goal.id!.isEmpty || goal.isLoading.value) {
       return;
     }
 
     if (goal.progress.value < 1.0) {
-      // Optimistic UI update
-      goal.progress.value = (goal.progress.value + 0.10).clamp(0.0, 1.0);
+      goal.isLoading.value = true;
       goals.refresh();
 
       try {
@@ -155,11 +180,6 @@ class MygoallController extends GetxController {
           "increment": 10,
           "note": "Completed daily goal milestone"
         };
-
-        print("===== INCREMENT GOAL PROGRESS PAYLOAD =====");
-        print("URL: $url");
-        print(jsonEncode(requestBody));
-        print("===========================================");
 
         final response = await http.post(
           Uri.parse(url),
@@ -173,21 +193,16 @@ class MygoallController extends GetxController {
         );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          print("===== INCREMENT GOAL PROGRESS SUCCESS =====");
-          print("StatusCode: ${response.statusCode}");
-          print("Body: ${response.body}");
-          print("===========================================");
+          goal.progress.value = (goal.progress.value + 0.10).clamp(0.0, 1.0);
           _triggerDashboardUpdates();
         } else {
-          print("===== INCREMENT GOAL PROGRESS ERROR =====");
-          print("StatusCode: ${response.statusCode}");
-          print("Body: ${response.body}");
-          print("=========================================");
-          // Optional: Revert optimistic update here if needed
+          print("Failed to increment progress: ${response.body}");
         }
       } catch (e) {
         print("Error incrementing goal progress: $e");
-        // Optional: Revert optimistic update here if needed
+      } finally {
+        goal.isLoading.value = false;
+        goals.refresh();
       }
     }
   }
@@ -230,13 +245,13 @@ class MygoallController extends GetxController {
     return null;
   }
 
-  Future<void> addGoal(String title, String deadline) async {
+  Future<bool> addGoal(String title, String deadline) async {
     final parsedDate = _parseDeadline(deadline);
     if (parsedDate != null && parsedDate.isBefore(DateTime.now())) {
       print("===== CREATE GOAL ERROR =====");
       print("Error: Past deadline given! ($deadline)");
       print("=============================");
-      return;
+      return false;
     }
 
     final String finalDeadlineIso = parsedDate != null 
@@ -246,15 +261,7 @@ class MygoallController extends GetxController {
     final iconTypes = ['rocket', 'run', 'book', 'money'];
     final iconType = iconTypes[goals.length % iconTypes.length];
     
-    // Optimistic UI update
-    goals.add(
-      GoalItem(
-        title: title,
-        deadline: deadline,
-        iconType: iconType,
-        progress: 0.0,
-      ),
-    );
+    isCreatingGoal.value = true;
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -289,12 +296,16 @@ class MygoallController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchGoals();
         _triggerDashboardUpdates();
+        return true;
       } else {
-        await fetchGoals(); // Sync back if creation failed
+        return false;
       }
 
     } catch (e) {
       print("Error creating goal: $e");
+      return false;
+    } finally {
+      isCreatingGoal.value = false;
     }
   }
 
