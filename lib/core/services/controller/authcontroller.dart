@@ -15,6 +15,8 @@ import 'dart:io';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class Authcontroller extends GetxController {
   final TextEditingController nameController = TextEditingController();
@@ -1043,6 +1045,173 @@ class Authcontroller extends GetxController {
       }
     } catch (e) {
       print("Error sending FCM token: $e");
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      isLoading.value = true;
+
+      await GoogleSignIn.instance.initialize(
+        serverClientId: "PASTE_YOUR_WEB_CLIENT_ID_HERE.apps.googleusercontent.com",
+      );
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final String idToken = googleAuth.idToken ?? '';
+      final String name = googleUser.displayName ?? '';
+
+      await _authenticateSocialLogin(Apiservices.goggle_login, idToken, name);
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar("Error", "Google sign in failed: $e", backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    try {
+      isLoading.value = true;
+      final AuthorizationCredentialAppleID credential =
+          await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final String idToken = credential.identityToken ?? credential.authorizationCode;
+      final String name = credential.givenName != null ? "${credential.givenName} ${credential.familyName ?? ''}".trim() : '';
+
+      await _authenticateSocialLogin(Apiservices.apple_login, idToken, name);
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar("Error", "Apple sign in failed: $e", backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
+
+  Future<void> _authenticateSocialLogin(String endpoint, String idToken, String name) async {
+    try {
+      final onboardingController = Get.isRegistered<OnboardingController>()
+          ? Get.find<OnboardingController>()
+          : Get.put(OnboardingController());
+      final obData = onboardingController.onboardingData;
+
+      final Map<String, dynamic> requestBody = {
+        "idToken": idToken,
+        "name": name,
+        "onboarding": {
+          "proudOfText": obData["initialGoalTitle"] ?? "",
+          "useCases": obData["useCases"] ?? [],
+          "personalities": obData["personalities"] ?? [],
+          "energyTimes": obData["energyTimes"] ?? [],
+          "procrastinationFrequencies":
+          obData["procrastinationFrequencies"] ?? [],
+          "habitsToBuild": obData["habitsToBuild"] ?? [],
+          "motivationStyles": obData["motivationStyles"] ?? [],
+          "rewardPreferences": obData["rewardPreferences"] ?? [],
+          "reminderFrequency": obData["reminderFrequency"] ?? "SMART",
+          "personalityDescription": obData["initialMood"] ?? "",
+          "focuses": obData["focuses"] ?? [],
+          "initialGoalTitle": obData["initialGoalTitle"] ?? "",
+          "initialHabitName": obData["initialHabitName"] ?? "",
+          "initialMood": obData["initialMood"] ?? "",
+        }
+      };
+
+      print("===== SOCIAL LOGIN PAYLOAD =====");
+      print(jsonEncode(requestBody));
+      print("Endpoint: $endpoint");
+
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      print("===== SOCIAL LOGIN RESPONSE =====");
+      print("StatusCode: ${response.statusCode}");
+      print("Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['data'] != null &&
+              decoded['data']['accessToken'] != null) {
+            accessToken = decoded['data']['accessToken'];
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('accessToken', accessToken);
+            await prefs.setBool('isLoggedIn', true);
+            await prefs.setBool('isOnboardingCompleted', true);
+          }
+        } catch (_) {}
+
+        await fetchUserProfile();
+        await fetchDashboard();
+        await fetchUserMood();
+        await sendFCMTokenToBackend();
+
+        try {
+          if (Get.isRegistered<Todaytaskcontroller>()) {
+            Get.find<Todaytaskcontroller>().fetchTasks();
+          }
+          if (Get.isRegistered<MygoallController>()) {
+            Get.find<MygoallController>().fetchGoals();
+          } else {
+            Get.put(MygoallController()).fetchGoals();
+          }
+          if (Get.isRegistered<WinsController>()) {
+            Get.find<WinsController>().fetchWinsDashboard();
+          } else {
+            Get.put(WinsController()).fetchWinsDashboard();
+          }
+          if (Get.isRegistered<QuoteController>()) {
+            Get.find<QuoteController>().fetchQuotes();
+            Get.find<QuoteController>().fetchDailyQuote();
+          } else {
+            Get.put(QuoteController()).fetchQuotes();
+            Get.find<QuoteController>().fetchDailyQuote();
+          }
+        } catch (_) {}
+
+        Get.snackbar(
+          "Success",
+          "Logged in successfully",
+          backgroundColor: const Color(0xff5E4B8B),
+          colorText: Colors.white,
+        );
+        Get.offAllNamed(AppRoutes.subscriptionPromotion);
+      } else {
+        String errorMsg = response.body;
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded['message'] != null) {
+            errorMsg = decoded['message'];
+          }
+        } catch (_) {}
+        if (errorMsg.length > 100) {
+          errorMsg = "${errorMsg.substring(0, 100)}...";
+        }
+        Get.snackbar(
+          "Error",
+          "Failed to login. $errorMsg",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "An error occurred: $e",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 }

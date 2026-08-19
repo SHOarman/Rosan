@@ -187,7 +187,9 @@ class _SigninScreenState extends State<SigninScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          authController.signInWithGoogle();
+                        },
                         child: Container(
                           width: 56,
                           height: 56,
@@ -205,7 +207,9 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                       const SizedBox(width: 14),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          authController.signInWithApple();
+                        },
                         child: Container(
                           width: 56,
                           height: 56,
