@@ -95,6 +95,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:purchases_flutter/models/purchases_configuration.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:rosannalie/core/dependency_injection/injection.dart';
@@ -144,6 +146,8 @@ void main() async {
 
   DependencyInjection.bindings();
 
+  await _configureRevenueCat();
+
   runApp(
     // DevicePreview(
     //   enabled: !kReleaseMode,
@@ -151,6 +155,11 @@ void main() async {
     // ),
       MyApp(initialRoute: initialRoute)
   );
+}
+
+Future<void> _configureRevenueCat() async {
+  PurchasesConfiguration configuration = PurchasesConfiguration("test_qfMlKvrCEtoJxKwxSOOYmgYnQPH");
+  await Purchases.configure(configuration);
 }
 
 class MyApp extends StatefulWidget {

@@ -17,6 +17,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 class Authcontroller extends GetxController {
   final TextEditingController nameController = TextEditingController();
@@ -400,6 +401,15 @@ class Authcontroller extends GetxController {
           await prefs.setString('userName', userName.value);
           await prefs.setString('userEmail', userEmail.value);
           await prefs.setString('userAvatar', userAvatar.value);
+          
+          // Link Current Session with RevenueCat
+          if (userEmail.value.isNotEmpty && userEmail.value != 'user@example.com') {
+             try {
+                await Purchases.logIn(userEmail.value);
+             } catch (e) {
+                print("RevenueCat LogIn skipped/failed (Check API Key): $e");
+             }
+          }
         }
       }
     } catch (e) {
@@ -663,6 +673,7 @@ class Authcontroller extends GetxController {
     userName.value = 'User';
     userEmail.value = 'user@example.com';
     userAvatar.value = '';
+    try { await Purchases.logOut(); } catch (_) {}
     Get.offAllNamed(AppRoutes.singin);
   }
 
@@ -673,6 +684,7 @@ class Authcontroller extends GetxController {
     userName.value = 'User';
     userEmail.value = 'user@example.com';
     userAvatar.value = '';
+    try { await Purchases.logOut(); } catch (_) {}
     Get.offAllNamed(AppRoutes.onborading);
   }
 

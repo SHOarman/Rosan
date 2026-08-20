@@ -40,6 +40,7 @@ import '../../presention/onloading/onlading8.dart';
 import '../../presention/onloading/onlading9.dart';
 import '../../presention/auth/signin_screen.dart';
 import '../../presention/subscription_Promotion/subscriptionPromotion.dart';
+import '../../presention/subscription_Promotion/subscriptionPromotionProfile.dart';
 import 'app_pages.dart';
 
 class AppPages {
@@ -106,5 +107,6 @@ class AppPages {
     GetPage(name: AppRoutes.myplan, page: ()=>const MyPlanPage()),
     GetPage(name: AppRoutes.notificationsettings, page: ()=>NotificationSettingsView()),
     GetPage(name: AppRoutes.subscriptionPromotion, page: ()=>const SubscriptionPromotion()),
+    GetPage(name: AppRoutes.subscriptionPromotionProfile, page: ()=>const SubscriptionPromotionProfile()),
   ];
 }

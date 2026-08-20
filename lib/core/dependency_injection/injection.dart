@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
+import 'package:rosannalie/core/services/controller/subscriptionController.dart';
 import 'package:rosannalie/core/services/controller/todaytaskcontroller.dart';
 import 'package:rosannalie/core/services/controller/mygoall_controller.dart';
 import 'package:rosannalie/core/services/controller/quote_controller.dart';
@@ -35,5 +36,8 @@ class DependencyInjection {
 
     //========================futuremecontroller=====================================
     Get.put(FutureMeController(), permanent: true);
+
+    //===============================================SubscriptionController=====================================
+    Get.lazyPut(() => SubscriptionController());
   }
 }

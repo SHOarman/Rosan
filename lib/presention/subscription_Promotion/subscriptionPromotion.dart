@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:rosannalie/core/services/controller/subscriptionController.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+
 class SubscriptionPromotion extends StatefulWidget {
   const SubscriptionPromotion({super.key});
 
@@ -12,7 +15,9 @@ class SubscriptionPromotion extends StatefulWidget {
 }
 
 class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
-  bool _isYearlySelected = true;
+  final pubController = Get.put(SubscriptionController());
+  
+  String _selectedPlanId = "";
 
   Widget _buildFeatureItem(String text) {
     return Padding(
@@ -39,7 +44,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
               style: AppTextStyles.inter(
                 fontSize: 15.0,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF5E4B8B), // Cohesive theme color
+                color: const Color(0xFF5E4B8B), 
               ),
             ),
           ),
@@ -71,7 +76,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
       body: SafeArea(
         child: Stack(
           children: [
-            // 1. Large background outline star and sparkle decorations on the right
+            // 1. Large background outline star and sparkle decorations
             Positioned(
               right: -30,
               top: 130,
@@ -148,7 +153,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                           size: 20,
                         ),
                       ),
-                      onPressed: () => Get.offAllNamed(AppRoutes.home),
+                      onPressed: () => Get.back(),
                     ),
                   ),
                 ),
@@ -194,195 +199,184 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                         const SizedBox(height: 16.0),
 
                         // Title
-                        Text(
-                          "Unlock your full potential",
+                        Obx(() => Text(
+                          pubController.paywallTitle.value,
                           style: AppTextStyles.poppins(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF161022),
                           ),
-                        ),
+                        )),
                         const SizedBox(height: 8.0),
 
                         // Subtitle
-                        Text(
-                          "Stop procrastinating & winning today!",
+                        Obx(() => Text(
+                          pubController.paywallSubtitle.value,
                           style: AppTextStyles.inter(
                             fontSize: 15,
                             color: const Color(0xFF8F7DB5),
                             fontWeight: FontWeight.w500,
                           ),
-                        ),
+                        )),
                         const SizedBox(height: 32.0),
 
                         // Features Checks list
-                        _buildFeatureItem("AI Motivational Coach"),
-                        _buildFeatureItem("Smart Planning & Calendar"),
-                        _buildFeatureItem("Unlimited Habit Tracking"),
-                        _buildFeatureItem("Future Self Goal Coaching"),
+                        Obx(() {
+                          if (pubController.paywallFeatures.isEmpty) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          return Column(
+                            children: pubController.paywallFeatures
+                                .map((feature) => _buildFeatureItem(feature))
+                                .toList(),
+                          );
+                        }),
                         const SizedBox(height: 24.0),
 
-                        // Yearly Subscription Card (Stack to support absolute badge)
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isYearlySelected = true;
-                            });
-                          },
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-                                decoration: BoxDecoration(
-                                  color: _isYearlySelected
-                                      ? const Color(0xFF9A7C9D).withValues(alpha: 0.05) // Selected: 5% opacity
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  border: Border.all(
-                                    color: _isYearlySelected ? const Color(0xFF9A7C9D) : const Color(0xFFE6DCFA),
-                                    width: _isYearlySelected ? 2.0 : 1.0,
-                                  ),
-                                  boxShadow: _isYearlySelected ? [] : unselectedShadow,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Yearly",
-                                          style: AppTextStyles.plusJakartaSans(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: const Color(0xFF161022),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4.0),
-                                        Text(
-                                          "Just \$4.99 per month",
-                                          style: AppTextStyles.inter(
-                                            fontSize: 13.0,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color(0xFF8F7DB5),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "\$59.99/yr",
-                                      style: AppTextStyles.plusJakartaSans(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: const Color(0xFF161022),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // MOST POPULAR badge pill on top border
-                              Positioned(
-                                top: -10,
-                                left: 16,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF9A7C9D), // Purple base badge color
-                                    borderRadius: BorderRadius.circular(6.0),
-                                  ),
-                                  child: Text(
-                                    "MOST POPULAR",
-                                    style: AppTextStyles.inter(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
+                        // Dynamic Plans List
+                        Obx(() {
+                          if (pubController.backendPlans.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+                          
+                          // Set default selection if none selected yet
+                          if (_selectedPlanId.isEmpty && pubController.backendPlans.isNotEmpty) {
+                             WidgetsBinding.instance.addPostFrameCallback((_) {
+                               setState(() => _selectedPlanId = pubController.backendPlans.first['planCode'].toString());
+                             });
+                          }
 
-                        // Monthly Subscription Card
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isYearlySelected = false;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
-                            decoration: BoxDecoration(
-                              color: !_isYearlySelected
-                                      ? const Color(0xFF9A7C9D).withValues(alpha: 0.05)
-                                      : Colors.white,
-                              borderRadius: BorderRadius.circular(16.0),
-                              border: Border.all(
-                                color: !_isYearlySelected ? const Color(0xFF9A7C9D) : const Color(0xFFE6DCFA),
-                                width: !_isYearlySelected ? 2.0 : 1.0,
-                              ),
-                              boxShadow: !_isYearlySelected ? [] : unselectedShadow,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Monthly",
-                                  style: AppTextStyles.plusJakartaSans(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF161022),
+                          return Column(
+                            children: pubController.backendPlans.map((planData) {
+                              final String planCode = planData['planCode'].toString();
+                              final bool isSelected = _selectedPlanId == planCode;
+                              final bool isPopular = planData['isPopular'] == true;
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedPlanId = planCode;
+                                    });
+                                  },
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? const Color(0xFF9A7C9D).withValues(alpha: 0.05)
+                                              : Colors.white,
+                                          borderRadius: BorderRadius.circular(16.0),
+                                          border: Border.all(
+                                            color: isSelected ? const Color(0xFF9A7C9D) : const Color(0xFFE6DCFA),
+                                            width: isSelected ? 2.0 : 1.0,
+                                          ),
+                                          boxShadow: isSelected ? [] : unselectedShadow,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  planData['title'] ?? planCode,
+                                                  style: AppTextStyles.plusJakartaSans(
+                                                    fontSize: 18.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: const Color(0xFF161022),
+                                                  ),
+                                                ),
+                                                if (planData['subtext'] != null) ...[
+                                                  const SizedBox(height: 4.0),
+                                                  Text(
+                                                    planData['subtext'],
+                                                    style: AppTextStyles.inter(
+                                                      fontSize: 13.0,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: const Color(0xFF8F7DB5),
+                                                    ),
+                                                  ),
+                                                ]
+                                              ],
+                                            ),
+                                            Text(
+                                              planData['formattedPrice'] ?? "\$${planData['price']}",
+                                              style: AppTextStyles.plusJakartaSans(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color(0xFF161022),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (isPopular)
+                                        Positioned(
+                                          top: -10,
+                                          left: 16,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF9A7C9D), // Purple base badge color
+                                              borderRadius: BorderRadius.circular(6.0),
+                                            ),
+                                            child: Text(
+                                              "MOST POPULAR",
+                                              style: AppTextStyles.inter(
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                  "\$6.99/mo",
-                                  style: AppTextStyles.plusJakartaSans(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF161022),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 40.0),
+                              );
+                            }).toList(),
+                          );
+                        }),
+                        
+                        const SizedBox(height: 24.0),
 
                         // Trial call to action button
                         Center(
-                          child: CustomButton(
-                            text: "Start 7-Day Free Trial",
+                          child: Obx(() => CustomButton(
+                            text: pubController.isLoading.value ? "Processing..." : pubController.paywallBanner.value,
                             gradientColors: const [
                               Color(0xFF8B77C2), // Premium custom purple gradients
                               Color(0xFF6B58A3),
                             ],
-                            onTap: () {
-                              Get.snackbar(
-                                "Subscription",
-                                "Trial plan initiated successfully!",
-                                backgroundColor: const Color(0xFFF6F5FB),
-                                colorText: const Color(0xFF5E4B8B),
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
+                            onTap: () async {
+                               if (pubController.isLoading.value) return;
+                               
+                               if (_selectedPlanId.isEmpty) {
+                                  Get.snackbar("Notice", "Please select a plan first");
+                                  return;
+                               }
+                               
+                               await pubController.makePurchase(_selectedPlanId);
                             },
-                          ),
+                          )),
                         ),
                         const SizedBox(height: 16.0),
 
                         // Cancel info label
                         Center(
-                          child: Text(
-                            "Cancel anytime. Auto-renews after 7 days.",
+                          child: Obx(() => Text(
+                            pubController.paywallSubtext.value,
                             style: AppTextStyles.inter(
                               fontSize: 12.0,
                               fontWeight: FontWeight.w500,
                               color: const Color(0xFF8F7DB5),
                             ),
-                          ),
+                          )),
                         ),
                         const SizedBox(height: 40.0),
                       ],

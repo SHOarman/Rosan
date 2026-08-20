@@ -54,8 +54,20 @@ class Apiservices {
   static const String futureMeDashboard = "$baseUrl/future-me/dashboard";
   static const String futureMeLetters = "$baseUrl/future-me/letters";
 
-  //============================================notifications========================================================
+  //============================================push_notifications========================================================
   static const String register_token = "$baseUrl/notifications/register-token";
   static const String notification_settings = "$baseUrl/notifications/settings";
+
+
+  //=========================================================Subscription=================================================
+static const String getavabile_plans = "$baseUrl/subscriptions/plans";
+static const String get_user_subscription_stutes="$baseUrl/subscriptions/status";
+static const String verifiction_native_purchase="$baseUrl/subscriptions/verify";
+static const String native_Store_Idempotent_Webhook="$baseUrl/subscriptions/webhook";
+static const String subscription_restore="$baseUrl/subscriptions/restore";
+static const String subscription_cancel="$baseUrl/subscriptions/cancel";
+
+
+
 }
 

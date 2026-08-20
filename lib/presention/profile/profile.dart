@@ -211,7 +211,7 @@ class Profile extends StatelessWidget {
                       const SizedBox(height: 16),
                       MyPlan(
                         onTap: () {
-                          Get.toNamed(AppRoutes.myplan);
+                          Get.toNamed(AppRoutes.subscriptionPromotionProfile);
                         },
                       ),
                       const SizedBox(height: 20),
