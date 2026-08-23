@@ -57,7 +57,7 @@ class Myjourneycard extends StatelessWidget {
             children: [
               const Text(
                 "🗺️",
-                style: TextStyle(fontSize: 16.0),
+                style: TextStyle(fontSize: 18.0),
               ),
               const SizedBox(width: 8.0),
               Text(
@@ -114,30 +114,48 @@ class Myjourneycard extends StatelessWidget {
                       Column(
                         children: [
                           // Circle
-                          Container(
-                            width: 32.0,
-                            height: 32.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isCompleted
-                                  ? const Color(0xFF7B64B0)
-                                  : const Color(0xFF7B64B0).withValues(alpha: 0.1),
-                            ),
-                            alignment: Alignment.center,
-                            child: _getIconWidget(item.icon),
-                          ),
+                          isCompleted
+                              ? Container(
+                                  width: 34.0,
+                                  height: 34.0,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: [Color(0xFF9B85CF), Color(0xFF5E4B8B)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: _getIconWidget(item.icon),
+                                )
+                              : CustomPaint(
+                                  painter: DashedBorderPainter(color: const Color(0xFFC5B8E8)),
+                                  child: Container(
+                                    width: 34.0,
+                                    height: 34.0,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xFFC5B8E8).withValues(alpha: 0.3),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: _getIconWidget(item.icon),
+                                  ),
+                                ),
                           // Connector line (drawn if not last item)
                           if (!isLast)
                             Expanded(
                               child: Container(
                                 width: 2.0,
-                                color: const Color(0xFF7B64B0).withValues(alpha: 0.15),
+                                color: isCompleted
+                                    ? const Color(0xFF9B85CF)
+                                    : const Color(0xFFC5B8E8).withValues(alpha: 0.4),
                               ),
                             ),
                         ],
                       ),
                       const SizedBox(width: 16.0),
-                      // Text details column
+
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +164,7 @@ class Myjourneycard extends StatelessWidget {
                             Text(
                               item.title,
                               style: AppTextStyles.plusJakartaSans(
-                                fontSize: 15.0,
+                                fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
                                 color: isCompleted
                                     ? const Color(0xFF2E2252)
@@ -156,10 +174,10 @@ class Myjourneycard extends StatelessWidget {
                             const SizedBox(height: 2.0),
                             Text(
                               item.date,
-                              style: AppTextStyles.inter(
+                              style: AppTextStyles.plusJakartaSans(
                                 fontSize: 12.0,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF8F7DB5).withValues(alpha: 0.7),
+                                color: const Color(0xFF8F7DB5)
                               ),
                             ),
                             if (!isLast) const SizedBox(height: 20.0),
@@ -175,5 +193,44 @@ class Myjourneycard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  DashedBorderPainter({required this.color, this.strokeWidth = 1.0});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - strokeWidth) / 2;
+
+    final double dashLength = 4.0;
+    final double gapLength = 2.5;
+    final double circumference = 2 * 3.14159 * radius;
+    final int count = circumference ~/ (dashLength + gapLength);
+    final double step = (3.14159 * 2) / count;
+
+    for (int i = 0; i < count; i++) {
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        i * step,
+        (dashLength / (dashLength + gapLength)) * step,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant DashedBorderPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
   }
 }

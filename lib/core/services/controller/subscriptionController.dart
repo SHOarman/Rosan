@@ -10,7 +10,7 @@ class SubscriptionController extends GetxController {
   var isProMember = false.obs;
   var availablePackages = <Package>[].obs;
 
-  // Backend UI Plans Data
+
   var paywallTitle = "".obs;
   var paywallSubtitle = "".obs;
   var paywallBanner = "".obs;
@@ -26,7 +26,7 @@ class SubscriptionController extends GetxController {
     checkCustomerStatus();
   }
 
-  // Fetch UI configuration and plans from the backend
+
   Future<void> fetchBackendPlans() async {
     try {
       final prefs = await SharedPreferences.getInstance();

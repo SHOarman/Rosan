@@ -15,6 +15,7 @@ import 'package:rosannalie/core/services/controller/todaytaskcontroller.dart';
 import 'package:rosannalie/core/services/controller/mygoall_controller.dart';
 import 'package:rosannalie/core/services/controller/quote_controller.dart';
 import 'package:rosannalie/core/services/controller/future_me_controller.dart';
+import 'package:rosannalie/core/services/controller/notification_controller.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -53,30 +54,101 @@ class Home extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 40),
-                      Obx(() {
-                        final authController = Get.find<Authcontroller>();
-                        final firstName = authController.userName.value.isNotEmpty
-                            ? authController.userName.value.trim().split(" ").first
-                            : "User";
-                        return Text(
-                          '${getGreeting()}, $firstName',
-                          style: AppTextStyles.plusJakartaSans(
-                            fontSize: 20,
-                            color: const Color(0xFF161022),
-                            fontWeight: FontWeight.w800,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Obx(() {
+                                  final authController = Get.find<Authcontroller>();
+                                  final firstName = authController.userName.value.isNotEmpty
+                                      ? authController.userName.value.trim().split(" ").first
+                                      : "User";
+                                  return Text(
+                                    '${getGreeting()}, $firstName',
+                                    style: AppTextStyles.plusJakartaSans(
+                                      fontSize: 20,
+                                      color: const Color(0xFF161022),
+                                      fontWeight: FontWeight.w900,
+                                    ).copyWith(
+                                      height: 28 / 20,
+                                      letterSpacing: 0,
+                                    ),
+                                  );
+                                }),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "You are amazing!",
+                                  style: AppTextStyles.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff575B61),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        );
-                      }),
-                      const SizedBox(height: 6),
-                      Text(
-                        "You are amazing!",
-                        style: AppTextStyles.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.gray,
-                        ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.toNamed(AppRoutes.notifications);
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: const Color(0xFFEBE6F6)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.03),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 2),
+                                      )
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.notifications_none_rounded,
+                                    color: Color(0xFF161022),
+                                    size: 24,
+                                  ),
+                                ),
+                                Obx(() {
+                                  final notifController = Get.put(NotificationController());
+                                  final count = notifController.notifications.where((n) => (n as Map)['readAt'] == null).length;
+                                  if (count == 0) return const SizedBox.shrink();
+
+                                  return Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.redAccent,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.white, width: 2),
+                                      ),
+                                      child: Text(
+                                        count > 9 ? '9+' : '$count',
+                                        style: AppTextStyles.inter(
+                                          fontSize: 10,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
 
                       //======================Dailymsg=====================================
                       DailyMsg(),
@@ -92,9 +164,9 @@ class Home extends StatelessWidget {
                         "Quick Access",
                         style: AppTextStyles.plusJakartaSans(
                           color: Color(0xff161022),
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
-                        ),
+                        ).copyWith(letterSpacing: 0.5)
                       ),
                       SizedBox(height: 14),
 
@@ -208,8 +280,8 @@ class Home extends StatelessWidget {
                             "Today's Tasks",
                             style: AppTextStyles.plusJakartaSans(
                               color: const Color(0xff3D2E6B),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
 
@@ -225,7 +297,7 @@ class Home extends StatelessWidget {
                               style: AppTextStyles.inter(
                                 color: const Color(0xff7B64B0),
                                 fontWeight: FontWeight.w600,
-                                fontSize: 12,
+                                fontSize: 13,
                               ),
                             ),
                           ),

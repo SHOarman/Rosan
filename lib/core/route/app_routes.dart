@@ -23,6 +23,7 @@ import 'package:rosannalie/presention/profile/privacy_Policy.dart';
 import 'package:rosannalie/presention/profile/termsof_Service.dart';
 import 'package:rosannalie/presention/profile/myplan.dart';
 import 'package:rosannalie/presention/profile/notification_settings.dart';
+import 'package:rosannalie/presention/notifications/notifications_screen.dart';
 import 'package:rosannalie/presention/wins/wins.dart';
 import 'package:rosannalie/presention/wins/achievements_see_all.dart';
 
@@ -106,6 +107,7 @@ class AppPages {
     GetPage(name: AppRoutes.termsofservice, page: ()=>const TermsOfServicePage()),
     GetPage(name: AppRoutes.myplan, page: ()=>const MyPlanPage()),
     GetPage(name: AppRoutes.notificationsettings, page: ()=>NotificationSettingsView()),
+    GetPage(name: AppRoutes.notifications, page: ()=>const NotificationsScreen()),
     GetPage(name: AppRoutes.subscriptionPromotion, page: ()=>const SubscriptionPromotion()),
     GetPage(name: AppRoutes.subscriptionPromotionProfile, page: ()=>const SubscriptionPromotionProfile()),
   ];

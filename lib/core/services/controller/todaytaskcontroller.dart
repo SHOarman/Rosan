@@ -228,17 +228,17 @@ class Todaytaskcontroller extends GetxController {
   }
 
   Future<void> addTask(String title, String priority, String category, bool showDailyToggle) async {
-    // Add to local list first for quick UI update
-    tasks.add(
-      TaskItem(
-        title: title,
-        priority: priority,
-        category: category,
-        showDailyToggle: showDailyToggle,
-        isCompleted: false,
-        isDaily: false,
-      ),
+    // Add to local list first for quick UI update, insert at the beginning
+    final newTask = TaskItem(
+      title: title,
+      priority: priority,
+      category: category,
+      showDailyToggle: showDailyToggle,
+      isCompleted: false,
+      isDaily: false,
+      isLoading: true, // Show loading state on this newly added item
     );
+    tasks.insert(0, newTask);
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -275,8 +275,11 @@ class Todaytaskcontroller extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchTasks();
         _triggerDashboardUpdates();
+      } else {
+        tasks.remove(newTask); // Rollback on failure
       }
     } catch (e) {
+      tasks.remove(newTask); // Rollback on failure
       print("Error creating task: $e");
     }
   }

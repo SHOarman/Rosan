@@ -122,8 +122,8 @@ class _SigninScreenState extends State<SigninScreen> {
                               Text(
                                 "Remember me",
                                 style: AppTextStyles.inter(
-                                  fontSize: 14,
-                                  color: const Color(0xFF2E2252),
+                                  fontSize: 14.5,
+                                  color: const Color(0xFF161022),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),

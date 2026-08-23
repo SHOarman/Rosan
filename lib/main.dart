@@ -95,6 +95,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:purchases_flutter/models/purchases_configuration.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -104,6 +105,15 @@ import 'package:rosannalie/core/route/app_routes.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 
+
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel',
+  'High Importance Notifications',
+  description: 'This channel is used for important notifications.',
+  importance: Importance.max,
+);
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -117,8 +127,18 @@ void main() async {
   try {
     await Firebase.initializeApp();
 
-
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    
+    // Create channel
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+        
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
   } catch (e) {
     debugPrint("Firebase init error: $e");
   }
@@ -188,28 +208,55 @@ class _MyAppState extends State<MyApp> {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       debugPrint('User granted push notification permission');
-    } else {
-      debugPrint('User declined or has not accepted permission');
     }
 
     String? token = await _firebaseMessaging.getToken();
     debugPrint("FCM Registration Token: $token");
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Foreground message received: ${message.notification?.title}');
+    // Initialize the flutter_local_notifications plugin
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings();
+    const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+    );
+    await flutterLocalNotificationsPlugin.initialize(
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        debugPrint('Notification clicked: ${details.payload}');
+      }
+    );
 
-      if (message.notification != null) {
-        Get.snackbar(
-          message.notification?.title ?? 'Notification',
-          message.notification?.body ?? '',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.black87,
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(10),
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      
+      // Some backends send pushes as data-only messages to bypass background restrictions.
+      final String? title = notification?.title ?? message.data['title'];
+      final String? body = notification?.body ?? message.data['body'] ?? message.data['message'];
+
+      debugPrint('Moin: Foreground message triggered!');
+      debugPrint('Moin: Title: $title, Body: $body');
+      debugPrint('Moin: Data Payload: ${message.data}');
+
+      // Show native flush notification in the foreground
+      if (title != null || body != null) {
+        flutterLocalNotificationsPlugin.show(
+          id: message.hashCode,
+          title: title ?? 'Rise',
+          body: body ?? 'New Notification',
+          notificationDetails: NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              icon: '@mipmap/ic_launcher',
+              priority: Priority.high,
+              importance: Importance.max,
+            ),
+          ),
         );
       }
     });
-
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('Notification clicked and app opened: ${message.data}');

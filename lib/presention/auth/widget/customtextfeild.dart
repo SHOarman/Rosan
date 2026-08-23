@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rosannalie/utils/appString.dart';
+
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String labelText;
@@ -49,10 +50,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     final activeGradient = const LinearGradient(
-      colors: [
-        Color(0xFF9B85CF),
-        Color(0xFF5E4B8B),
-      ],
+      colors: [Color(0xFF9B85CF), Color(0xFF5E4B8B)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );
@@ -72,18 +70,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         labelStyle: AppTextStyles.plusJakartaSans(
-          color: _isFocused ? const Color(0xFF5E4B8B) : const Color(0xFF8B7DB5),
+          color: const Color(0xFF0B1A1D),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        floatingLabelStyle: AppTextStyles.plusJakartaSans(
+          color: const Color(0xFF0B1A1D),
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         hintText: widget.hintText,
         hintStyle: AppTextStyles.plusJakartaSans(
-          color: const Color(0xFF8B7DB5).withValues(alpha: 0.5),
+          color: const Color(0xFF0B1A1D),
           fontSize: 15,
         ),
         fillColor: Colors.white.withValues(alpha: 0.55),
         filled: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 24.0,
+          vertical: 16.0,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide(
@@ -98,22 +104,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(
-            color: Colors.red,
-            width: 1.0,
-          ),
+          borderSide: const BorderSide(color: Colors.red, width: 1.0),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(
-            color: Colors.red,
-            width: 1.5,
-          ),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
         ),
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
-                  _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  _obscureText
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: const Color(0xFF8B7DB5),
                   size: 22,
                 ),

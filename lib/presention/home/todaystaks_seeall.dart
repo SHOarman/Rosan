@@ -78,8 +78,8 @@ class TodaystaksSeeall extends StatelessWidget {
                           children: [
                             Text(
                               '$doneCount of ${tasks.length} done',
-                              style: AppTextStyles.inter(
-                                fontSize: 12.0,
+                              style: AppTextStyles.plusJakartaSans(
+                                fontSize: 12.5,
                                 fontWeight: FontWeight.w500,
                                 color: const Color(0xFF8F7DB5),
                               ),
@@ -97,10 +97,10 @@ class TodaystaksSeeall extends StatelessWidget {
                         const SizedBox(height: 8.0),
                         // Progress Bar
                         Container(
-                          height: 6.0,
+                          height: 8.0,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF8F7DB5).withOpacity(0.15),
+                            color: const Color(0xFFC5B8E8).withOpacity(0.25),
                             borderRadius: BorderRadius.circular(3.0),
                           ),
                           alignment: Alignment.centerLeft,
@@ -109,7 +109,11 @@ class TodaystaksSeeall extends StatelessWidget {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF7B64B0),
+                                gradient: LinearGradient(colors: [
+                                  Color(0xff7B64B0),
+                                  Color(0xff7B64B0)
+                                ]),
+
                                 borderRadius: BorderRadius.circular(3.0),
                               ),
                             ),
@@ -232,8 +236,15 @@ class TodaystaksSeeall extends StatelessWidget {
 
   Widget _buildTaskCard(BuildContext context, TaskItem task, Todaytaskcontroller controller) {
     return Obx(() {
-      return Container(
-        width: double.infinity,
+      final isAdding = task.isLoading.value && task.id == null;
+
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Opacity(
+            opacity: isAdding ? 0.4 : 1.0,
+            child: Container(
+              width: double.infinity,
         margin: const EdgeInsets.only(bottom: 12.0),
         padding: const EdgeInsets.only(top: 14, bottom: 14, left: 16, right: 16),
         decoration: BoxDecoration(
@@ -278,7 +289,7 @@ class TodaystaksSeeall extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                     alignment: Alignment.center,
-                    child: task.isLoading.value
+                    child: (task.isLoading.value && task.id != null)
                         ? const SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -353,10 +364,10 @@ class TodaystaksSeeall extends StatelessWidget {
                 children: [
                   Text(
                     'Set for daily',
-                    style: AppTextStyles.inter(
+                    style: AppTextStyles.plusJakartaSans(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF8F7DB5).withOpacity(0.8),
+                      color: const Color(0xFF575B61),
                     ),
                   ),
                   Transform.scale(
@@ -373,8 +384,19 @@ class TodaystaksSeeall extends StatelessWidget {
                 ],
               ),
             ],
-          ],
-        ),
+              ],
+            ),
+          )),
+          if (isAdding)
+            const SizedBox(
+              width: 24.0,
+              height: 24.0,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: Color(0xFF7B64B0),
+              ),
+            ),
+        ],
       );
     });
   }
@@ -405,8 +427,9 @@ class TodaystaksSeeall extends StatelessWidget {
       ),
       child: Text(
         priority,
-        style: AppTextStyles.inter(
-          fontSize: 11.0,
+        style: AppTextStyles.plusJakartaSans(
+          fontSize: 10.5,
+
           fontWeight: FontWeight.w600,
           color: textColor,
         ),
@@ -423,10 +446,10 @@ class TodaystaksSeeall extends StatelessWidget {
       ),
       child: Text(
         category,
-        style: AppTextStyles.inter(
+        style: AppTextStyles.plusJakartaSans(
           fontSize: 11.0,
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF8F7DB5),
+          color: const Color(0xFF575B61),
         ),
       ),
     );
@@ -449,8 +472,8 @@ class TodaystaksSeeall extends StatelessWidget {
             textColor = const Color(0xFFFF6B6B);
             break;
           case 'medium':
-            bgColor = const Color(0xFFFFF9E6);
-            textColor = const Color(0xFFFFB300);
+            bgColor = const Color(0xFFFFF3E0);
+            textColor = const Color(0xFFC58D3A);
             break;
           default:
             bgColor = const Color(0xFFF0FFF4);
@@ -458,7 +481,7 @@ class TodaystaksSeeall extends StatelessWidget {
         }
       } else {
         bgColor = Colors.white;
-        border = Border.all(color: const Color(0xFFE2DCF7), width: 1.0);
+        border = Border.all(color: const Color(0xFFE2DCF7), width: 2.0);
         switch (priority.toLowerCase()) {
           case 'high':
             textColor = const Color(0xFFFF6B6B);
@@ -538,8 +561,8 @@ class TodaystaksSeeall extends StatelessWidget {
 
   void _showAddTaskBottomSheet(BuildContext context, Todaytaskcontroller controller) {
     final titleController = TextEditingController();
+    final categoryController = TextEditingController();
     var selectedPriority = 'High'.obs;
-    var selectedCategory = 'Work'.obs;
 
     showModalBottomSheet(
       context: context,
@@ -564,7 +587,7 @@ class TodaystaksSeeall extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header title
+
               Text(
                 "New Task",
                 style: AppTextStyles.plusJakartaSans(
@@ -575,7 +598,7 @@ class TodaystaksSeeall extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Text Field: "What needs to be done?"
+
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
@@ -588,7 +611,7 @@ class TodaystaksSeeall extends StatelessWidget {
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
-                    borderSide: const BorderSide(color: Color(0xFFE2DCF7), width: 1.0),
+                    borderSide: const BorderSide(color: Color(0xFFC5B8E8), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -600,7 +623,7 @@ class TodaystaksSeeall extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Priority Selection Row: High, Medium, Low
+
               Text(
                 "Priority",
                 style: AppTextStyles.inter(
@@ -621,7 +644,7 @@ class TodaystaksSeeall extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Category Selection Row: Work, Health, Personal (or Learning)
+
               Text(
                 "Category",
                 style: AppTextStyles.inter(
@@ -631,14 +654,27 @@ class TodaystaksSeeall extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(child: _buildCategoryButton('Work', selectedCategory)),
-                  const SizedBox(width: 10),
-                  Expanded(child: _buildCategoryButton('Health', selectedCategory)),
-                  const SizedBox(width: 10),
-                  Expanded(child: _buildCategoryButton('Personal Life', selectedCategory)),
-                ],
+              TextField(
+                controller: categoryController,
+                decoration: InputDecoration(
+                  hintText: "E.g., Work, Health, Personal",
+                  hintStyle: AppTextStyles.inter(
+                    color: const Color(0xFF8F7DB5).withOpacity(0.6),
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: const BorderSide(color: Color(0xFFC5B8E8), width: 2.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: const BorderSide(color: Color(0xFF7B64B0), width: 1.5),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                ),
+                style: AppTextStyles.inter(color: const Color(0xFF2E2252), fontSize: 14),
               ),
               const SizedBox(height: 24),
 
@@ -653,14 +689,14 @@ class TodaystaksSeeall extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(24.0),
-                          border: Border.all(color: const Color(0xFFE2DCF7), width: 1.0),
+                          border: Border.all(color: const Color(0xFFE2DCF7), width: 2.0),
                         ),
                         child: Center(
                           child: Text(
                             "Cancel",
-                            style: AppTextStyles.inter(
+                            style: AppTextStyles.plusJakartaSans(
                               fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               color: const Color(0xFF8F7DB5),
                             ),
                           ),
@@ -683,8 +719,8 @@ class TodaystaksSeeall extends StatelessWidget {
                           return;
                         }
                         final priority = selectedPriority.value;
-                        final isHigh = priority == 'High';
-                        final category = selectedCategory.value;
+                        final categoryText = categoryController.text.trim();
+                        final category = categoryText.isEmpty ? 'General' : categoryText;
                         controller.addTask(
                           titleController.text.trim(),
                           priority,
@@ -713,7 +749,7 @@ class TodaystaksSeeall extends StatelessWidget {
                         child: Center(
                           child: Text(
                             "Add Task",
-                            style: AppTextStyles.inter(
+                            style: AppTextStyles.plusJakartaSans(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,

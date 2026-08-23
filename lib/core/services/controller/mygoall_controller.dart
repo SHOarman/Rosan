@@ -138,11 +138,14 @@ class MygoallController extends GetxController {
               prog = (item['progress'] is int) ? (item['progress'] as int).toDouble() / 100.0 : (item['progress'] as double) / 100.0;
             }
 
+            final idStr = item['id'] != null ? item['id'].toString() : (item['title'] ?? 'No Title');
+            final hash = idStr.hashCode.abs();
+
             goals.add(GoalItem(
               id: item['id'],
               title: item['title'] ?? 'No Title',
               deadline: formattedDeadline,
-              iconType: iconTypes[i % iconTypes.length],
+              iconType: iconTypes[hash % iconTypes.length],
               progress: prog,
             ));
           }
@@ -257,9 +260,6 @@ class MygoallController extends GetxController {
     final String finalDeadlineIso = parsedDate != null 
         ? parsedDate.toUtc().toIso8601String()
         : DateTime.now().add(const Duration(days: 30)).toUtc().toIso8601String();
-
-    final iconTypes = ['rocket', 'run', 'book', 'money'];
-    final iconType = iconTypes[goals.length % iconTypes.length];
     
     isCreatingGoal.value = true;
 

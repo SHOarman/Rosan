@@ -23,7 +23,7 @@ class Allquotes extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              // Header Row with centered title and left back button
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

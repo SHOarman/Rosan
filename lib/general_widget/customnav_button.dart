@@ -144,12 +144,16 @@ class CustomBottomNavBar extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(
                 item.label,
-                style: AppTextStyles.inter(
+                textAlign: TextAlign.center,
+                style: AppTextStyles.poppins(
                   fontSize: 10.0,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected
                       ? const Color(0xFF5E4B8B)
                       : const Color(0xFF575B61),
+                ).copyWith(
+                  height: 1.2,
+                  letterSpacing: 0,
                 ),
               ),
             ),

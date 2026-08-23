@@ -91,9 +91,12 @@ class StackCard extends StatelessWidget {
                     title,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.plusJakartaSans(
-                      fontWeight: FontWeight.bold,
-                      fontSize: titleFontSize ?? 14,
-                      color: titleColor ?? Colors.black87,
+                      fontWeight: (titleFontSize == 13.0) ? FontWeight.w700 : FontWeight.w800,
+                      fontSize: titleFontSize ?? 20.0,
+                      color: titleColor ?? const Color(0xFF161022),
+                    ).copyWith(
+                      height: (titleFontSize == 13.0 ? 18.0 : 28.0) / (titleFontSize ?? 20.0),
+                      letterSpacing: 0.0,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -102,8 +105,12 @@ class StackCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     style: AppTextStyles.plusJakartaSans(
-                      fontSize: subtitleFontSize ?? 12,
+                      fontWeight: FontWeight.w400,
+                      fontSize: subtitleFontSize ?? 14.0,
                       color: subtitleColor ?? const Color(0xFF575B61),
+                    ).copyWith(
+                      height: (subtitleFontSize == 10.5 ? 16.0 : 20.0) / (subtitleFontSize ?? 14.0),
+                      letterSpacing: 0.0,
                     ),
                   ),
                 ],

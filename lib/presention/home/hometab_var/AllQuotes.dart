@@ -130,12 +130,8 @@ class AllQuotesTab extends StatelessWidget {
           // Top Left Quote Icon (new.svg)
           SvgPicture.asset(
             "assets/icon/new.svg",
-            colorFilter: const ColorFilter.mode(
-              Color(0x264A3870),
-              BlendMode.srcIn,
-            ),
-            width: 16.0,
-            height: 14.0,
+            width: 17.0,
+            height: 17.0,
           ),
           const SizedBox(height: 10.0),
           // Quote Text
@@ -143,51 +139,60 @@ class AllQuotesTab extends StatelessWidget {
             quote.text,
             style: AppTextStyles.plusJakartaSans(
               fontSize: 15.0,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: const Color(0xFF161022),
+            ).copyWith(
+              fontStyle: FontStyle.italic,
+              height: 20 / 14,
+              letterSpacing: 0,
             ),
           ),
           const SizedBox(height: 12.0),
-          // Bottom Author + Save Button Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '— ${quote.author}',
-                style: AppTextStyles.inter(
+                style: AppTextStyles.plusJakartaSans(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF7A68A6),
-                ),
+                ).copyWith(
+                height: 20 / 16.5,
+                  letterSpacing: 0.2,
+
               ),
-              Obx(() => GestureDetector(
-                    onTap: () => controller.toggleSave(quote),
-                    child: Container(
-                      width: 32.0,
-                      height: 32.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF4A3870).withValues(alpha: 0.08),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Icon(
-                        quote.isSaved.value
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: quote.isSaved.value
-                            ? const Color(0xFFFF5A79)
-                            : const Color(0xFF8F7DB5),
-                        size: 18,
+              ),
+              Obx(() {
+                final isSaved = quote.isSaved.value;
+                return GestureDetector(
+                  onTap: () => controller.toggleSave(quote),
+                  child: Container(
+                    width: 36.0,
+                    height: 36.0,
+                    decoration: BoxDecoration(
+                      color: isSaved
+                          ? const Color(0xFFF49DC3).withValues(alpha: 0.5)
+                          : const Color(0xFFFFFFFF).withValues(alpha: 0.6),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSaved
+                            ? const Color(0xFFF49DC3).withValues(alpha: 0.8)
+                            : const Color(0xFFC5B8E8).withValues(alpha: 0.4),
+                        width: isSaved ? 1.1 : 1.0,
                       ),
                     ),
-                  )),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      isSaved ? Icons.favorite : Icons.favorite_border,
+                      color: isSaved
+                          ? const Color(0xFFFF5A79)
+                          : const Color(0xFF8F7DB5),
+                      size: 20,
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
         ],

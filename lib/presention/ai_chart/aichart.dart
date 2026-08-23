@@ -87,7 +87,7 @@ class _AichartState extends State<Aichart> {
         children: [
           // ── Main content ───────────────────────────────────────────────
           Positioned.fill(
-            bottom: 118.0, // nav(70) + navBottom(40) + gap(8)
+            bottom: 118.0,
             child: SafeArea(
               bottom: false,
               child: Column(
@@ -144,7 +144,7 @@ class _AichartState extends State<Aichart> {
           ),
           const SizedBox(width: 10),
 
-          // Name + status
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,7 +373,7 @@ class _AichartState extends State<Aichart> {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                 child: Container(
-                  width: 44,
+                  width: 50,
                   height: 44,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.80),
@@ -615,7 +615,7 @@ class _UserBubble extends StatelessWidget {
                   ),
                   child: Text(
                     message.text,
-                    style: AppTextStyles.inter(
+                    style: AppTextStyles.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
@@ -628,7 +628,7 @@ class _UserBubble extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             message.time,
-            style: AppTextStyles.inter(
+            style: AppTextStyles.plusJakartaSans(
               fontSize: 10,
               fontWeight: FontWeight.w400,
               color: const Color(0xFF9E9AA8),
@@ -699,7 +699,7 @@ class _TypingBubble extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   'Thinking...',
-                  style: AppTextStyles.inter(
+                  style: AppTextStyles.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF8F7DB5),

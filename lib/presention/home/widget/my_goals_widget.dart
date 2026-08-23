@@ -26,7 +26,8 @@ class MyGoalsWidget extends StatelessWidget {
                   color: const Color(0xff3D2E6B),
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                ),
+
+                ).copyWith(letterSpacing: 1)
               ),
               GestureDetector(
                 onTap: () {
@@ -37,7 +38,7 @@ class MyGoalsWidget extends StatelessWidget {
                   style: AppTextStyles.inter(
                     color: const Color(0xff7B64B0),
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                    fontSize: 13,
                   ),
                 ),
               )

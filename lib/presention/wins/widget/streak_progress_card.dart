@@ -57,8 +57,8 @@ class StreakProgressCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 50,
+                  height: 50,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Color(0xffFFB74D), Color(0xffFF8A65)],
@@ -91,8 +91,11 @@ class StreakProgressCard extends StatelessWidget {
                               : '1–Day Streak! 🔥',
                           style: AppTextStyles.plusJakartaSans(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                             color: const Color(0xFF161022),
+                          ).copyWith(
+                            height: 24.0 / 16.0,
+                            letterSpacing: 0.0,
                           ),
                         ),
                       ),
@@ -103,9 +106,12 @@ class StreakProgressCard extends StatelessWidget {
                               ? controller.streakMotivationText.value
                               : 'Keep going — 6 more days to your next badge!',
                           style: AppTextStyles.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF444054),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF575B61),
+                          ).copyWith(
+                            height: 20.0 / 14.0,
+                            letterSpacing: 0.0,
                           ),
                         ),
                       ),

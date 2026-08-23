@@ -71,7 +71,7 @@ class Futureme extends StatelessWidget {
                           fontSize: 20,
                           color: const Color(0xFF161022),
                           fontWeight: FontWeight.w800,
-                        ),
+                        ).copyWith(letterSpacing: 1)
                       ),
                       const SizedBox(width: 40),
                     ],

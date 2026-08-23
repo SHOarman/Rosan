@@ -42,16 +42,13 @@ class MyPlan extends StatelessWidget {
                 width: 38.0,
                 height: 38.0,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF6F5FB),
+                  color: const Color(0xFFF4F1F9),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 alignment: Alignment.center,
                 child: SvgPicture.asset(
                   "assets/images/Icon (2).svg",
-                  colorFilter: const ColorFilter.mode(
-                    Color(0xFF575B61),
-                    BlendMode.srcIn,
-                  ),
+
                   width: 20.0,
                   height: 20.0,
                 ),
@@ -63,7 +60,7 @@ class MyPlan extends StatelessWidget {
                   "My Plan",
                   style: AppTextStyles.inter(
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w400,
                     color: const Color(0xFF161022),
                   ),
                 ),

@@ -35,8 +35,8 @@ class Futuredcard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 64.0,
-            height: 64.0,
+            width: 68.0,
+            height: 68.0,
             decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
               gradient: const LinearGradient(
@@ -55,30 +55,29 @@ class Futuredcard extends StatelessWidget {
             alignment: Alignment.center,
             child: SvgPicture.asset(
               "assets/images/SparkleIcon.svg",
-              width: 24.0,
-              height: 24.0,
+              width: 28.0,
+              height: 28.0,
             ),
           ),
           const SizedBox(height: 12.0),
           // Futured Title
           Text(
-            "Glow-UP ✨",
+            "Hey You! ✨",
             style: AppTextStyles.plusJakartaSans(
               fontSize: 20.0,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: const Color(0xFF3D2E6B),
-
-            ),
+            ).copyWith(height: 27 / 20, letterSpacing: 0),
           ),
           const SizedBox(height: 12.0),
           // Description text centered directly
           Text(
             "Your vision, growth and progress",
             style: AppTextStyles.plusJakartaSans(
-              fontSize: 15.0,
-              fontWeight: FontWeight.w600,
+              fontSize: 14.0,
+              fontWeight: FontWeight.w400,
               color: const Color(0xFF575B61),
-            ),
+            ).copyWith(height: 19.5 / 14.0, letterSpacing: 0.2),
             textAlign: TextAlign.center,
           ),
         ],

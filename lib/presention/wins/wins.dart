@@ -44,17 +44,17 @@ class Wins extends StatelessWidget {
                             fontSize: 20,
                             color: const Color(0xFF161022),
                             fontWeight: FontWeight.w800,
-                          ),
+                          ).copyWith(letterSpacing: 0.50),
                         ),
                       ),
                       const SizedBox(height: 24),
 
-                      // ── Stat cards row ────────────────────────────────────
+
                       Obx(() {
                         final controller = Get.isRegistered<WinsController>() ? Get.find<WinsController>() : Get.put(WinsController());
                         return Row(
                         children: [
-                          // Day streak
+
                           Expanded(
                             child: StackCard(
                               showBorder: true,
@@ -92,10 +92,12 @@ class Wins extends StatelessWidget {
                           // Badges
                           Expanded(
                             child: StackCard(
+
                               gradientColors: const [
                                 Color(0xFFF0FFF0),
                                 Color(0xFFC8E6C9),
                               ],
+
                               icon: SvgPicture.asset(
                                 'assets/icon/badge_icon.svg',
                                 width: 28,
@@ -124,8 +126,8 @@ class Wins extends StatelessWidget {
                             style: AppTextStyles.plusJakartaSans(
                               color: const Color(0xff161022),
                               fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                            ),
+                              fontSize: 18,
+                            ).copyWith(letterSpacing: 0.50),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -136,7 +138,7 @@ class Wins extends StatelessWidget {
                                 Text(
                                   "See all",
                                   style: AppTextStyles.plusJakartaSans(
-                                    fontSize: 14,
+                                    fontSize: 14.5,
                                     fontWeight: FontWeight.w600,
                                     color: const Color(0xFF7B64B0),
                                   ),
@@ -163,9 +165,12 @@ class Wins extends StatelessWidget {
                         return Text(
                           "Achievements (${controller.unlockedBadgesCount.value}/${controller.totalBadgesCount.value})",
                           style: AppTextStyles.plusJakartaSans(
-                            color: const Color(0xff161022),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
+                            color: const Color(0xFF161022),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 17.5,
+                          ).copyWith(
+                            height: 24.0 / 16.0,
+                            letterSpacing: 0.0,
                           ),
                         );
                       }),

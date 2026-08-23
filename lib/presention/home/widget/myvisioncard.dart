@@ -48,10 +48,10 @@ class Myvisioncard extends StatelessWidget {
               Text(
                 "My Vision",
                 style: AppTextStyles.plusJakartaSans(
-                  fontSize: 16.0,
+                  fontSize: 17.0,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E2252),
-                ),
+                  color: const Color(0xFF3D2E6B),
+                ).copyWith(height: 22.5/17.5, letterSpacing: 0.2)
               ),
             ],
           ),

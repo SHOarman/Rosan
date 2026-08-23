@@ -44,6 +44,7 @@ class AppRoutes {
   static const String subscriptionPromotion = '/subscriptionPromotion';
   static const String subscriptionPromotionProfile = '/subscriptionPromotionProfile';
   static const String notificationsettings = '/notificationsettings';
+  static const String notifications = '/notifications';
   static const String inbox = '/inbox';
   static const String wins = '/wins';
   static const String wins_seeall = '/wins_seeall';

@@ -57,6 +57,8 @@ class Apiservices {
   //============================================push_notifications========================================================
   static const String register_token = "$baseUrl/notifications/register-token";
   static const String notification_settings = "$baseUrl/notifications/settings";
+  static const String read_all_notifications = "$baseUrl/notifications/read-all";
+  static String read_single_notification(String id) => "$baseUrl/notifications/$id/read";
 
 
   //=========================================================Subscription=================================================

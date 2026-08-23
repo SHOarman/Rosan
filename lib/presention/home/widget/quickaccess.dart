@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:rosannalie/utils/appString.dart';
 
 class Quickaccess extends StatelessWidget {
   final String title;
@@ -50,12 +51,13 @@ class Quickaccess extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Icon Container
+
             Container(
               width: 40,
               height: 40,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
+                
                 color: iconBackgroundColor,
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -76,10 +78,13 @@ class Quickaccess extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: AppTextStyles.plusJakartaSans(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E1E1E),
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF161022),
+                      ).copyWith(
+                        height: 24 / 16,
+                        letterSpacing: 0,
                       ),
                     ),
                   ),
@@ -89,11 +94,11 @@ class Quickaccess extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       subtitle,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: AppTextStyles.plusJakartaSans(
+                        fontSize: 13,
                         fontWeight: FontWeight.w400,
-                        color: const Color(0xFF1E1E1E).withValues(alpha: 0.6),
-                      ),
+                        color: const Color(0xFF575B61),
+                      )
                     ),
                   ),
                 ],

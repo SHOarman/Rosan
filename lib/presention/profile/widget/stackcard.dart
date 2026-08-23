@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
 
 class Stackcard extends StatelessWidget {
-  const Stackcard({super.key});
+  const  Stackcard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +118,8 @@ class Stackcard extends StatelessWidget {
           const SizedBox(height: 6.0),
           Text(
             value,
-            style: AppTextStyles.plusJakartaSans(
-              fontSize: 18,
+            style: AppTextStyles.inter(
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: const Color(0xFF161022),
             ),
@@ -128,9 +128,9 @@ class Stackcard extends StatelessWidget {
           Text(
             label,
             style: AppTextStyles.inter(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF8F7DB5),
+              color: const Color(0xFF4B454B),
             ),
           ),
         ],

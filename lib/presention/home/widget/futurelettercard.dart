@@ -38,7 +38,7 @@ class Futurelettercard extends StatelessWidget {
                         style: AppTextStyles.plusJakartaSans(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2E2252),
+                          color: const Color(0xFF3D2E6B),
                         ),
                       ),
                       IconButton(
@@ -213,9 +213,9 @@ class Futurelettercard extends StatelessWidget {
               Text(
                 "Letter to Future Me",
                 style: AppTextStyles.plusJakartaSans(
-                  fontSize: 16.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E2252),
+                  color: const Color(0xFF3D2E6B),
                 ),
               ),
             ],
@@ -227,39 +227,94 @@ class Futurelettercard extends StatelessWidget {
           // Action Button: Write a letter
           GestureDetector(
             onTap: () => _showWriteLetterBottomSheet(context, controller),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(
-                  color: const Color(0xFFDDD0FF),
-                  width: 1.0,
-                ),
+            child: CustomPaint(
+              painter: DashedRectPainter(
+                color: const Color(0xFFC5B8E8),
+                strokeWidth: 1.0,
+                radius: 14.0,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "✍️",
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Text(
-                    "Write a letter to your future self",
-                    style: AppTextStyles.plusJakartaSans(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF7B64B0),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14.0),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(14.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "✍️",
+                      style: TextStyle(fontSize: 16.0),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8.0),
+                    Text(
+                      "Write a letter to your future self",
+                      style: AppTextStyles.plusJakartaSans(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF7B64B0),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+class DashedRectPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double radius;
+
+  DashedRectPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.radius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+
+    final path = Path()..addRRect(rrect);
+
+    final dashPath = Path();
+    final dashArray = <double>[4.0, 4.0];
+    for (final metric in path.computeMetrics()) {
+      double distance = 0.0;
+      int index = 0;
+      while (distance < metric.length) {
+        final len = dashArray[index % dashArray.length];
+        if (index % 2 == 0) {
+          dashPath.addPath(
+            metric.extractPath(distance, distance + len),
+            Offset.zero,
+          );
+        }
+        distance += len;
+        index++;
+      }
+    }
+
+    canvas.drawPath(dashPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant DashedRectPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.radius != radius;
   }
 }

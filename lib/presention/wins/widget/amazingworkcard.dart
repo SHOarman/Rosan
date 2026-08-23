@@ -74,9 +74,12 @@ class Amazingworkcard extends StatelessWidget {
             controller.bannerTitle.value.isNotEmpty ? controller.bannerTitle.value : 'Amazing work today, keep it up!',
             textAlign: TextAlign.center,
             style: AppTextStyles.plusJakartaSans(
-              fontSize: 16,
+              fontSize: 17,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF161022),
+            ).copyWith(
+              height: 24.0 / 16.0,
+              letterSpacing: 0.0,
             ),
           ),
           const SizedBox(height: 8),
@@ -88,7 +91,7 @@ class Amazingworkcard extends StatelessWidget {
                 : "You've earned $currentPointsVal points and completed $winsCount wins.\nThat's something to be proud of.",
             textAlign: TextAlign.center,
             style: AppTextStyles.inter(
-              fontSize: 13,
+              fontSize: 13.5,
               fontWeight: FontWeight.w400,
               color: const Color(0xFF444054),
             ).copyWith(height: 1.5),
@@ -109,7 +112,7 @@ class Amazingworkcard extends StatelessWidget {
               FractionallySizedBox(
                 widthFactor: progress.clamp(0.0, 1.0),
                 child: Container(
-                  height: 8,
+                  height: 9,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [
@@ -132,10 +135,14 @@ class Amazingworkcard extends StatelessWidget {
             controller.progressText.value.isNotEmpty 
                 ? controller.progressText.value 
                 : '$currentPointsVal/$totalPointsVal points to next level',
-            style: AppTextStyles.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xFF6B5F8A),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.plusJakartaSans(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w400,
+              color: const Color(0xFF7E8184),
+            ).copyWith(
+              height: 18.0 / 12.0,
+              letterSpacing: 0.0,
             ),
           ),
         ],

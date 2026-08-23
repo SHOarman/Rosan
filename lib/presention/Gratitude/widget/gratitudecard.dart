@@ -22,7 +22,7 @@ class Gratitudecard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.0),
         border:  Border.all(
           color: Color(0xFFFFFFFF),
-          width: 1.0,
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
@@ -41,8 +41,8 @@ class Gratitudecard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 45,
+                height: 45 ,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
@@ -70,7 +70,7 @@ class Gratitudecard extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF575B61),
-                ),
+                ).copyWith(letterSpacing: 0.66)
               ),
             ],
           ),

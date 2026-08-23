@@ -60,19 +60,19 @@ class DailyMsg extends StatelessWidget {
                   Text(
                     '“$quoteText”',
                     style: AppTextStyles.plusJakartaSans(
-                      fontSize: 15.0,
+                      fontSize: 15.5,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2E2252),
-                    ),
+                      color: const Color(0xFF3D2E6B),
+                    ).copyWith(fontStyle: FontStyle.italic),
                   ),
                   const SizedBox(height: 8.0),
                   Text(
                     quoteAuthor.isNotEmpty ? '— $quoteAuthor' : '',
                     style: AppTextStyles.plusJakartaSans(
-                      fontSize: 11.0,
+                      fontSize: 12.5,
                       fontWeight: FontWeight.w500,
                       color: const Color(0xFF575B61),
-                    ),
+                    ).copyWith(fontStyle: FontStyle.italic)
                   ),
                 ],
               );

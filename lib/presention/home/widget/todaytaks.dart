@@ -38,14 +38,14 @@ class TodayTasks extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Progress Section
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '$doneCount of ${tasks.length} done',
-                  style: AppTextStyles.inter(
-                    fontSize: 12.0,
+                  style: AppTextStyles.plusJakartaSans(
+                    fontSize: 12.5,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF8F7DB5),
                   ),
@@ -61,12 +61,12 @@ class TodayTasks extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8.0),
-            // Progress Bar
+
             Container(
-              height: 6.0,
+              height: 8.0,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFF8F7DB5).withOpacity(0.15),
+                color: const Color(0xFFC5B8E8).withOpacity(0.25),
                 borderRadius: BorderRadius.circular(3.0),
               ),
               alignment: Alignment.centerLeft,
@@ -75,33 +75,45 @@ class TodayTasks extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 350),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF7B64B0),
+                    gradient: LinearGradient(colors: [
+                      Color(0xff7B64B0),
+                      Color(0xff7B64B0)
+                    ]),
+                    // color: const Color(0xFF7B64B0),
                     borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 16.0),
-            // Tasks List
+
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: tasks.length > 3 ? 3 : tasks.length, // Show top 3 as preview
+              itemCount: tasks.length > 3 ? 3 : tasks.length,
               separatorBuilder: (context, index) => Divider(
                 height: 1.0,
                 thickness: 1.0,
-                color: const Color(0xFF8F7DB5).withOpacity(0.1),
+                color: const Color(0xFFC5B8E840).withOpacity(0.1),
               ),
               itemBuilder: (context, index) {
                 final task = tasks[index];
 
-                return InkWell(
-                  onTap: () => controller.toggleTask(task),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: Row(
-                      children: [
-                        // Checkbox
+                return Obx(() {
+                  final isAdding = task.isLoading.value && task.id == null;
+                  
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Opacity(
+                        opacity: isAdding ? 0.4 : 1.0,
+                        child: InkWell(
+                          onTap: () => controller.toggleTask(task),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Row(
+                              children: [
+                                // Checkbox
                         Obx(() {
                           return AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
@@ -109,24 +121,47 @@ class TodayTasks extends StatelessWidget {
                             height: 22.0,
                             decoration: BoxDecoration(
                               color: task.isCompleted.value
-                                  ? const Color(0xFF7B64B0)
+                                  ? null
                                   : Colors.transparent,
+                              gradient: task.isCompleted.value
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color(0xFF9B85CF),
+                                        Color(0xFF5E4B8B),
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    )
+                                  : null,
                               border: Border.all(
                                 color: task.isCompleted.value
-                                    ? const Color(0xFF7B64B0)
+                                    ? Colors.transparent
                                     : const Color(0xFF8F7DB5).withOpacity(0.4),
                                 width: 1.5,
                               ),
-                              borderRadius: BorderRadius.circular(6.0),
+                              borderRadius: BorderRadius.circular(7.0),
                             ),
                             alignment: Alignment.center,
-                            child: task.isCompleted.value
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 14.0,
+                            child: (task.isLoading.value && task.id != null)
+                                ? SizedBox(
+                                    width: 12.0,
+                                    height: 12.0,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.0,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        task.isCompleted.value 
+                                            ? Colors.white 
+                                            : const Color(0xFF7B64B0),
+                                      ),
+                                    ),
                                   )
-                                : null,
+                                : task.isCompleted.value
+                                    ? const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 14.0,
+                                      )
+                                    : null,
                           );
                         }),
                         const SizedBox(width: 12.0),
@@ -135,15 +170,17 @@ class TodayTasks extends StatelessWidget {
                           child: Obx(() {
                             return Text(
                               task.title,
-                              style: AppTextStyles.inter(
+                              style: AppTextStyles.plusJakartaSans(
                                 fontSize: 14.0,
                                 fontWeight: task.isCompleted.value
                                     ? FontWeight.w500
-                                    : FontWeight.w600,
+                                    : FontWeight.w500,
                                 color: task.isCompleted.value
                                     ? const Color(0xFF8F7DB5)
-                                    : const Color(0xFF2E2252),
+                                    : const Color(0xFF3D2E6B),
                               ).copyWith(
+                                height: 20 / 14,
+                                letterSpacing: 0,
                                 decoration: task.isCompleted.value
                                     ? TextDecoration.lineThrough
                                     : TextDecoration.none,
@@ -151,15 +188,29 @@ class TodayTasks extends StatelessWidget {
                             );
                           }),
                         ),
-                        const SizedBox(width: 8.0),
-                        // Priority Badge
-                        _buildPriorityBadge(task.priority),
-                      ],
+
+                            const SizedBox(width: 8.0),
+                            // Priority Badge
+                            _buildPriorityBadge(task.priority),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                );
-              },
-            ),
+                  if (isAdding)
+                    const SizedBox(
+                      width: 24.0,
+                      height: 24.0,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Color(0xFF7B64B0),
+                      ),
+                    ),
+                ],
+              );
+            });
+          },
+        ),
           ],
         ),
       );
@@ -172,20 +223,20 @@ class TodayTasks extends StatelessWidget {
 
     switch (priority.toLowerCase()) {
       case 'high':
-        bgColor = const Color(0xFFFFF0F0);
-        textColor = const Color(0xFFFF6B6B);
+        bgColor = const Color(0xFFFDECEA);
+        textColor = const Color(0xFFE57373);
         break;
       case 'medium':
-        bgColor = const Color(0xFFFFF9E6);
-        textColor = const Color(0xFFFFB300);
+        bgColor = const Color(0xFFFFF3E0);
+        textColor = const Color(0xFFFFB74D);
         break;
       default:
-        bgColor = const Color(0xFFF0FFF4);
-        textColor = const Color(0xFF2ECC71);
+        bgColor = const Color(0xFFE8F5E9);
+        textColor = const Color(0xFF3FC344);
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12.0),

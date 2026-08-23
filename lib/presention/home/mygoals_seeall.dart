@@ -55,9 +55,9 @@ class MygoalsSeeall extends StatelessWidget {
                       fontSize: 20,
                       color: const Color(0xFF161022),
                       fontWeight: FontWeight.w800,
-                    ),
+                    ).copyWith(letterSpacing: 1)
                   ),
-                  // Empty placeholder to balance the back button alignment
+
                   const SizedBox(width: 40),
                 ],
               ),
@@ -105,10 +105,10 @@ class MygoalsSeeall extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               "$activeCount active goals - Keep going! 👑",
-                              style: AppTextStyles.inter(
+                              style: AppTextStyles.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF8F7DB5),
+                                color: const Color(0xFF8B7DB5),
                               ),
                             ),
                           ],
@@ -120,7 +120,6 @@ class MygoalsSeeall extends StatelessWidget {
               }),
               const SizedBox(height: 24),
 
-              // Goal Cards List
               Expanded(
                 child: Obx(() {
                   final goals = controller.goals;
@@ -175,7 +174,7 @@ class MygoalsSeeall extends StatelessWidget {
                                           const SizedBox(width: 8),
                                           Text(
                                             "Add Goal",
-                                            style: AppTextStyles.inter(
+                                            style: AppTextStyles.plusJakartaSans(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: const Color(0xFF7B64B0),
@@ -294,7 +293,7 @@ class MygoalsSeeall extends StatelessWidget {
           ),
           Text(
             percentageText,
-            style: AppTextStyles.inter(
+            style: AppTextStyles.plusJakartaSans(
               fontSize: 14.0,
               fontWeight: FontWeight.bold,
               color: const Color(0xFF2E2252),
@@ -397,9 +396,9 @@ class MygoalsSeeall extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Horizontal Progress Bar
+
             Container(
-              height: 6.0,
+              height: 7.0,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: mainColor.withOpacity(0.15),
@@ -443,7 +442,7 @@ class MygoalsSeeall extends StatelessWidget {
                       )
                     : Text(
                         "+10% Progress",
-                        style: AppTextStyles.inter(
+                        style: AppTextStyles.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: mainColor,
@@ -458,43 +457,42 @@ class MygoalsSeeall extends StatelessWidget {
   }
 
   Widget _buildGoalProgressRing(GoalItem goal, Color color) {
-    IconData iconData;
+    String emojiString;
     switch (goal.iconType) {
       case 'rocket':
-        iconData = Icons.rocket_launch;
+        emojiString = "🚀";
         break;
       case 'run':
-        iconData = Icons.directions_run;
+        emojiString = "🏃";
         break;
       case 'book':
-        iconData = Icons.menu_book;
+        emojiString = "📚";
         break;
       case 'money':
-        iconData = Icons.savings_outlined;
+        emojiString = "💰";
         break;
       default:
-        iconData = Icons.flag;
+        emojiString = "🎯";
     }
     return SizedBox(
-      width: 50,
-      height: 50,
+      width: 58,
+      height: 58,
       child: Stack(
         alignment: Alignment.center,
         children: [
           SizedBox(
-            width: 50,
-            height: 50,
-            child: CircularProgressIndicator(
-              value: goal.progress.value,
-              strokeWidth: 4.5,
-              backgroundColor: color.withOpacity(0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(color),
+            width: 58,
+            height: 58,
+            child: CustomPaint(
+              painter: DashedCirclePainter(
+                color: color,
+                bgColor: color.withOpacity(0.15),
+              ),
             ),
           ),
-          Icon(
-            iconData,
-            color: color,
-            size: 20,
+          Text(
+            emojiString,
+            style: const TextStyle(fontSize: 24),
           ),
         ],
       ),
@@ -686,5 +684,53 @@ class MygoalsSeeall extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class DashedCirclePainter extends CustomPainter {
+  final Color color;
+  final Color bgColor;
+
+  DashedCirclePainter({required this.color, required this.bgColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double strokeWidth = 4.5;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - strokeWidth) / 2;
+
+    // Draw background circle (light opacity)
+    final bgPaint = Paint()
+      ..color = bgColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+    canvas.drawCircle(center, radius, bgPaint);
+
+    // Draw 4 dashes
+    final dashPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = strokeWidth;
+      
+    final int dashCount = 4;
+    final double sweepAngle = 3.14159 / 4; // 45 degrees
+    
+    // Position the gaps perfectly at top, right, bottom, left directions
+    for (int i = 0; i < dashCount; i++) {
+      final startAngle = (3.14159 / 8) + i * (3.14159 / 2);
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweepAngle,
+        false,
+        dashPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant DashedCirclePainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.bgColor != bgColor;
   }
 }

@@ -32,7 +32,7 @@ class AppTextStyles {
     );
   }
 
-  // Plus Jakarta Sans Text Styles
+
   static TextStyle plusJakartaSans({
     double? fontSize,
     FontWeight? fontWeight,
@@ -53,7 +53,7 @@ class AppTextStyles {
     );
   }
 
-  // Inter Text Styles
+
   static TextStyle inter({
     double? fontSize,
     FontWeight? fontWeight,
@@ -74,7 +74,7 @@ class AppTextStyles {
     );
   }
 
-  // Cormorant Garamond Text Styles
+
   static TextStyle cormorantGaramond({
     double? fontSize,
     FontWeight? fontWeight,
@@ -110,6 +110,27 @@ class AppTextStyles {
       );
     }
     return GoogleFonts.poppins(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+    );
+  }
+
+  // Manrope Text Styles
+  static TextStyle manrope({
+    double? fontSize,
+    FontWeight? fontWeight,
+    Color? color,
+    List<Color>? gradientColors,
+  }) {
+    if (gradientColors != null && gradientColors.isNotEmpty) {
+      return GoogleFonts.manrope(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        foreground: Paint()..shader = _createShader(gradientColors, fontSize),
+      );
+    }
+    return GoogleFonts.manrope(
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,

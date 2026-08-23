@@ -5,8 +5,6 @@ import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/general_widget/custombutton.dart';
 import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/core/services/controller/subscriptionController.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
-
 class SubscriptionPromotion extends StatefulWidget {
   const SubscriptionPromotion({super.key});
 
@@ -41,10 +39,10 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
           Expanded(
             child: Text(
               text,
-              style: AppTextStyles.inter(
-                fontSize: 15.0,
+              style: AppTextStyles.manrope(
+                fontSize: 16.0,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF5E4B8B), 
+                color: const Color(0xFF4A3B4D),
               ),
             ),
           ),
@@ -55,7 +53,6 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
 
   @override
   Widget build(BuildContext context) {
-    // Unselected shadows from design specs
     final List<BoxShadow> unselectedShadow = [
       BoxShadow(
         color: Colors.black.withValues(alpha: 0.1),
@@ -153,7 +150,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                           size: 20,
                         ),
                       ),
-                      onPressed: () => Get.back(),
+                      onPressed: () => Get.toNamed(AppRoutes.home),
                     ),
                   ),
                 ),
@@ -166,11 +163,31 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Premium Plan Tag Badge
+                        Obx(() => Text(
+                          pubController.paywallTitle.value,
+                          style: AppTextStyles.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF161022),
+                          ),
+                        )),
+                        const SizedBox(height: 8.0),
+
+                        Obx(() => Text(
+                          pubController.paywallSubtitle.value,
+                          style: AppTextStyles.inter(
+                            fontSize: 15,
+                            color: const Color(0xFF4A3B4D),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )),
+
+                        const SizedBox(height: 26.0),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFAD4C0).withValues(alpha: 0.3), // 30% Opacity orange base
-                            borderRadius: BorderRadius.circular(100.0), // Rounded pill radius
+                            borderRadius: BorderRadius.circular(100.0),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -190,7 +207,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                                 style: AppTextStyles.plusJakartaSans(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF7D3E25), // Cohesive dark orange text
+                                  color: const Color(0xFF7D3E25),
                                 ),
                               ),
                             ],
@@ -198,29 +215,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                         ),
                         const SizedBox(height: 16.0),
 
-                        // Title
-                        Obx(() => Text(
-                          pubController.paywallTitle.value,
-                          style: AppTextStyles.poppins(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF161022),
-                          ),
-                        )),
-                        const SizedBox(height: 8.0),
 
-                        // Subtitle
-                        Obx(() => Text(
-                          pubController.paywallSubtitle.value,
-                          style: AppTextStyles.inter(
-                            fontSize: 15,
-                            color: const Color(0xFF8F7DB5),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )),
-                        const SizedBox(height: 32.0),
-
-                        // Features Checks list
                         Obx(() {
                           if (pubController.paywallFeatures.isEmpty) {
                             return const Center(child: CircularProgressIndicator());
@@ -238,8 +233,7 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                           if (pubController.backendPlans.isEmpty) {
                             return const SizedBox.shrink();
                           }
-                          
-                          // Set default selection if none selected yet
+
                           if (_selectedPlanId.isEmpty && pubController.backendPlans.isNotEmpty) {
                              WidgetsBinding.instance.addPostFrameCallback((_) {
                                setState(() => _selectedPlanId = pubController.backendPlans.first['planCode'].toString());
@@ -285,20 +279,20 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                                               children: [
                                                 Text(
                                                   planData['title'] ?? planCode,
-                                                  style: AppTextStyles.plusJakartaSans(
+                                                  style: AppTextStyles.manrope(
                                                     fontSize: 18.0,
                                                     fontWeight: FontWeight.bold,
-                                                    color: const Color(0xFF161022),
+                                                    color: const Color(0xFF2E2530),
                                                   ),
                                                 ),
                                                 if (planData['subtext'] != null) ...[
                                                   const SizedBox(height: 4.0),
                                                   Text(
                                                     planData['subtext'],
-                                                    style: AppTextStyles.inter(
-                                                      fontSize: 13.0,
+                                                    style: AppTextStyles.manrope(
+                                                      fontSize: 14.0,
                                                       fontWeight: FontWeight.w500,
-                                                      color: const Color(0xFF8F7DB5),
+                                                      color: const Color(0xFF4A3B4D),
                                                     ),
                                                   ),
                                                 ]
@@ -306,10 +300,10 @@ class _SubscriptionPromotionState extends State<SubscriptionPromotion> {
                                             ),
                                             Text(
                                               planData['formattedPrice'] ?? "\$${planData['price']}",
-                                              style: AppTextStyles.plusJakartaSans(
+                                              style: AppTextStyles.manrope(
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold,
-                                                color: const Color(0xFF161022),
+                                                color: const Color(0xFF2E2530),
                                               ),
                                             ),
                                           ],

@@ -41,7 +41,7 @@ class Profilecard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Initials Avatar with Gradient
+
             Container(
               width: 56.0,
               height: 56.0,
@@ -106,7 +106,7 @@ class Profilecard extends StatelessWidget {
               }),
             ),
             const SizedBox(width: 12.0),
-            // User Details
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,8 +114,8 @@ class Profilecard extends StatelessWidget {
                 children: [
                   Obx(() => Text(
                     name ?? authController.userName.value,
-                    style: AppTextStyles.plusJakartaSans(
-                      fontSize: 16,
+                    style: AppTextStyles.inter(
+                      fontSize: 17,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF161022),
                     ),
@@ -126,7 +126,7 @@ class Profilecard extends StatelessWidget {
                     style: AppTextStyles.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF8F7DB5),
+                      color: const Color(0xFF575B61),
                     ),
                   )),
                 ],

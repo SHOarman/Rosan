@@ -59,7 +59,7 @@ class Gratitude extends StatelessWidget {
                               fontSize: 20,
                               color: const Color(0xFF161022),
                               fontWeight: FontWeight.w800,
-                            ),
+                            ).copyWith(letterSpacing: 1),
                           ),
                         ),
 
@@ -158,7 +158,11 @@ class Gratitude extends StatelessWidget {
           child: _buildStatCard(
             value: '${auth.dashboardGratitude.value}',
             label: 'Total',
-            emoji: '🗒️',
+            iconWidget: Image.asset(
+              'assets/images/icon.png',
+              width: 34.0,
+              height: 34.0,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -166,7 +170,7 @@ class Gratitude extends StatelessWidget {
           child: _buildStatCard(
             value: '${auth.dashboardStreak.value}',
             label: 'Day streak',
-            emoji: '🔥',
+            iconWidget: const Text('🔥', style: TextStyle(fontSize: 20)),
           ),
         ),
         const SizedBox(width: 12),
@@ -174,17 +178,112 @@ class Gratitude extends StatelessWidget {
           child: _buildStatCard(
             value: '${c.daysThisMonth}',
             label: 'Days this month',
-            emoji: '📅',
+            iconWidget: _buildCalendarIcon(),
           ),
         ),
       ],
     );
   }
 
+  Widget _buildCalendarIcon() {
+    final now = DateTime.now();
+    final months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    final currentMonth = months[now.month - 1];
+
+    return SizedBox(
+      width: 28.0,
+      height: 30.0,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            width: 26.0,
+            height: 26.0,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4.0),
+              border: Border.all(color: const Color(0xFFD6D1E6), width: 1.0),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 9.0,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF14A4A),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(3.0),
+                      topRight: Radius.circular(3.0),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 1.0),
+                    child: Text(
+                      currentMonth,
+                      style: const TextStyle(
+                        fontSize: 5.5,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.0,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      now.day.toString(),
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF2E2252),
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Left Binder Ring
+          Positioned(
+            top: 1.0,
+            left: 7.0,
+            child: Container(
+              width: 2.5,
+              height: 5.5,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(1.5),
+                border: Border.all(color: const Color(0xFF575B61), width: 0.5),
+              ),
+            ),
+          ),
+          // Right Binder Ring
+          Positioned(
+            top: 1.0,
+            right: 7.0,
+            child: Container(
+              width: 2.5,
+              height: 5.5,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(1.5),
+                border: Border.all(color: const Color(0xFF575B61), width: 0.5),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatCard({
     required String value,
     required String label,
-    required String emoji,
+    required Widget iconWidget,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
@@ -205,7 +304,7 @@ class Gratitude extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 20)),
+          iconWidget,
           const SizedBox(height: 6),
           Text(
             value,
@@ -218,10 +317,10 @@ class Gratitude extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: AppTextStyles.inter(
-              fontSize: 11,
+            style: AppTextStyles.plusJakartaSans(
+              fontSize: 11.5,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF8F7DB5),
+              color: const Color(0xFFB5A8D5),
             ),
             textAlign: TextAlign.center,
           ),
@@ -284,19 +383,19 @@ class Gratitude extends StatelessWidget {
                 children: [
                   Text(
                     entry.text,
-                    style: AppTextStyles.inter(
+                    style: AppTextStyles.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF2E2252),
+                      color: const Color(0xFF3D2E6B),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     entry.dateLabel,
-                    style: AppTextStyles.inter(
+                    style: AppTextStyles.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
-                      color: const Color(0xFF8F7DB5),
+                      color: const Color(0xFFB5A8D5),
                     ),
                   ),
                 ],
@@ -357,8 +456,8 @@ class Gratitude extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 43,
+                      height: 43,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
@@ -398,7 +497,7 @@ class Gratitude extends StatelessWidget {
                   maxLines: 4,
                   decoration: InputDecoration(
                     hintText: 'Write freely, no judgment...',
-                    hintStyle: AppTextStyles.inter(
+                    hintStyle: AppTextStyles.plusJakartaSans(
                       color: const Color(0xFF8F7DB5).withValues(alpha: 0.6),
                       fontSize: 14,
                     ),
@@ -438,6 +537,13 @@ class Gratitude extends StatelessWidget {
                         child: Container(
                           height: 48,
                           alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xFF8F7DB5),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                          ),
                           child: Text(
                             'Cancel',
                             style: AppTextStyles.inter(

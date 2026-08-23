@@ -83,21 +83,21 @@ class Accound extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
         child: Row(
           children: [
-            // Icon Container with SVG
+
             Container(
               width: 38.0,
               height: 38.0,
               decoration: BoxDecoration(
-                color: const Color(0xFFF6F5FB),
+                color: const Color(0xFFF4F1F9),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 svgPath,
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFF7B64B0),
-                  BlendMode.srcIn,
-                ),
+                // colorFilter: const ColorFilter.mode(
+                //   Color(0xFF7B64B0),
+                //   BlendMode.srcIn,
+                // ),
                 width: 20.0,
                 height: 20.0,
               ),
@@ -109,7 +109,7 @@ class Accound extends StatelessWidget {
                 title,
                 style: AppTextStyles.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w400,
                   color: const Color(0xFF161022),
                 ),
               ),

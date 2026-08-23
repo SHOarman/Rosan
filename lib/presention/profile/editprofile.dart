@@ -35,7 +35,7 @@ class EditProfile extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFF1EFFF),
+                        color: Color(0xFFF1F5F9),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -53,12 +53,12 @@ class EditProfile extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(width: 40), // spacer to center the title
+                  const SizedBox(width: 40),
                 ],
               ),
               const SizedBox(height: 30),
 
-              // Profile Avatar with Camera Overlay
+
               Center(
                 child: Stack(
                   children: [
@@ -151,8 +151,8 @@ class EditProfile extends StatelessWidget {
                 controller: authController.nameController,
                 style: AppTextStyles.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF161022),
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF64748B),
                 ),
                 decoration: InputDecoration(
                   prefixIcon: Padding(
@@ -160,7 +160,7 @@ class EditProfile extends StatelessWidget {
                     child: SvgPicture.asset(
                       "assets/images/Icon.svg",
                       colorFilter: const ColorFilter.mode(
-                        Color(0xFF8F7DB5),
+                        Color(0xFF64748B),
                         BlendMode.srcIn,
                       ),
                       width: 20.0,
@@ -204,7 +204,7 @@ class EditProfile extends StatelessWidget {
                 style: AppTextStyles.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF161022),
+                    color: const Color(0xFF64748B),
                 ),
                 decoration: InputDecoration(
                   prefixIcon: Padding(
@@ -212,7 +212,7 @@ class EditProfile extends StatelessWidget {
                     child: SvgPicture.asset(
                       "assets/images/Icon (9).svg",
                       colorFilter: const ColorFilter.mode(
-                        Color(0xFF8F7DB5),
+                        Color(0xFF64748B),
                         BlendMode.srcIn,
                       ),
                       width: 20.0,

@@ -21,25 +21,21 @@ class _FeelingcardState extends State<Feelingcard> {
       imageAsset: 'assets/images/good.png',
       label: 'Good',
       value: 'good',
-      scale: 1.3,
     ),
     _MoodItem(
       imageAsset: 'assets/images/ok.png',
       label: 'Okay',
       value: 'okay',
-      scale: 1.15,
     ),
     _MoodItem(
       imageAsset: 'assets/images/low.png',
       label: 'Low',
       value: 'low',
-      scale: 1.15,
     ),
     _MoodItem(
       imageAsset: 'assets/images/darient.png',
       label: 'Drained',
       value: 'drained',
-      scale: 1.3,
     ),
   ];
 
@@ -106,19 +102,16 @@ class _FeelingcardState extends State<Feelingcard> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Transform.scale(
-                          scale: item.scale,
-                          child: Image.asset(
-                            item.imageAsset,
-                            width: 24.0,
-                            height: 24.0,
-                          ),
+                        Image.asset(
+                          item.imageAsset,
+                          width: 28.0,
+                          height: 28.0,
                         ),
                         const SizedBox(height: 4.0),
                         Text(
                           item.label,
                           style: AppTextStyles.inter(
-                            fontSize: 11.0,
+                            fontSize: 11.5,
                             fontWeight:
                                 isSelected ? FontWeight.w600 : FontWeight.w400,
                             color: isSelected
@@ -143,12 +136,10 @@ class _MoodItem {
   final String imageAsset;
   final String label;
   final String value;
-  final double scale;
 
   const _MoodItem({
     required this.imageAsset,
     required this.label,
     required this.value,
-    this.scale = 1.0,
   });
 }

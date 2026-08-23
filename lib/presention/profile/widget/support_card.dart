@@ -105,16 +105,13 @@ class SupportCard extends StatelessWidget {
               width: 38.0,
               height: 38.0,
               decoration: BoxDecoration(
-                color: const Color(0xFFF6F5FB),
+                color: const Color(0xFFF4F1F9),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               alignment: Alignment.center,
               child: SvgPicture.asset(
                 svgPath,
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFF7B64B0),
-                  BlendMode.srcIn,
-                ),
+
                 width: 20.0,
                 height: 20.0,
               ),
@@ -126,7 +123,7 @@ class SupportCard extends StatelessWidget {
                 title,
                 style: AppTextStyles.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w400,
                   color: const Color(0xFF161022),
                 ),
               ),

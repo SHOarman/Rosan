@@ -182,12 +182,12 @@ class Profile extends StatelessWidget {
 
                       //==========================================accound=======================================
                       Text(
-                        "Account",
+                        "ACCOUNT",
                         style: AppTextStyles.inter(
                           color: const Color(0xff161022),
                           fontSize: 19,
                           fontWeight: FontWeight.bold,
-                        ),
+                        ).copyWith(letterSpacing: .80)
                       ),
                       const SizedBox(height: 16),
                       Accound(
@@ -201,12 +201,12 @@ class Profile extends StatelessWidget {
                       const SizedBox(height: 30),
 
                       Text(
-                        "Subscription",
+                        "SUBSCRIPTION",
                         style: AppTextStyles.inter(
                           color: const Color(0xff161022),
                           fontSize: 19,
                           fontWeight: FontWeight.bold,
-                        ),
+                        ).copyWith(letterSpacing: .60)
                       ),
                       const SizedBox(height: 16),
                       MyPlan(
@@ -216,12 +216,12 @@ class Profile extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        "Support",
+                        "SUPPORT",
                         style: AppTextStyles.inter(
                           color: const Color(0xff161022),
                           fontSize: 19,
                           fontWeight: FontWeight.bold,
-                        ),
+                        ).copyWith(letterSpacing: .60)
                       ),
                       const SizedBox(height: 16),
                       SupportCard(
