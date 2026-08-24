@@ -4,9 +4,13 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
+import 'package:rosannalie/core/route/app_routes.dart';
+import 'package:rosannalie/core/route/app_pages.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class WinsController extends GetxController {
   final RxBool isLoading = false.obs;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
 
   final RxInt dayStreak = 0.obs;
@@ -74,10 +78,40 @@ class WinsController extends GetxController {
             totalPoints.value = metrics['totalPoints'] ?? 0;
             unlockedBadgesCount.value = metrics['unlockedBadgesCount'] ?? 0;
             totalBadgesCount.value = metrics['totalBadgesCount'] ?? 0;
-            currentLevel.value = metrics['currentLevel'] ?? 1;
-            progressPoints.value = metrics['progressPoints'] ?? 0;
-            nextLevelTarget.value = metrics['nextLevelTarget'] ?? 100;
+            
+            int parsedLevel = metrics['currentLevel'] ?? 1;
+            int lastCelebratedLevel = prefs.getInt('last_celebrated_level') ?? parsedLevel; 
+            
+            if (parsedLevel > lastCelebratedLevel) {
+               prefs.setInt('last_celebrated_level', parsedLevel);
+               _showCelebration('🎮', 'Level $parsedLevel');
+            } else if (prefs.getInt('last_celebrated_level') == null) {
+               prefs.setInt('last_celebrated_level', parsedLevel);
+            }
+            
+            currentLevel.value = parsedLevel;
+            int pPoints = metrics['progressPoints'] ?? 0;
+            int nTarget = metrics['nextLevelTarget'] ?? 100;
+            
+            progressPoints.value = pPoints;
+            nextLevelTarget.value = nTarget;
             pointsRemaining.value = metrics['pointsRemaining'] ?? 0;
+
+            int lastSavedTarget = prefs.getInt('saved_next_level_target') ?? nTarget;
+            if (nTarget > lastSavedTarget) {
+               prefs.setInt('saved_next_level_target', nTarget);
+               _showCelebration('🎯', 'Target Completed!');
+            } else if (prefs.getInt('saved_next_level_target') == null) {
+               prefs.setInt('saved_next_level_target', nTarget);
+            }
+            
+            if (pPoints > 0 && pPoints >= nTarget) {
+               int lastTarget = prefs.getInt('celebrated_target_reached') ?? 0;
+               if (lastTarget < pPoints) { 
+                  prefs.setInt('celebrated_target_reached', pPoints);
+                  _showCelebration('🎯', 'Goal Reached!');
+               }
+            }
             progressText.value = metrics['progressText'] ?? '';
           }
 
@@ -153,6 +187,21 @@ class WinsController extends GetxController {
 
   void _showCelebration(String emoji, String title) {
     if (Get.context == null) return;
+
+    if (Get.currentRoute == AppRoutes.subscriptionPromotion || 
+        Get.currentRoute == AppRoutes.subscriptionPromotionProfile) {
+      Future.delayed(const Duration(seconds: 2), () {
+        _showCelebration(emoji, title);
+      });
+      return;
+    }
+
+    try {
+      _audioPlayer.play(AssetSource('audio/achimentandlevelup.mp3'));
+    } catch (e) {
+      print("Error playing celebration sound: $e");
+    }
+
     Get.dialog(
       TweenAnimationBuilder(
         tween: Tween<double>(begin: 0.1, end: 1.0),

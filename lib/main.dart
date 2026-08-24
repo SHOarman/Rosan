@@ -1,92 +1,3 @@
-// import 'package:device_preview/device_preview.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:flutter/services.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-//
-// import 'package:rosannalie/core/dependency_injection/injection.dart';
-// import 'package:rosannalie/core/route/app_routes.dart';
-// import 'package:rosannalie/core/route/app_pages.dart';
-// import 'package:rosannalie/utils/appcolors.dart';
-//
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   try {
-//     await Firebase.initializeApp();
-//   } catch (e) {
-//     debugPrint("Firebase init error: $e");
-//   }
-//   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-//   await SystemChrome.setPreferredOrientations([
-//     DeviceOrientation.portraitUp,
-//     DeviceOrientation.portraitDown,
-//   ]);
-//
-//   final prefs = await SharedPreferences.getInstance();
-//   final String savedToken = prefs.getString('accessToken') ?? '';
-//   final bool isLoggedIn = savedToken.isNotEmpty || (prefs.getBool('isLoggedIn') ?? false);
-//
-//   final bool isOnboardingCompleted = prefs.getBool('isOnboardingCompleted') ?? false;
-//
-//   String initialRoute;
-//   if (isLoggedIn) {
-//     initialRoute = AppRoutes.subscriptionPromotion;
-//   } else if (isOnboardingCompleted) {
-//     initialRoute = AppRoutes.singin;
-//   } else {
-//     initialRoute = AppRoutes.onborading;
-//   }
-//
-//   DependencyInjection.bindings();
-//
-//   runApp(
-//     // DevicePreview(
-//     //   enabled: !kReleaseMode,
-//     //   builder: (context) => MyApp(initialRoute: initialRoute),
-//     // ),
-//       MyApp(initialRoute: initialRoute)
-//   );
-// }
-//
-// class MyApp extends StatelessWidget {
-//   final String initialRoute;
-//   const MyApp({super.key, required this.initialRoute});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return GetMaterialApp(
-//       useInheritedMediaQuery: true,
-//       locale: DevicePreview.locale(context),
-//       builder: DevicePreview.appBuilder,
-//       debugShowCheckedModeBanner: false,
-//       title: 'Rise',
-//       theme: ThemeData(
-//         scaffoldBackgroundColor: Colors.white,
-//         colorScheme: ColorScheme.fromSeed(
-//           seedColor: AppColors.primary,
-//           surface: Colors.white,
-//           brightness: Brightness.light,
-//         ),
-//         textTheme: GoogleFonts.plusJakartaSansTextTheme(
-//           ThemeData.light().textTheme,
-//         ),
-//         elevatedButtonTheme: ElevatedButtonThemeData(
-//           style: ElevatedButton.styleFrom(
-//             backgroundColor: AppColors.secondary,
-//             foregroundColor: Colors.white,
-//           ),
-//         ),
-//       ),
-//       initialRoute: initialRoute,
-//       getPages: AppPages.routes,
-//     );
-//   }
-// }
-
-
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -119,6 +30,27 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   debugPrint("Handling a background message: ${message.messageId}");
+  
+  final String? title = message.notification?.title ?? message.data['title'];
+  final String? body = message.notification?.body ?? message.data['body'] ?? message.data['message'];
+
+  if (title != null || body != null) {
+      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+      await flutterLocalNotificationsPlugin.show(
+        id: DateTime.now().millisecond,
+        title: title ?? 'Rise',
+        body: body ?? 'New Notification',
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'high_importance_channel',
+            'High Importance Notifications',
+            icon: '@mipmap/ic_launcher',
+            priority: Priority.high,
+            importance: Importance.max,
+          ),
+        ),
+      );
+  }
 }
 
 void main() async {
@@ -178,8 +110,8 @@ void main() async {
 }
 
 Future<void> _configureRevenueCat() async {
-  PurchasesConfiguration configuration = PurchasesConfiguration("test_qfMlKvrCEtoJxKwxSOOYmgYnQPH");
-  await Purchases.configure(configuration);
+  // PurchasesConfiguration configuration = PurchasesConfiguration("test_qfMlKvrCEtoJxKwxSOOYmgYnQPH");
+  // await Purchases.configure(configuration);
 }
 
 class MyApp extends StatefulWidget {
@@ -213,7 +145,7 @@ class _MyAppState extends State<MyApp> {
     String? token = await _firebaseMessaging.getToken();
     debugPrint("FCM Registration Token: $token");
 
-    // Initialize the flutter_local_notifications plugin
+    //=============================================Initialize the flutter_local_notifications plugin==============================================
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings();
     const InitializationSettings initializationSettings = InitializationSettings(
@@ -230,29 +162,39 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       
-      // Some backends send pushes as data-only messages to bypass background restrictions.
       final String? title = notification?.title ?? message.data['title'];
       final String? body = notification?.body ?? message.data['body'] ?? message.data['message'];
 
       debugPrint('Moin: Foreground message triggered!');
-      debugPrint('Moin: Title: $title, Body: $body');
-      debugPrint('Moin: Data Payload: ${message.data}');
 
-      // Show native flush notification in the foreground
       if (title != null || body != null) {
-        flutterLocalNotificationsPlugin.show(
-          id: message.hashCode,
-          title: title ?? 'Rise',
-          body: body ?? 'New Notification',
-          notificationDetails: NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel.id,
-              channel.name,
-              channelDescription: channel.description,
-              icon: '@mipmap/ic_launcher',
-              priority: Priority.high,
-              importance: Importance.max,
+        Get.snackbar(
+          title ?? 'Rise',
+          body ?? 'You have a new message.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.white,
+          colorText: const Color(0xFF3D2E6B),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 16.0,
+          icon: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Image.asset('assets/icon/loguicon.png', width: 32, height: 32),
+          ),
+          duration: const Duration(seconds: 4),
+          boxShadows: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20.0,
+              offset: const Offset(0, 10),
             ),
+          ],
+          mainButton: TextButton(
+            onPressed: () {
+              if (Get.isSnackbarOpen) {
+                Get.closeCurrentSnackbar();
+              }
+            },
+            child: const Text('Close', style: TextStyle(color: Color(0xFF7B64B0))),
           ),
         );
       }

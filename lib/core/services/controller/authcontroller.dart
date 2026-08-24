@@ -46,45 +46,6 @@ class Authcontroller extends GetxController {
   void onInit() {
     super.onInit();
     _loadSession();
-
-    // Foreground Notification Listener
-    if (!kIsWeb) {
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("🔔 FCM Foreground Message Arrived!");
-        print("Data Payload: ${message.data}");
-        print("Notification Payload: ${message.notification?.title}");
-
-        String title = message.notification?.title ?? message.data['title'] ?? 'Rise Productivity';
-        String body = message.notification?.body ?? message.data['body'] ?? message.data['message'] ?? 'You have a new message.';
-
-        Get.snackbar(
-          title,
-          body,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.white,
-          colorText: const Color(0xFF3D2E6B),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 16.0,
-          icon: const Icon(Icons.notifications_active, color: Color(0xFF7B64B0)),
-          duration: const Duration(seconds: 4),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20.0,
-              offset: const Offset(0, 10),
-            ),
-          ],
-          mainButton: TextButton(
-            onPressed: () {
-              if (Get.isSnackbarOpen) {
-                Get.closeCurrentSnackbar();
-              }
-            },
-            child: const Text('Close', style: TextStyle(color: Color(0xFF7B64B0))),
-          ),
-        );
-      });
-    }
   }
 
   Future<void> _loadSession() async {

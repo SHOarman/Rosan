@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.rosannalie"
+    namespace = "com.riseapp.project"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
 
-        applicationId = "com.example.rosannalie"
+        applicationId = "com.riseapp.project"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
