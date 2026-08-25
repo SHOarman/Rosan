@@ -22,8 +22,8 @@ class SubscriptionController extends GetxController {
   void onInit() {
     super.onInit();
     fetchBackendPlans();
-    fetchOfferings();
-    checkCustomerStatus();
+    // fetchOfferings();
+    // checkCustomerStatus();
   }
 
 

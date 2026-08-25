@@ -605,20 +605,13 @@ class Gratitude extends StatelessWidget {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Save ',
-                                        style: AppTextStyles.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const Text('💛',
-                                          style: TextStyle(fontSize: 14)),
-                                    ],
+                                : Text(
+                                    'Save',
+                                    style: AppTextStyles.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
                           ),
                         );

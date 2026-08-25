@@ -10,6 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:purchases_flutter/models/purchases_configuration.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'package:rosannalie/core/dependency_injection/injection.dart';
 import 'package:rosannalie/core/route/app_routes.dart';
@@ -20,10 +21,12 @@ import 'package:rosannalie/utils/appcolors.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel',
+  'high_importance_channel_with_sound',
   'High Importance Notifications',
   description: 'This channel is used for important notifications.',
   importance: Importance.max,
+  playSound: true,
+  sound: RawResourceAndroidNotificationSound('notificitonsound'),
 );
 
 @pragma('vm:entry-point')
@@ -42,11 +45,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         body: body ?? 'New Notification',
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
-            'high_importance_channel',
+            'high_importance_channel_with_sound',
             'High Importance Notifications',
             icon: '@mipmap/ic_launcher',
             priority: Priority.high,
             importance: Importance.max,
+            sound: RawResourceAndroidNotificationSound('notificitonsound'),
+            playSound: true,
+          ),
+          iOS: DarwinNotificationDetails(
+            sound: 'notificitonsound.mp3',
+            presentSound: true,
           ),
         ),
       );
@@ -168,33 +177,24 @@ class _MyAppState extends State<MyApp> {
       debugPrint('Moin: Foreground message triggered!');
 
       if (title != null || body != null) {
-        Get.snackbar(
-          title ?? 'Rise',
-          body ?? 'You have a new message.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.white,
-          colorText: const Color(0xFF3D2E6B),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 16.0,
-          icon: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Image.asset('assets/icon/loguicon.png', width: 32, height: 32),
-          ),
-          duration: const Duration(seconds: 4),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20.0,
-              offset: const Offset(0, 10),
+        flutterLocalNotificationsPlugin.show(
+          id: DateTime.now().millisecond,
+          title: title ?? 'Rise',
+          body: body ?? 'New Notification',
+          notificationDetails: const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'high_importance_channel_with_sound',
+              'High Importance Notifications',
+              icon: '@mipmap/ic_launcher',
+              priority: Priority.high,
+              importance: Importance.max,
+              sound: RawResourceAndroidNotificationSound('notificitonsound'),
+              playSound: true,
             ),
-          ],
-          mainButton: TextButton(
-            onPressed: () {
-              if (Get.isSnackbarOpen) {
-                Get.closeCurrentSnackbar();
-              }
-            },
-            child: const Text('Close', style: TextStyle(color: Color(0xFF7B64B0))),
+            iOS: DarwinNotificationDetails(
+              sound: 'notificitonsound.mp3',
+              presentSound: true,
+            ),
           ),
         );
       }

@@ -211,7 +211,7 @@ class Futurelettercard extends StatelessWidget {
               ),
               const SizedBox(width: 8.0),
               Text(
-                "Letter to Future Me",
+                "Letter to future me",
                 style: AppTextStyles.plusJakartaSans(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,

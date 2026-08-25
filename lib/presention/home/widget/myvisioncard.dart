@@ -63,7 +63,7 @@ class Myvisioncard extends StatelessWidget {
             maxLines: null,
             textInputAction: TextInputAction.done,
             style: AppTextStyles.plusJakartaSans(
-              fontSize: 15.0,
+              fontSize: 15.5,
               fontWeight: FontWeight.w500,
               color: const Color(0xFF7A68A6),
             ).copyWith(
