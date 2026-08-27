@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:rosannalie/utils/appString.dart';
-
 class CustomBottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int>? onTap;
@@ -94,6 +94,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         if (onTap != null) {
           onTap!(index);
         } else {

@@ -184,7 +184,7 @@ class CreateAccound extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        authController.signInWithGoogle();
+                        // authController.signInWithGoogle();
                       },
                       child: Container(
                         width: 56,
@@ -204,7 +204,7 @@ class CreateAccound extends StatelessWidget {
                     const SizedBox(width: 14),
                     GestureDetector(
                       onTap: () {
-                        authController.signInWithApple();
+                        // authController.signInWithApple();
                       },
                       child: Container(
                         width: 56,

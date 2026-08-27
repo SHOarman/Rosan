@@ -18,6 +18,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Authcontroller extends GetxController {
   final TextEditingController nameController = TextEditingController();
@@ -971,18 +972,34 @@ class Authcontroller extends GetxController {
 
   Future<void> sendFCMTokenToBackend() async {
     if (kIsWeb) {
-      print("Skipping FCM token generation on Web/Chrome to avoid configuration errors during testing.");
+      print(
+          "Skipping FCM token generation on Web/Chrome to avoid configuration errors during testing.");
       return;
     }
 
     try {
-      NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      NotificationSettings currentSettings = await FirebaseMessaging.instance.getNotificationSettings();
+      bool isGranted = currentSettings.authorizationStatus == AuthorizationStatus.authorized;
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      if (!isGranted) {
+        NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
+        bool isAndroidGranted = false;
+        if (defaultTargetPlatform == TargetPlatform.android) {
+            final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+            isAndroidGranted = await flutterLocalNotificationsPlugin
+                .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                ?.requestNotificationsPermission() ?? false;
+        }
+        
+        isGranted = settings.authorizationStatus == AuthorizationStatus.authorized || isAndroidGranted;
+      }
+
+      if (isGranted) {
         String? fcmToken = await FirebaseMessaging.instance.getToken();
         
         if (fcmToken != null) {
@@ -1013,8 +1030,6 @@ class Authcontroller extends GetxController {
             print("Failed to register token: ${response.statusCode} - ${response.body}");
           }
         }
-      } else {
-        print('User declined notification permission');
       }
     } catch (e) {
       print("Error sending FCM token: $e");

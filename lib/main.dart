@@ -141,19 +141,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _setupPushNotifications() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('User granted push notification permission');
-    }
-
-    String? token = await _firebaseMessaging.getToken();
-    debugPrint("FCM Registration Token: $token");
-
     //=============================================Initialize the flutter_local_notifications plugin==============================================
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings();
@@ -167,6 +154,46 @@ class _MyAppState extends State<MyApp> {
         debugPrint('Notification clicked: ${details.payload}');
       }
     );
+
+    // 1. First check the current permission status
+    NotificationSettings currentSettings = await _firebaseMessaging.getNotificationSettings();
+
+    // 2. If it is NOT authorized, then we request permission
+    bool isGranted = currentSettings.authorizationStatus == AuthorizationStatus.authorized;
+    
+    if (!isGranted) {
+      NotificationSettings settings = await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      bool androidPermissionGranted = false;
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        androidPermissionGranted = await flutterLocalNotificationsPlugin
+                .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                ?.requestNotificationsPermission() ?? false;
+      }
+
+      isGranted = settings.authorizationStatus == AuthorizationStatus.authorized || androidPermissionGranted;
+
+      if (!isGranted) {
+        debugPrint("User permanently denied notification permissions.");
+      } else {
+        debugPrint('User just granted FCM push notification permission');
+      }
+    } else {
+      debugPrint('User ALREADY granted push notification permission, skipped request.');
+    }
+
+    if (isGranted) {
+      String? token = await _firebaseMessaging.getToken();
+      debugPrint("FCM Registration Token: $token");
+    } else {
+      debugPrint("FCM Token generation skipped because user denied permission.");
+    }
+
+
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;

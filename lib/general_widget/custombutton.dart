@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rosannalie/utils/appString.dart';
 import '../utils/appcolors.dart';
-
 class CustomButton extends StatefulWidget {
   final String text;
   final VoidCallback? onTap;
