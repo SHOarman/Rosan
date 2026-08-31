@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/utils/appString.dart';
+import 'package:rosannalie/core/services/controller/support_controller.dart';
 
-class TermsOfServicePage extends StatelessWidget {
+class TermsOfServicePage extends StatefulWidget {
   const TermsOfServicePage({super.key});
+
+  @override
+  State<TermsOfServicePage> createState() => _TermsOfServicePageState();
+}
+
+class _TermsOfServicePageState extends State<TermsOfServicePage> {
+  final SupportController _supportController = Get.isRegistered<SupportController>()
+      ? Get.find<SupportController>()
+      : Get.put(SupportController());
+
+  @override
+  void initState() {
+    super.initState();
+    _supportController.fetchTerms();
+  }
 
   Widget _buildSectionCard({
     required String title,
@@ -154,156 +170,46 @@ class TermsOfServicePage extends StatelessWidget {
               ),
               const SizedBox(height: 24.0),
 
-              // Section 1
-              _buildSectionCard(
-                title: "1. Acceptance of Terms",
-                content: "By downloading, accessing, or using Rise (\"the App\"), you agree to these Terms of Service. If you do not agree with these terms, please discontinue use of the App.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 2
-              _buildSectionCard(
-                title: "2. About Rise",
-                content: "Rise is a personal growth and productivity platform designed to help users:",
-                bulletPoints: [
-                  "Set meaningful goals",
-                  "Build positive habits",
-                  "Track daily progress",
-                  "Practice gratitude",
-                  "Stay motivated through AI-powered coaching",
-                  "Celebrate personal achievements"
-                ],
-                footerText: "Rise is intended for personal development and self-improvement purposes only.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 3
-              _buildSectionCard(
-                title: "3. Eligibility",
-                content: "You must be at least 13 years old to use Rise. If you are under the age required by your local laws, parental or guardian consent may be necessary.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 4
-              _buildSectionCard(
-                title: "4. User Accounts",
-                content: "To access certain features, you may need to create an account. You are responsible for:",
-                bulletPoints: [
-                  "Keeping your login credentials secure",
-                  "Maintaining accurate account information",
-                  "All activity that occurs under your account"
-                ],
-                footerText: "Please notify us immediately if you believe your account has been compromised.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 5
-              _buildSectionCard(
-                title: "5. AI Coach Disclaimer",
-                content: "Rise includes AI-powered coaching and motivational guidance. The AI Coach is intended to provide encouragement, productivity support, habit-building suggestions, and personal development insights. AI responses should not be considered professional medical, psychological, legal, or financial advice. Users remain responsible for their own decisions and actions.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 6
-              _buildSectionCard(
-                title: "6. Subscription & Premium Features",
-                content: "Rise may offer free and premium subscription plans. Premium features may include:",
-                bulletPoints: [
-                  "Unlimited AI Coach conversations",
-                  "Advanced goal tracking",
-                  "Enhanced productivity insights",
-                  "Personalized coaching experiences",
-                  "Additional motivational content"
-                ],
-                footerText: "Subscription fees are billed according to the selected plan.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 7
-              _buildSectionCard(
-                title: "7. Cancellation & Billing",
-                content: "You may cancel your subscription at any time through your device's app store or account settings. Premium access remains available until the end of the active billing period. Refunds are subject to the policies of the platform through which the purchase was made.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 8
-              _buildSectionCard(
-                title: "8. User Responsibilities",
-                content: "You agree to use Rise responsibly and respectfully. You may not:",
-                bulletPoints: [
-                  "Attempt to disrupt the service",
-                  "Abuse AI features",
-                  "Access accounts belonging to others",
-                  "Upload harmful or malicious content",
-                  "Use the platform for unlawful activities"
-                ],
-                footerText: "Violation of these rules may result in account suspension or termination.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 9
-              _buildSectionCard(
-                title: "9. Intellectual Property",
-                content: "All content, branding, designs, graphics, AI experiences, and software within Rise are protected by intellectual property laws. You may not copy, modify, distribute, or reproduce any part of the App without written permission.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 10
-              _buildSectionCard(
-                title: "10. Limitation of Liability",
-                content: "Rise is provided \"as is.\" While we strive to offer reliable services, we cannot guarantee uninterrupted availability or specific personal outcomes. We are not responsible for losses resulting from the use or inability to use the App.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 11
-              _buildSectionCard(
-                title: "11. Changes to These Terms",
-                content: "We may update these Terms of Service periodically. When significant changes occur, we will notify users through the App or via email. Continued use of Rise after updates indicates acceptance of the revised terms.",
-              ),
-              const SizedBox(height: 16.0),
-
-              // Section 12 / Contact Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20.0),
-                  border: Border.all(
-                    color: const Color(0xFFF1EFFF),
-                    width: 1.0,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6C586D).withOpacity(0.04),
-                      blurRadius: 20.0,
-                      offset: const Offset(0, 6),
+              Obx(() {
+                if (_supportController.isTermsLoading.value) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(40.0),
+                      child: CircularProgressIndicator(color: Color(0xFF5E4B8B)),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "12. Contact",
-                      style: AppTextStyles.plusJakartaSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF161022),
+                  );
+                }
+
+                if (_supportController.termsPolicies.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: Text(
+                        "No terms and conditions found.",
+                        style: AppTextStyles.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF575B61),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12.0),
-                    Text(
-                      "If you have questions regarding these Terms, please contact us: support@riseapp.com or www.riseapp.com",
-                      style: AppTextStyles.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF575B61),
-                      ).copyWith(height: 1.5),
-                    ),
-                  ],
-                ),
-              ),
+                  );
+                }
+
+                return ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _supportController.termsPolicies.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+                  itemBuilder: (context, index) {
+                    final policy = _supportController.termsPolicies[index];
+                    return _buildSectionCard(
+                      title: policy["title"] ?? "",
+                      content: policy["content"] ?? "",
+                    );
+                  },
+                );
+              }),
               const SizedBox(height: 40.0),
             ],
           ),

@@ -6,12 +6,27 @@ import 'package:rosannalie/utils/appString.dart';
 import 'package:rosannalie/utils/appcolors.dart';
 import 'package:intl/intl.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (Get.isRegistered<NotificationController>()) {
+      Get.find<NotificationController>().fetchNotifications();
+    } else {
+      Get.put(NotificationController()).fetchNotifications();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final NotificationController controller = Get.put(NotificationController());
+    final NotificationController controller = Get.find<NotificationController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -99,7 +114,7 @@ class NotificationsScreen extends StatelessWidget {
               final title = notif['title'] ?? 'Notification';
               final message = notif['message'] ?? '';
               final bool isUnread = notif['readAt'] == null;
-              final String id = notif['id'] ?? '';
+              final String id = notif['id']?.toString() ?? notif['_id']?.toString() ?? '';
 
               String dateString = '';
               if (notif['createdAt'] != null) {
@@ -142,21 +157,13 @@ class NotificationsScreen extends StatelessWidget {
                           Container(
                             width: 44,
                             height: 44,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  AppColors.primarygredent2,
-                                  AppColors.primarygredent1,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.notifications_active_rounded,
                               color: Colors.white,
-                              size: 20,
+                            ),
+                            child: Image.asset(
+                              'assets/icon/loguicon.png',
+                              fit: BoxFit.contain,
                             ),
                           ),
                           if (isUnread)
@@ -209,6 +216,14 @@ class NotificationsScreen extends StatelessWidget {
                             ],
                           ],
                         ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                        onPressed: () {
+                          if (id.isNotEmpty) {
+                            controller.deleteNotification(id, index);
+                          }
+                        },
                       ),
                     ],
                   ),

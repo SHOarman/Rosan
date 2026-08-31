@@ -564,8 +564,41 @@ class MygoalsSeeall extends StatelessWidget {
               // Deadline Field
               TextField(
                 controller: deadlineController,
+                readOnly: true,
+                onTap: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2101),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF7B64B0),
+                            onPrimary: Colors.white,
+                            onSurface: Color(0xFF2E2252),
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF7B64B0),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) {
+                    const List<String> months = [
+                      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                    ];
+                    deadlineController.text = "${picked.day} ${months[picked.month - 1]} ${picked.year}";
+                  }
+                },
                 decoration: InputDecoration(
-                  hintText: "Deadline (e.g. Dec 2026)",
+                  hintText: "Deadline (e.g. 15 Dec 2026)",
                   hintStyle: AppTextStyles.inter(
                     color: const Color(0xFF8F7DB5).withOpacity(0.6),
                     fontSize: 14,

@@ -216,6 +216,7 @@ class _MoodPillCardState extends State<MoodPillCard> with SingleTickerProviderSt
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
+            width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100.0), // Rounded pill shape
@@ -227,34 +228,33 @@ class _MoodPillCardState extends State<MoodPillCard> with SingleTickerProviderSt
             child: Row(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (false) ...[
-                  Text(
-                    widget.emoji,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      height: 1.2,
-                    ),
+                Text(
+                  widget.emoji,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    height: 1.2,
                   ),
-                  const SizedBox(width: 8.0),
-                ],
-                Expanded(
+                ),
+                const SizedBox(width: 8.0),
+                Flexible(
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
+                    alignment: Alignment.center,
                     child: Text(
                       widget.text,
                       style: AppTextStyles.inter(
-                    fontSize: 14.0,
-                    fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: widget.isSelected 
-                        ? const Color(0xFF3D2E6B) // Dark purple for active state
-                        : const Color(0xFF8F7DB5), // Softer purple for inactive state
+                        fontSize: 14.0,
+                        fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: widget.isSelected 
+                            ? const Color(0xFF3D2E6B)
+                            : const Color(0xFF8F7DB5),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
             ),
           ),
         ),

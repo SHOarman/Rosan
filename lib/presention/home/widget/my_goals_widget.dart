@@ -131,13 +131,27 @@ class MyGoalsWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    goal.title,
-                    style: AppTextStyles.plusJakartaSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2E2252),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        goal.title,
+                        style: AppTextStyles.plusJakartaSans(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF2E2252),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "Due ${goal.deadline}",
+                        style: AppTextStyles.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF8F7DB5).withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Text(

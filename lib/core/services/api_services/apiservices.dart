@@ -15,7 +15,7 @@ class Apiservices {
   static const String login = "$baseUrl/auth/login";
   static const String get_profile = "$baseUrl/users/me";
   static const String update_profile = "$baseUrl/users/me";
-  static const String delete_account = "$baseUrl/users/me/delete";
+  static const String delete_account = "$baseUrl/users/me";
   static const String deactivate_account = "$baseUrl/users/me/deactivate";
   static const String goggle_login = "$baseUrl/auth/google";
   static const String apple_login = "$baseUrl/auth/apple";
@@ -36,6 +36,8 @@ class Apiservices {
   //============================================support========================================================
   static const String supportFaqs = "$baseUrl/support/faqs";
   static const String supportTickets = "$baseUrl/support/tickets";
+  static const String supportPrivacy = "$baseUrl/support/privacy";
+  static const String supportTerms = "$baseUrl/support/terms";
 
   //============================================ai_coach========================================================
   static const String aiHistory = "$baseUrl/ai/history";
@@ -59,7 +61,7 @@ class Apiservices {
   static const String notification_settings = "$baseUrl/notifications/settings";
   static const String read_all_notifications = "$baseUrl/notifications/read-all";
   static String read_single_notification(String id) => "$baseUrl/notifications/$id/read";
-
+  static String delete_notification(String id) => "$baseUrl/notifications/$id";
 
   //=========================================================Subscription=================================================
 static const String getavabile_plans = "$baseUrl/subscriptions/plans";

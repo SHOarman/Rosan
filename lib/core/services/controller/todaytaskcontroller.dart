@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
 import 'package:rosannalie/core/services/controller/wins_controller.dart';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
+import 'package:rosannalie/core/services/controller/notification_controller.dart';
 
 class TaskItem {
   final String? id;
@@ -48,6 +49,9 @@ class Todaytaskcontroller extends GetxController {
       }
       if (Get.isRegistered<Authcontroller>()) {
         Get.find<Authcontroller>().fetchDashboard();
+      }
+      if (Get.isRegistered<NotificationController>()) {
+        Get.find<NotificationController>().fetchNotifications();
       }
     } catch (_) {}
   }

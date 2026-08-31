@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
 import 'package:rosannalie/core/services/controller/wins_controller.dart';
 import 'package:rosannalie/core/services/controller/authcontroller.dart';
+import 'package:rosannalie/core/services/controller/notification_controller.dart';
+
 class GoalItem {
   final String? id;
   final String title;
@@ -43,6 +45,9 @@ class MygoallController extends GetxController {
       }
       if (Get.isRegistered<Authcontroller>()) {
         Get.find<Authcontroller>().fetchDashboard();
+      }
+      if (Get.isRegistered<NotificationController>()) {
+        Get.find<NotificationController>().fetchNotifications();
       }
     } catch (_) {}
   }
@@ -215,6 +220,31 @@ class MygoallController extends GetxController {
       return DateTime.parse(input);
     } catch (e) {
       final parts = input.trim().split(' ');
+      
+      if (parts.length == 3) {
+        int? day = int.tryParse(parts[0]);
+        String monthStr = parts[1].toLowerCase();
+        int? year = int.tryParse(parts[2]);
+        
+        if (day != null && year != null) {
+          int month = 1;
+          if (monthStr.startsWith('jan')) month = 1;
+          else if (monthStr.startsWith('feb')) month = 2;
+          else if (monthStr.startsWith('mar')) month = 3;
+          else if (monthStr.startsWith('apr')) month = 4;
+          else if (monthStr.startsWith('may')) month = 5;
+          else if (monthStr.startsWith('jun')) month = 6;
+          else if (monthStr.startsWith('jul')) month = 7;
+          else if (monthStr.startsWith('aug')) month = 8;
+          else if (monthStr.startsWith('sep')) month = 9;
+          else if (monthStr.startsWith('oct')) month = 10;
+          else if (monthStr.startsWith('nov')) month = 11;
+          else if (monthStr.startsWith('dec')) month = 12;
+          
+          return DateTime(year, month, day, 23, 59, 59);
+        }
+      }
+
       if (parts.length >= 2) {
         String monthStr = '';
         String yearStr = '';
@@ -269,7 +299,6 @@ class MygoallController extends GetxController {
 
       final Map<String, dynamic> requestBody = {
         "title": title,
-        "description": "",
         "deadline": finalDeadlineIso
       };
 

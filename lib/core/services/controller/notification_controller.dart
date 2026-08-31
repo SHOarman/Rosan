@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rosannalie/core/services/api_services/apiservices.dart';
 
@@ -78,6 +79,61 @@ class NotificationController extends GetxController {
       }
     } catch (e) {
       print("Mark as read error: $e");
+    }
+  }
+
+  Future<void> deleteNotification(String id, int index) async {
+    try {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken') ?? '';
+
+      final url = Apiservices.delete_notification(id);
+      print("---- DELETE NOTIFICATION START ----");
+      print("Attempting to delete notification with index: $index");
+      print("Raw ID passed from item: $id");
+      print("Endpoint URL: $url");
+      
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      );
+      
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      print("Delete Response Status Code: ${response.statusCode}");
+      print("Delete Response Body: ${response.body}");
+      print("---- DELETE NOTIFICATION END ----");
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Update local state instantly
+        var updatedList = List.from(notifications);
+        updatedList.removeWhere((element) => (element['id']?.toString() ?? element['_id']?.toString() ?? '') == id);
+        notifications.value = updatedList;
+      } else if (response.statusCode == 201) {
+         var updatedList = List.from(notifications);
+         updatedList.removeWhere((element) => (element['id']?.toString() ?? element['_id']?.toString() ?? '') == id);
+         notifications.value = updatedList;
+      } else {
+        Get.snackbar("Error", "Failed to delete notification.");
+      }
+
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      print("Delete notification error: $e");
+
     }
   }
 

@@ -1,0 +1,63 @@
+--------- beginning of main
+08-30 11:58:14.289   912  1069 E Light   : AmbienteLight: 52.000000
+08-30 11:58:14.623   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:14.749  1341  1637 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.976) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+08-30 11:58:14.956   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:15.004   576   576 I android.hardware.thermal@2.0-service.mtk: fill_temperatures filterType1 name: SKIN type: SKIN throttlingStatus: NONE value: 39 ret_temps size 0
+08-30 11:58:15.290   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:15.623   912  1069 I chatty  : uid=1000(system) sensors@2.0-ser identical 1 line
+08-30 11:58:15.956   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:16.006   576   576 I android.hardware.thermal@2.0-service.mtk: fill_temperatures filterType1 name: SKIN type: SKIN throttlingStatus: NONE value: 39 ret_temps size 0
+08-30 11:58:16.290   912  1069 E Light   : AmbienteLight: 52.000000
+08-30 11:58:16.416  1341  1635 I MiuiNetworkPolicy: updateUidState uid = 10192, uidState = 3
+08-30 11:58:16.623   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:16.670  1814  1921 D NetworkController.MobileSignalController(3): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 miuiLevel=0 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=-100 rsrq=-17 rssnr=-3 cqi=0 ta=0 miuiLevel=4 level=3 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiSinr = 2147483647 ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthLte}, phoneId=1, mMtkLevel=0, mMtkRsrpOnly=false, mMtkLteRsrpThreshold=null, mMtkLteRssnrThreshold=null level=3
+08-30 11:58:16.672  1814  1921 D NetworkController.MobileSignalController(3): updateTelephonySignalStrength: hasService=true ss=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 miuiLevel=0 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=-100 rsrq=-17 rssnr=-3 cqi=0 ta=0 miuiLevel=4 level=3 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiSinr = 2147483647 ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthLte}, phoneId=1, mMtkLevel=0, mMtkRsrpOnly=false, mMtkLteRsrpThreshold=null, mMtkLteRssnrThreshold=null displayInfo=TelephonyDisplayInfo {network=LTE, override=NONE}
+08-30 11:58:16.672  1814  1921 D NetworkController.MobileSignalController(3): NotQcom5G, signal level = 4
+08-30 11:58:16.956   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:17.007   576   576 I android.hardware.thermal@2.0-service.mtk: fill_temperatures filterType1 name: SKIN type: SKIN throttlingStatus: NONE value: 39 ret_temps size 0
+08-30 11:58:17.073   916   916 I thermal_repeater: [recvMdThermalInfo] ret=26, strLen=127,  3, 28, -50, 196, 32767, 0
+--------- beginning of system
+08-30 11:58:17.175  1341  4108 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10190; state: DISABLED
+08-30 11:58:17.176  1341  4108 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10190; state: ENABLED
+08-30 11:58:17.177  1341  1370 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10190; state: ENABLED
+08-30 11:58:17.186  1341  1635 I MiuiNetworkPolicy: updateUidState uid = 10298, uidState = 19
+08-30 11:58:17.186  1341  1635 I MiuiNetworkPolicy: updateUidState uid = 10190, uidState = 19
+08-30 11:58:17.206   560   560 D Zygote  : Forked child process 12772
+08-30 11:58:17.212  1341  1370 D Boost   : hostingType=broadcast, hostingName={com.google.android.apps.turbo/com.google.android.apps.turbo.nudges.broadcasts.BatteryStatusChangedReceiver}, callerPackage=android, isSystem=true, isBoostNeeded=false.
+08-30 11:58:17.213  1341  1370 I ActivityManager: Start proc 12772:com.google.android.apps.turbo/u0a190 for broadcast {com.google.android.apps.turbo/com.google.android.apps.turbo.nudges.broadcasts.BatteryStatusChangedReceiver} caller=android
+08-30 11:58:17.216  1341  1635 D MiuiNetworkPolicy: updateLimit mLimitEnabled=true,enabled=false,mNetworkPriorityMode=255
+08-30 11:58:17.238 12772 12772 E roid.apps.turb: Not starting debugger since process cannot load the jdwp agent.
+08-30 11:58:17.251  1341  3454 V ActivityManager: New death recipient com.android.server.am.ActivityManagerService$AppDeathRecipient@b7ce095 for thread android.os.BinderProxy@8d735aa
+08-30 11:58:17.259  1341  1635 I MiuiNetworkPolicy: updateUidState uid = 10190, uidState = 11
+08-30 11:58:17.289   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:17.331  1341  3454 I UiModeManager: systemserver package:com.google.android.apps.turbo null
+08-30 11:58:17.332 12772 12772 I ForceDarkHelper: packageName:com.google.android.apps.turbo getForceDarkConfigInfo null  forceDarkAppConfigJsonString:null
+08-30 11:58:17.332 12772 12772 I ForceDarkHelper: ForceDarkConfigInfo: null
+08-30 11:58:17.337 12772 12772 I MiuiForceDarkConfig: MiuiForceDarkConfig setConfig density:2.750000, mainRule:17, secondaryRule:0, tertiaryRule:0
+08-30 11:58:17.345 12772 12772 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+08-30 11:58:17.346 12772 12772 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+08-30 11:58:17.492  1341  1635 I MiuiNetworkPolicy: updateUidState uid = 10306, uidState = 11
+08-30 11:58:17.493  1341  1635 I MiuiNetworkPolicy: updateUidState uid = 10190, uidState = 19
+08-30 11:58:17.623   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:17.759  1341  1637 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.976) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+08-30 11:58:17.808   603  2331 I BufferQueueProducer: [StatusBar#0](this:0xb40000740517bc58,id:11,api:1,p:1814,c:603) queueBuffer: fps=0.07 dur=13365.09 max=13365.09 min=13365.09
+08-30 11:58:17.826   572   678 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:0.149574,dur:13371.33,max:13343.54,min:27.79  
+08-30 11:58:17.831   603   603 I SurfaceFlinger: operator()(), mtkRenderCntDebug 26164, screenshot (Background for -SurfaceView - com.riseapp.project/com.riseapp.project.MainActivity#0)
+08-30 11:58:17.831   603   603 I SurfaceFlinger: operator()(), mtkRenderCntDebug 26164, screenshot (SurfaceView - com.riseapp.project/com.riseapp.project.MainActivity#0)
+08-30 11:58:17.831   603   603 I SurfaceFlinger: operator()(), mtkRenderCntDebug 26164, screenshot (com.riseapp.project/com.riseapp.project.MainActivity#0)
+08-30 11:58:17.853  1341  3454 I InputDispatcher: setInputWindows displayId=0 Window{81ae0a mode=1 rootTaskId=1 u0 RoundCorner} Window{9dde968 mode=1 rootTaskId=1 u0 RoundCorner} Window{6d1b372 mode=1 rootTaskId=1 u0 GestureStubRight} Window{4d44674 mode=1 rootTaskId=1 u0 GestureStubLeft} Window{f01ac36 mode=1 rootTaskId=1 u0 GestureStubHome} Window{7a5c09c mode=1 rootTaskId=1 u0 NavigationBar0} Window{7bf25c4 mode=1 rootTaskId=1 u0 StatusBar} Window{a77e363 mode=1 rootTaskId=115 u0 com.riseapp.project/com.riseapp.project.MainActivity} SurfaceView - com.riseapp.project/com.riseapp.project.MainActivity#0 Window{4c9df5 mode=1 rootTaskId=1 u0 com.miui.miwallpaper.wallpaperservice.MiuiKeyguardPictorialWallpaper} Window{91a7ab9 mode=1 rootTaskId=1 u0 com.miui.miwallpaper.wallpaperservice.ImageWallpaper} 
+08-30 11:58:17.956   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:17.957   921  1011 D AALLightSensor: oldLux=48 [SA:51 LA:50] newLux=48 (oriLux: 51)
+08-30 11:58:18.008   576   576 I android.hardware.thermal@2.0-service.mtk: fill_temperatures filterType1 name: SKIN type: SKIN throttlingStatus: NONE value: 38 ret_temps size 0
+08-30 11:58:18.290   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:18.483   911 12590 W MtkOmxVdecExV4L2: ## [WARNING, 110] GetCmd() line: 399 No command in 5 seconds ...
+08-30 11:58:18.489  1814  1921 D NetworkController.MobileSignalController(1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 miuiLevel=0 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=-99 rsrq=-17 rssnr=-1 cqi=0 ta=0 miuiLevel=4 level=3 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiSinr = 2147483647 ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthLte}, phoneId=0, mMtkLevel=0, mMtkRsrpOnly=false, mMtkLteRsrpThreshold=null, mMtkLteRssnrThreshold=null level=3
+08-30 11:58:18.491  1814  1921 D NetworkController.MobileSignalController(1): updateTelephonySignalStrength: hasService=true ss=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 miuiLevel=0 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=-99 rsrq=-17 rssnr=-1 cqi=0 ta=0 miuiLevel=4 level=3 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiSinr = 2147483647 ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthLte}, phoneId=0, mMtkLevel=0, mMtkRsrpOnly=false, mMtkLteRsrpThreshold=null, mMtkLteRssnrThreshold=null displayInfo=TelephonyDisplayInfo {network=LTE, override=NONE}
+08-30 11:58:18.491  1814  1921 D NetworkController.MobileSignalController(1): NotQcom5G, signal level = 4
+08-30 11:58:18.623   912  1069 E Light   : AmbienteLight: 52.000000
+08-30 11:58:18.744   764   850 I mi_thermald: special_target_modify: set generic device battery to 8
+08-30 11:58:18.748   764   850 I mi_thermald: generic_set_level: set generic device battery to 8
+08-30 11:58:18.956   912  1069 E Light   : AmbienteLight: 51.000000
+08-30 11:58:19.009   576   576 I android.hardware.thermal@2.0-service.mtk: fill_temperatures filterType1 name: SKIN type: SKIN throttlingStatus: NONE value: 38 ret_temps size 0
+08-30 11:58:19.289   912  1069 E Light   : AmbienteLight: 52.000000

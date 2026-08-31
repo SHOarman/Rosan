@@ -23,7 +23,6 @@ class _Onlading10State extends State<Onlading10> {
   Widget _buildMiniCard(Map<String, String> item, int index) {
     final isSelected = selectedIndices.contains(index);
     return MiniCard(
-      width: double.infinity,
       text: item["text"]!,
       emoji: item["emoji"]!,
       isSelected: isSelected,
@@ -78,32 +77,17 @@ class _Onlading10State extends State<Onlading10> {
               ),
             ),
             const SizedBox(height: 40),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Wrap(
+              spacing: 12.0,
+              runSpacing: 16.0,
+              alignment: WrapAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildMiniCard(rewards[0], 0),
-                      const SizedBox(height: 12),
-                      _buildMiniCard(rewards[1], 1),
-                      const SizedBox(height: 12),
-                      _buildMiniCard(rewards[2], 2),
-                      const SizedBox(height: 12),
-                      _buildMiniCard(rewards[5], 5),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildMiniCard(rewards[3], 3),
-                      const SizedBox(height: 12),
-                      _buildMiniCard(rewards[4], 4),
-                    ],
-                  ),
-                ),
+                _buildMiniCard(rewards[0], 0),
+                _buildMiniCard(rewards[3], 3),
+                _buildMiniCard(rewards[1], 1),
+                _buildMiniCard(rewards[4], 4),
+                _buildMiniCard(rewards[2], 2),
+                _buildMiniCard(rewards[5], 5),
               ],
             ),
             const SizedBox(height: 150),

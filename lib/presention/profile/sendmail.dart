@@ -256,6 +256,10 @@ class SendMail extends StatelessWidget {
                     }
 
                     _isSubmitting.value = true;
+                    Get.dialog(
+                      const Center(child: CircularProgressIndicator()),
+                      barrierDismissible: false,
+                    );
 
                     final supportController = Get.isRegistered<SupportController>() ? Get.find<SupportController>() : Get.put(SupportController());
                     final success = await supportController.createSupportTicket(
@@ -265,20 +269,23 @@ class SendMail extends StatelessWidget {
                       category: category,
                     );
 
+                    if (Get.isDialogOpen ?? false) {
+                      Get.back();
+                    }
                     _isSubmitting.value = false;
 
                     if (success) {
                       Get.snackbar(
                         "Success",
-                        "Support request sent successfully",
+                        "Support ticket submitted successfully. Our team will get back to you shortly.",
                         snackPosition: SnackPosition.BOTTOM,
                         backgroundColor: const Color(0xFFEFE8FF),
                         colorText: const Color(0xFF7B64B0),
                         margin: const EdgeInsets.all(20),
                         borderRadius: 12,
-                        duration: const Duration(seconds: 2),
+                        duration: const Duration(seconds: 3),
                       );
-                      Future.delayed(const Duration(seconds: 2), () {
+                      Future.delayed(const Duration(seconds: 3), () {
                         Get.offAllNamed(AppRoutes.home);
                       });
                     } else {

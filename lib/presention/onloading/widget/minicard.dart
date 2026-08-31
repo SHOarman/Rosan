@@ -19,7 +19,7 @@ class MiniCard extends StatefulWidget {
     this.imageAsset,
     this.leading,
     this.isSelected = false,
-    this.width = 169.0,
+    this.width,
     this.height = 40.0,
   });
 
@@ -130,19 +130,18 @@ class _MiniCardState extends State<MiniCard> with SingleTickerProviderStateMixin
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        widget.text,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.inter(
-                          fontSize: 14.0,
-                          fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: widget.isSelected 
-                              ? const Color(0xFF3D2E6B) // Dark purple for active state
-                              : const Color(0xFF8F7DB5), // Softer purple for inactive state
-                        ),
+                  Flexible(
+                    child: Text(
+                      widget.text,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.inter(
+                        fontSize: 14.0,
+                        fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: widget.isSelected 
+                            ? const Color(0xFF3D2E6B)
+                            : const Color(0xFF8F7DB5),
                       ),
                     ),
                   ),
