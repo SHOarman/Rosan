@@ -21,16 +21,32 @@ class _SubscriptionPromotionProfileState
 
   String _selectedPlanId = "";
 
-  Widget _buildFeatureItem(String text) {
+  @override
+  void initState() {
+    super.initState();
+    // Explicitly fetch the new profile plans whenever this screen opens
+    pubController.fetchProfilePlans();
+  }
+
+  Widget _buildFeatureItem(dynamic feature) {
+    String text = "";
+    String? icon;
+    if (feature is String) {
+      text = feature;
+    } else if (feature is Map) {
+      text = feature['text'] ?? "";
+      icon = feature['icon'];
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEEEAFF),
+            decoration: const BoxDecoration(
+              color: Color(0xFFEEEAFF),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -41,17 +57,53 @@ class _SubscriptionPromotionProfileState
           ),
           const SizedBox(width: 12.0),
           Expanded(
-            child: Text(
-              text,
-              style: AppTextStyles.inter(
-                fontSize: 14.0,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF4A3B4D),
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  if (icon != null && icon.isNotEmpty)
+                    TextSpan(
+                      text: "$icon ",
+                      style: const TextStyle(fontSize: 14.0),
+                    ),
+                  TextSpan(
+                    text: text,
+                    style: AppTextStyles.inter(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF4A3B4D),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEverythingIncludedItem(Map feature) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (feature['icon'] != null && feature['icon'].toString().isNotEmpty) ...[
+          Text(
+            feature['icon'] ?? "",
+            style: const TextStyle(fontSize: 16.0),
+          ),
+          const SizedBox(width: 8.0),
+        ],
+        Expanded(
+          child: Text(
+            feature['text'] ?? "",
+            style: AppTextStyles.inter(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF7A64AE),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -170,10 +222,11 @@ class _SubscriptionPromotionProfileState
                               color: const Color(0xFFFFF0DD),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            child: const Icon(
-                              Icons.card_giftcard,
-                              color: Color(0xFFE94D2B),
-                              size: 20,
+                            child: Obx(
+                              () => Text(
+                                pubController.trialOfferIcon.value,
+                                style: const TextStyle(fontSize: 20),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16.0),
@@ -183,9 +236,9 @@ class _SubscriptionPromotionProfileState
                               children: [
                                 Obx(
                                   () => Text(
-                                    pubController.paywallBanner.value.isEmpty
+                                    pubController.trialOfferTitle.value.isEmpty
                                         ? "7-day free trial"
-                                        : pubController.paywallBanner.value,
+                                        : pubController.trialOfferTitle.value,
                                     style: AppTextStyles.plusJakartaSans(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -196,9 +249,9 @@ class _SubscriptionPromotionProfileState
                                 const SizedBox(height: 4.0),
                                 Obx(
                                   () => Text(
-                                    pubController.paywallSubtext.value.isEmpty
+                                    pubController.trialOfferDesc.value.isEmpty
                                         ? "No charge until your trial ends. Cancel anytime."
-                                        : pubController.paywallSubtext.value,
+                                        : pubController.trialOfferDesc.value,
                                     style: AppTextStyles.inter(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
@@ -366,14 +419,11 @@ class _SubscriptionPromotionProfileState
                                   ? "/${priceParts[1]}"
                                   : "";
 
-                              var featuresList =
-                                  selectedPlanData['features'] != null &&
-                                      (selectedPlanData['features'] as List)
-                                          .isNotEmpty
-                                  ? List<String>.from(
-                                      selectedPlanData['features'],
-                                    )
-                                  : pubController.paywallFeatures;
+                              var featuresList = pubController.cardFeatures.isNotEmpty
+                                  ? pubController.cardFeatures
+                                  : (selectedPlanData['features'] != null && (selectedPlanData['features'] as List).isNotEmpty
+                                      ? List<dynamic>.from(selectedPlanData['features'])
+                                      : pubController.paywallFeatures);
 
                               return Container(
                                 width: double.infinity,
@@ -440,6 +490,76 @@ class _SubscriptionPromotionProfileState
                         ],
                       );
                     }),
+                    
+                    Obx(() {
+                      if (pubController.everythingIncluded.isEmpty) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(24.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24.0),
+                            border: Border.all(
+                              color: const Color(0xFFEFECFB),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.02),
+                                offset: const Offset(0, 4),
+                                blurRadius: 10.0,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                pubController.featuresTitle.value.isEmpty ? "Everything included:" : pubController.featuresTitle.value,
+                                style: AppTextStyles.plusJakartaSans(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF4C3B78),
+                                ),
+                              ),
+                              const SizedBox(height: 20.0),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: pubController.everythingIncluded
+                                          .asMap()
+                                          .entries
+                                          .where((e) => e.key % 2 == 0)
+                                          .map((e) => Padding(
+                                              padding: const EdgeInsets.only(bottom: 16.0),
+                                              child: _buildEverythingIncludedItem(e.value)))
+                                          .toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Column(
+                                      children: pubController.everythingIncluded
+                                          .asMap()
+                                          .entries
+                                          .where((e) => e.key % 2 != 0)
+                                          .map((e) => Padding(
+                                              padding: const EdgeInsets.only(bottom: 16.0),
+                                              child: _buildEverythingIncludedItem(e.value)))
+                                          .toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
 
                     const SizedBox(height: 32.0),
                   ],
@@ -461,28 +581,46 @@ class _SubscriptionPromotionProfileState
                   ),
                 ),
               ),
-              child: Obx(
-                () => CustomButton(
-                  text: pubController.isLoading.value
-                      ? "Processing..."
-                      : (pubController.paywallBanner.value.isEmpty
-                            ? "Start 7-Day Free Trial"
-                            : pubController.paywallBanner.value),
-                  gradientColors: const [
-                    Color(0xFF7961B2), // Solid Purple for the new UI
-                    Color(0xFF67519E),
-                  ],
-                  onTap: () async {
-                    if (pubController.isLoading.value) return;
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Obx(
+                    () => CustomButton(
+                      text: pubController.isLoading.value
+                          ? "Processing..."
+                          : (pubController.ctaText.value.isEmpty
+                                ? "Start Free Trial →"
+                                : pubController.ctaText.value),
+                      gradientColors: const [
+                        Color(0xFF7961B2), // Solid Purple for the new UI
+                        Color(0xFF67519E),
+                      ],
+                      onTap: () async {
+                        if (pubController.isLoading.value) return;
 
-                    if (_selectedPlanId.isEmpty) {
-                      Get.snackbar("Notice", "Please select a plan first");
-                      return;
-                    }
+                        if (_selectedPlanId.isEmpty) {
+                          Get.snackbar("Notice", "Please select a plan first");
+                          return;
+                        }
 
-                    await pubController.makePurchase(_selectedPlanId);
-                  },
-                ),
+                        await pubController.makePurchase(_selectedPlanId);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12.0),
+                  Obx(
+                    () => Text(
+                      pubController.footerNote.value.isEmpty
+                          ? "7 days free · Cancel anytime · No surprises"
+                          : pubController.footerNote.value,
+                      style: AppTextStyles.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFC4B8DA),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

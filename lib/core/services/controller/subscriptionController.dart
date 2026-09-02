@@ -13,9 +13,24 @@ class SubscriptionController extends GetxController {
 
   var paywallTitle = "".obs;
   var paywallSubtitle = "".obs;
+  
+  // New Trial Offer block
+  var trialOfferTitle = "".obs;
+  var trialOfferDesc = "".obs;
+  var trialOfferIcon = "🎁".obs;
+  
   var paywallBanner = "".obs;
   var paywallSubtext = "".obs;
+  var ctaText = "".obs;
+  var footerNote = "".obs;
+  var featuresTitle = "".obs;
+  
   var paywallFeatures = <String>[].obs;
+  
+  // New arrays with maps for emojis + text
+  var cardFeatures = <Map<dynamic, dynamic>>[].obs;
+  var everythingIncluded = <Map<dynamic, dynamic>>[].obs;
+  
   var backendPlans = [].obs;
 
   @override
@@ -48,8 +63,25 @@ class SubscriptionController extends GetxController {
           final data = decoded['data'];
           if (data['title'] != null) paywallTitle.value = data['title'];
           if (data['subtitle'] != null) paywallSubtitle.value = data['subtitle'];
+          
+          if (data['trialOffer'] != null) {
+            trialOfferTitle.value = data['trialOffer']['title'] ?? "";
+            trialOfferDesc.value = data['trialOffer']['description'] ?? "";
+            trialOfferIcon.value = data['trialOffer']['icon'] ?? "🎁";
+          }
+          
           if (data['trialBanner'] != null) paywallBanner.value = data['trialBanner'];
           if (data['trialSubtext'] != null) paywallSubtext.value = data['trialSubtext'];
+          if (data['ctaText'] != null) ctaText.value = data['ctaText'];
+          if (data['footerNote'] != null) footerNote.value = data['footerNote'];
+          if (data['featuresTitle'] != null) featuresTitle.value = data['featuresTitle'];
+          
+          if (data['cardFeatures'] != null) {
+            cardFeatures.value = List<Map<dynamic, dynamic>>.from(data['cardFeatures']);
+          }
+          if (data['everythingIncluded'] != null) {
+            everythingIncluded.value = List<Map<dynamic, dynamic>>.from(data['everythingIncluded']);
+          }
           
           if (data['features'] != null) {
             paywallFeatures.value = List<String>.from(data['features']);
@@ -61,6 +93,60 @@ class SubscriptionController extends GetxController {
       }
     } catch (e) {
       print("Error fetching backend plans: $e");
+    }
+  }
+
+  Future<void> fetchProfilePlans() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken') ?? '';
+
+      final response = await http.get(
+        Uri.parse(Apiservices.get_profile_plans), // Hit the new profile-plans endpoint
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'ngrok-skip-browser-warning': 'true',
+          'bypass-tunnel-reminder': 'true',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final data = decoded['data'];
+          if (data['title'] != null) paywallTitle.value = data['title'];
+          if (data['subtitle'] != null) paywallSubtitle.value = data['subtitle'];
+          
+          if (data['trialOffer'] != null) {
+            trialOfferTitle.value = data['trialOffer']['title'] ?? "";
+            trialOfferDesc.value = data['trialOffer']['description'] ?? "";
+            trialOfferIcon.value = data['trialOffer']['icon'] ?? "🎁";
+          }
+          
+          if (data['trialBanner'] != null) paywallBanner.value = data['trialBanner'];
+          if (data['trialSubtext'] != null) paywallSubtext.value = data['trialSubtext'];
+          if (data['ctaText'] != null) ctaText.value = data['ctaText'];
+          if (data['footerNote'] != null) footerNote.value = data['footerNote'];
+          if (data['featuresTitle'] != null) featuresTitle.value = data['featuresTitle'];
+          
+          if (data['cardFeatures'] != null) {
+            cardFeatures.value = List<Map<dynamic, dynamic>>.from(data['cardFeatures']);
+          }
+          if (data['everythingIncluded'] != null) {
+            everythingIncluded.value = List<Map<dynamic, dynamic>>.from(data['everythingIncluded']);
+          }
+          
+          if (data['features'] != null) {
+            paywallFeatures.value = List<String>.from(data['features']);
+          }
+          if (data['plans'] != null) {
+            backendPlans.value = data['plans'];
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile plans: $e");
     }
   }
 

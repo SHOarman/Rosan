@@ -23,8 +23,10 @@ class _SigninScreenState extends State<SigninScreen> {
     final authController = Get.find<Authcontroller>();
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Form(
@@ -152,9 +154,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     () => Center(
                       child: CustomButton(
                         text: "Sign in",
-
-                        showIcon: !authController.isLoading.value,
-                        isDisabled: authController.isLoading.value,
+                        showIcon: true,
                         gradientColors: const [
                           AppColors.primarygredent2,
                           AppColors.primarygredent1,
@@ -264,6 +264,36 @@ class _SigninScreenState extends State<SigninScreen> {
             ),
           ),
         ),
+      ),
+          Obx(() {
+            if (authController.isLoading.value) {
+              return Container(
+                color: Colors.white.withOpacity(0.85),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Color(0xFF5E4B8B),
+                        strokeWidth: 4.0,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "Signing in...",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF5E4B8B),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
       ),
     );
   }

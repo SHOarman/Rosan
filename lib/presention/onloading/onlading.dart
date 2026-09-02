@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosannalie/core/route/app_pages.dart';
 import 'package:video_player/video_player.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Onlading extends StatefulWidget {
@@ -52,10 +53,13 @@ class _OnladingState extends State<Onlading> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: _isInitialized && _controller != null
-          ? SizedBox.expand(
-              child: FittedBox(
+      backgroundColor: const Color(0xFFF6F5FB),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 800),
+        child: _isInitialized && _controller != null
+            ? SizedBox.expand(
+                key: const ValueKey('video_player'),
+                child: FittedBox(
                 fit: BoxFit.cover,
                 child: SizedBox(
                   width: _controller!.value.size.width,
@@ -64,7 +68,25 @@ class _OnladingState extends State<Onlading> {
                 ),
               ),
             )
-          : const SizedBox.shrink(),
+          : Container(
+              key: const ValueKey('splash_text'),
+              color: const Color(0xFFF6F5FB),
+              child: Center(
+                child: Text(
+                  "Manifest\nRise",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 40,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF5E4B8B),
+                    letterSpacing: 1.5,
+                    height: 1.3,
+                  ),
+                ),
+              ),
+            ),
+      ),
     );
   }
 }

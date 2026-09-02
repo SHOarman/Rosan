@@ -49,7 +49,7 @@ class AppPages {
   static final routes = [
 
     //================================onloding==========================
-    GetPage(name: AppRoutes.onborading, page: ()=>Onlading()),
+    GetPage(name: AppRoutes.onborading, page: ()=>Onlading(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 800)),
     GetPage(name: AppRoutes.onborading1, page: ()=>Onlading1()),
     GetPage(name: AppRoutes.onborading2, page: ()=>Onlading2()),
     GetPage(name: AppRoutes.onborading3, page: ()=>Onlading3()),
