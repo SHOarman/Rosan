@@ -237,10 +237,10 @@ class CustomBottomNavBar extends StatelessWidget {
   Future<void> _triggerFeedback() async {
     final bool hasVibrator = await Vibration.hasVibrator() ?? false;
     if (hasVibrator) {
-      Vibration.vibrate(duration: 25, amplitude: 128);
+      Vibration.vibrate(duration: 60, amplitude: 255);
     } else {
       // Fallback for devices without a dedicated vibrator API result
-      HapticFeedback.lightImpact();
+      HapticFeedback.mediumImpact();
     }
   }
 

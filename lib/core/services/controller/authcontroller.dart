@@ -1356,7 +1356,7 @@ class Authcontroller extends GetxController {
       };
 
       print("===== REGISTER PAYLOAD =====");
-      print(jsonEncode(requestBody));
+      // print(jsonEncode(requestBody)); // 🔒 masked for security
       print("============================");
 
       final response = await http.post(
@@ -1740,7 +1740,7 @@ class Authcontroller extends GetxController {
       };
 
       print("===== LOGIN PAYLOAD =====");
-      print(jsonEncode(requestBody));
+      // print(jsonEncode(requestBody)); // 🔒 masked for security
       print("=========================");
 
       final response = await http.post(
@@ -1954,7 +1954,7 @@ class Authcontroller extends GetxController {
       };
 
       print("===== VERIFY OTP PAYLOAD =====");
-      print(jsonEncode(requestBody));
+      // print(jsonEncode(requestBody)); // 🔒 masked for security
       print("Endpoint: $endpoint");
       print("==============================");
 

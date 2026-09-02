@@ -120,8 +120,7 @@ class MygoallController extends GetxController {
             }
           }
 
-          final iconTypes = ['rocket', 'run', 'book', 'money'];
-
+          // Removed hardcoded iconTypes
           for (int i = 0; i < dataList.length; i++) {
             final item = dataList[i];
             
@@ -132,7 +131,7 @@ class MygoallController extends GetxController {
                try {
                  final dt = DateTime.parse(rawDeadline).toLocal();
                  final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                 formattedDeadline = '${monthNames[dt.month - 1]} ${dt.year}';
+                 formattedDeadline = '${dt.day} ${monthNames[dt.month - 1]} ${dt.year}';
                } catch(e) {
                  formattedDeadline = rawDeadline;
                }
@@ -150,7 +149,7 @@ class MygoallController extends GetxController {
               id: item['id'],
               title: item['title'] ?? 'No Title',
               deadline: formattedDeadline,
-              iconType: iconTypes[hash % iconTypes.length],
+              iconType: item['icon'] ?? '🚀',
               progress: prog,
             ));
           }
@@ -278,7 +277,7 @@ class MygoallController extends GetxController {
     return null;
   }
 
-  Future<bool> addGoal(String title, String deadline) async {
+  Future<bool> addGoal(String title, String deadline, {String icon = '🚀'}) async {
     final parsedDate = _parseDeadline(deadline);
     if (parsedDate != null && parsedDate.isBefore(DateTime.now())) {
       print("===== CREATE GOAL ERROR =====");
@@ -299,7 +298,8 @@ class MygoallController extends GetxController {
 
       final Map<String, dynamic> requestBody = {
         "title": title,
-        "deadline": finalDeadlineIso
+        "deadline": finalDeadlineIso,
+        "icon": icon
       };
 
       print("===== CREATE GOAL PAYLOAD =====");

@@ -305,23 +305,14 @@ class MygoalsSeeall extends StatelessWidget {
   }
 
   Widget _buildGoalCard(BuildContext context, GoalItem goal, MygoallController controller) {
-    Color mainColor;
-    switch (goal.iconType) {
-      case 'rocket':
-        mainColor = const Color(0xFF7B64B0);
-        break;
-      case 'run':
-        mainColor = const Color(0xFFFFB300); 
-        break;
-      case 'book':
-        mainColor = const Color(0xFF2ECC71); 
-        break;
-      case 'money':
-        mainColor = const Color(0xFFFF5A79); // pink/magenta
-        break;
-      default:
-        mainColor = const Color(0xFF7B64B0);
-    }
+    final colors = [
+      const Color(0xFF7B64B0),
+      const Color(0xFFFFB300),
+      const Color(0xFF2ECC71),
+      const Color(0xFFFF5A79)
+    ];
+    final colorHash = goal.id?.hashCode ?? goal.title.hashCode;
+    final mainColor = colors[colorHash.abs() % colors.length];
 
     return Obx(() {
       final progressPercentText = '${(goal.progress.value * 100).round()}%';
@@ -457,23 +448,7 @@ class MygoalsSeeall extends StatelessWidget {
   }
 
   Widget _buildGoalProgressRing(GoalItem goal, Color color) {
-    String emojiString;
-    switch (goal.iconType) {
-      case 'rocket':
-        emojiString = "🚀";
-        break;
-      case 'run':
-        emojiString = "🏃";
-        break;
-      case 'book':
-        emojiString = "📚";
-        break;
-      case 'money':
-        emojiString = "💰";
-        break;
-      default:
-        emojiString = "🎯";
-    }
+    String emojiString = goal.iconType.isNotEmpty ? goal.iconType : "🚀";
     return SizedBox(
       width: 58,
       height: 58,
@@ -502,6 +477,13 @@ class MygoalsSeeall extends StatelessWidget {
   void _showAddGoalBottomSheet(BuildContext context, MygoallController controller) {
     final titleController = TextEditingController();
     final deadlineController = TextEditingController();
+    final RxString selectedIcon = '🚀'.obs;
+    final List<String> availableIcons = [
+      '🚀', '📚', '💰', '🎯', '🌟', '🏆', '🔥', '💼', '💡', '📈', 
+      '🌱', '🎓', '✈️', '🏡', '💻', '🎨', '⚡', '🔑', '🍎', '💧', 
+      '🥗', '🌿', '⛰️', '🛠️', '🎙️', '📊', '📷', '📱', '⚖️', '🎮', 
+      '🎸', '⚽', '🌍', '🚗', '⏱️', '💎', '🏅', '✨', '🌈', '🧠'
+    ];
 
     showModalBottomSheet(
       context: context,
@@ -534,7 +516,45 @@ class MygoalsSeeall extends StatelessWidget {
                   color: const Color(0xFF2E2252),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              // Icon Selector
+              Text(
+                "Select an Icon",
+                style: AppTextStyles.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2E2252),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 50,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: availableIcons.length,
+                  itemBuilder: (context, index) {
+                    final icon = availableIcons[index];
+                    return Obx(() => GestureDetector(
+                      onTap: () => selectedIcon.value = icon,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: selectedIcon.value == icon ? const Color(0xFF7B64B0).withOpacity(0.2) : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: selectedIcon.value == icon ? const Color(0xFF7B64B0) : const Color(0xFFE2DCF7),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Text(icon, style: const TextStyle(fontSize: 20)),
+                      ),
+                    ));
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
               
               // Title Field
               TextField(
@@ -663,6 +683,7 @@ class MygoalsSeeall extends StatelessWidget {
                             final success = await controller.addGoal(
                               titleController.text.trim(),
                               deadlineController.text.trim(),
+                              icon: selectedIcon.value,
                             );
                             if (success) {
                               Get.back();

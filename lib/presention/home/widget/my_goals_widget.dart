@@ -74,29 +74,15 @@ class MyGoalsWidget extends StatelessWidget {
   }
 
   Widget _buildHomeGoalCard(GoalItem goal) {
-    Color mainColor;
-    String emoji;
-    switch (goal.iconType) {
-      case 'rocket':
-        mainColor = const Color(0xFF7B64B0); // purple
-        emoji = "🚀";
-        break;
-      case 'run':
-        mainColor = const Color(0xFFFFB300); // orange
-        emoji = "🏃";
-        break;
-      case 'book':
-        mainColor = const Color(0xFF2ECC71); // green
-        emoji = "📚";
-        break;
-      case 'money':
-        mainColor = const Color(0xFFFF5A79); // pink/magenta
-        emoji = "💰";
-        break;
-      default:
-        mainColor = const Color(0xFF7B64B0);
-        emoji = "🎯";
-    }
+    final colors = [
+      const Color(0xFF7B64B0),
+      const Color(0xFFFFB300),
+      const Color(0xFF2ECC71),
+      const Color(0xFFFF5A79)
+    ];
+    final colorHash = goal.id?.hashCode ?? goal.title.hashCode;
+    final mainColor = colors[colorHash.abs() % colors.length];
+    final String emoji = goal.iconType.isNotEmpty ? goal.iconType : "🚀";
 
     return Obx(() {
       final percentageText = '${(goal.progress.value * 100).round()}%';

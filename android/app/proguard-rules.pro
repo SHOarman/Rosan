@@ -30,3 +30,6 @@
 # Google Play Core
 -dontwarn com.google.android.play.core.**
 -keep class com.google.android.play.core.** { *; }
+
+# Vibration Plugin
+-keep class com.benjaminabel.vibration.** { *; }
