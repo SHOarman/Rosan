@@ -161,7 +161,7 @@ class _SubscriptionPromotionProfileState
                   children: [
                     Center(
                       child: Image.asset(
-                        "assets/images/LOGO (2) 2 (3).png",
+                        "assets/icon/loguicon.png",
                         width: 90,
                         height: 90,
                       ),
@@ -170,40 +170,31 @@ class _SubscriptionPromotionProfileState
                     const SizedBox(height: 24.0),
 
                     // Title
-                    Obx(
-                      () => Text(
-                        pubController.paywallTitle.value.isEmpty
-                            ? "Rise Premium ✨"
-                            : pubController.paywallTitle.value,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF433475),
-                        ),
+                    Text(
+                      "Rise Premium ✨",
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF433475),
                       ),
                     ),
 
                     const SizedBox(height: 8.0),
 
                     // Subtitle
-                    Obx(
-                      () => Text(
-                        pubController.paywallSubtitle.value.isEmpty
-                            ? "Unlock your full potential with everything Rise has to offer."
-                            : pubController.paywallSubtitle.value,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.inter(
-                          fontSize: 14,
-                          color: const Color(0xFF7E70AD),
-                          fontWeight: FontWeight.w500,
-                        ),
+                    Text(
+                      "Unlock your full potential with everything Rise has to offer.",
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.inter(
+                        fontSize: 14,
+                        color: const Color(0xFF7E70AD),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
 
                     const SizedBox(height: 24.0),
 
-                    // Trial Banner (Green Box)
                     Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
@@ -219,14 +210,12 @@ class _SubscriptionPromotionProfileState
                           Container(
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFFF0DD),
+                              color: const Color(0xFFFFFFFF),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            child: Obx(
-                              () => Text(
-                                pubController.trialOfferIcon.value,
-                                style: const TextStyle(fontSize: 20),
-                              ),
+                            child: const Text(
+                              "✨",
+                              style: TextStyle(fontSize: 22),
                             ),
                           ),
                           const SizedBox(width: 16.0),
@@ -234,29 +223,21 @@ class _SubscriptionPromotionProfileState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Obx(
-                                  () => Text(
-                                    pubController.trialOfferTitle.value.isEmpty
-                                        ? "7-day free trial"
-                                        : pubController.trialOfferTitle.value,
-                                    style: AppTextStyles.plusJakartaSans(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF147A46),
-                                    ),
+                                Text(
+                                  "7-day free trial",
+                                  style: AppTextStyles.plusJakartaSans(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF147A46),
                                   ),
                                 ),
                                 const SizedBox(height: 4.0),
-                                Obx(
-                                  () => Text(
-                                    pubController.trialOfferDesc.value.isEmpty
-                                        ? "No charge until your trial ends. Cancel anytime."
-                                        : pubController.trialOfferDesc.value,
-                                    style: AppTextStyles.inter(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: const Color(0xFF339864),
-                                    ),
+                                Text(
+                                  "No charge until your trial ends. Cancel anytime.",
+                                  style: AppTextStyles.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF339864),
                                   ),
                                 ),
                               ],

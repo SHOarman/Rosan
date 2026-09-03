@@ -150,19 +150,17 @@ class _SigninScreenState extends State<SigninScreen> {
                   ),
                   const SizedBox(height: 35),
 
-                  Obx(
-                    () => Center(
-                      child: CustomButton(
-                        text: "Sign in",
-                        showIcon: true,
-                        gradientColors: const [
-                          AppColors.primarygredent2,
-                          AppColors.primarygredent1,
-                        ],
-                        onTap: () {
-                          authController.signIn(_formKey);
-                        },
-                      ),
+                  Center(
+                    child: CustomButton(
+                      text: "Sign in",
+                      showIcon: true,
+                      gradientColors: const [
+                        AppColors.primarygredent2,
+                        AppColors.primarygredent1,
+                      ],
+                      onTap: () {
+                        authController.signIn(_formKey);
+                      },
                     ),
                   ),
                   const SizedBox(height: 20),

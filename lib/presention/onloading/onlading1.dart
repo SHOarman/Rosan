@@ -23,7 +23,7 @@ class Onlading1 extends StatelessWidget {
 
             Center(
               child: Image.asset(
-                "assets/images/LOGO (2) 2 (2).png",
+                "assets/icon/loguicon.png",
                 width: 100.0,
                 height: 100.0,
                 fit: BoxFit.cover,

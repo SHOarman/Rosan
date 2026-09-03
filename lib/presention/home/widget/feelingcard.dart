@@ -102,10 +102,13 @@ class _FeelingcardState extends State<Feelingcard> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          item.imageAsset,
-                          width: 28.0,
-                          height: 28.0,
+                        Transform.scale(
+                          scale: (item.label == 'Good' || item.label == 'Drained') ? 1.25 : 1.0,
+                          child: Image.asset(
+                            item.imageAsset,
+                            width: 28.0,
+                            height: 28.0,
+                          ),
                         ),
                         const SizedBox(height: 4.0),
                         Text(

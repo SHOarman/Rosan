@@ -50,7 +50,7 @@ class AppPages {
 
     //================================onloding==========================
     GetPage(name: AppRoutes.onborading, page: ()=>Onlading(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 800)),
-    GetPage(name: AppRoutes.onborading1, page: ()=>Onlading1()),
+    GetPage(name: AppRoutes.onborading1, page: ()=>Onlading1(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 800)),
     GetPage(name: AppRoutes.onborading2, page: ()=>Onlading2()),
     GetPage(name: AppRoutes.onborading3, page: ()=>Onlading3()),
     GetPage(name: AppRoutes.onborading4, page: ()=>Onlading4()),
@@ -68,7 +68,7 @@ class AppPages {
 
 
     //========================================authscrean====================================================
-    GetPage(name: AppRoutes.singin, page: ()=>SigninScreen()),
+    GetPage(name: AppRoutes.singin, page: ()=>SigninScreen(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 800)),
     GetPage(name: AppRoutes.createaccount, page: ()=>CreateAccound()),
     GetPage(name: AppRoutes.forgotpassword, page: ()=>ForgotPassword()),
 
@@ -108,7 +108,7 @@ class AppPages {
     GetPage(name: AppRoutes.myplan, page: ()=>const MyPlanPage()),
     GetPage(name: AppRoutes.notificationsettings, page: ()=>NotificationSettingsView()),
     GetPage(name: AppRoutes.notifications, page: ()=>const NotificationsScreen()),
-    GetPage(name: AppRoutes.subscriptionPromotion, page: ()=>const SubscriptionPromotion()),
+    GetPage(name: AppRoutes.subscriptionPromotion, page: ()=>const SubscriptionPromotion(), transition: Transition.fadeIn, transitionDuration: const Duration(milliseconds: 800)),
     GetPage(name: AppRoutes.subscriptionPromotionProfile, page: ()=>const SubscriptionPromotionProfile()),
   ];
 }

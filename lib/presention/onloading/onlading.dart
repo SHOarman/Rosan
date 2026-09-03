@@ -15,6 +15,7 @@ class Onlading extends StatefulWidget {
 class _OnladingState extends State<Onlading> {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
+  bool _hasNavigated = false;
 
   @override
   void initState() {
@@ -27,25 +28,33 @@ class _OnladingState extends State<Onlading> {
         _controller?.setVolume(0.0);
         _controller?.play();
 
-
-        Future.delayed(const Duration(seconds: 8), () async {
-          final prefs = await SharedPreferences.getInstance();
-          final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-          final bool isOnboardingCompleted = prefs.getBool('isOnboardingCompleted') ?? false;
-
-          if (isLoggedIn) {
-            Get.offNamed(AppRoutes.subscriptionPromotion);
-          } else if (isOnboardingCompleted) {
-            Get.offNamed(AppRoutes.singin);
-          } else {
-            Get.offNamed(AppRoutes.onborading1);
-          }
-        });
+        _controller?.addListener(_videoListener);
       });
+  }
+
+  void _videoListener() async {
+    if (_controller != null && _controller!.value.isInitialized) {
+      if (_controller!.value.position >= _controller!.value.duration && !_hasNavigated) {
+        _hasNavigated = true;
+        
+        final prefs = await SharedPreferences.getInstance();
+        final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+        final bool isOnboardingCompleted = prefs.getBool('isOnboardingCompleted') ?? false;
+
+        if (isLoggedIn) {
+          Get.offNamed(AppRoutes.subscriptionPromotion);
+        } else if (isOnboardingCompleted) {
+          Get.offNamed(AppRoutes.singin);
+        } else {
+          Get.offNamed(AppRoutes.onborading1);
+        }
+      }
+    }
   }
 
   @override
   void dispose() {
+    _controller?.removeListener(_videoListener);
     _controller?.dispose();
     super.dispose();
   }
@@ -73,10 +82,10 @@ class _OnladingState extends State<Onlading> {
               color: const Color(0xFFF6F5FB),
               child: Center(
                 child: Text(
-                  "Manifest\nRise",
+                  "Rise",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.playfairDisplay(
-                    fontSize: 40,
+                    fontSize: 50,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF5E4B8B),

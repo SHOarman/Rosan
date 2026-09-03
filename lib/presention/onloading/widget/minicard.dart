@@ -137,7 +137,7 @@ class _MiniCardState extends State<MiniCard> with SingleTickerProviderStateMixin
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.inter(
-                        fontSize: 14.0,
+                        fontSize: 14.59,
                         fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
                         color: widget.isSelected 
                             ? const Color(0xFF3D2E6B)

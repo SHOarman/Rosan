@@ -214,7 +214,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
                       ),
                       alignment: Alignment.center,
                       child: const Text(
-                        "🎁",
+                        "✨",
                         style: TextStyle(fontSize: 18.0),
                       ),
                     ),

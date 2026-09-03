@@ -288,22 +288,25 @@ class CustomBottomNavBar extends StatelessWidget {
     final item = _navItems[index];
     final bool isSelected = selectedIndex == index;
 
-    return GestureDetector(
-      onTap: () {
-        _triggerFeedback();
-        if (onTap != null) {
-          onTap!(index);
-        } else {
-          if (!isSelected) {
-            Get.offAllNamed(item.route);
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          _triggerFeedback();
+          if (onTap != null) {
+            onTap!(index);
+          } else {
+            if (!isSelected) {
+              Get.offAllNamed(item.route);
+            }
           }
-        }
-      },
-      behavior: HitTestBehavior.opaque,
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Align(
+          alignment: Alignment.center,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        width: isSelected ? 76.0 : 54.0,
+        width: double.infinity,
         height: 44.0,
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFEFE8FF) : Colors.transparent,
@@ -320,17 +323,14 @@ class CustomBottomNavBar extends StatelessWidget {
               : [],
         ),
         alignment: Alignment.center,
-        padding: isSelected
-            ? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0)
-            : EdgeInsets.zero,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset(
               isSelected ? item.activeIcon : item.inactiveIcon,
-              width: isSelected ? 18.0 : 20.0,
-              height: isSelected ? 18.0 : 20.0,
+              width: 20.0,
+              height: 20.0,
               colorFilter: ColorFilter.mode(
                 isSelected ? const Color(0xFF5E4B8B) : const Color(0xFF575B61),
                 BlendMode.srcIn,
@@ -355,6 +355,8 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
         ),
       ),
     );

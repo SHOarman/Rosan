@@ -132,12 +132,12 @@ class Profilecard extends StatelessWidget {
                 ],
               ),
             ),
-            // Chevron icon
-            const Icon(
-              Icons.chevron_right,
-              color: Color(0xFF8F7DB5),
-              size: 20.0,
-            ),
+            // // Chevron icon
+            // const Icon(
+            //   Icons.chevron_right,
+            //   color: Color(0xFF8F7DB5),
+            //   size: 20.0,
+            // ),
           ],
         ),
       ),
