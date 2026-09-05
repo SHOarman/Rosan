@@ -34,7 +34,7 @@ class Futurelettercard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Letter to Future Self ✉️",
+                        "Letter to your future self ✉️",
                         style: AppTextStyles.plusJakartaSans(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class Futurelettercard extends StatelessWidget {
                               ),
                             )
                           : Text(
-                              "Send to Future Self ✨",
+                              "Send to your future self✨",
                               style: AppTextStyles.plusJakartaSans(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
@@ -244,7 +244,7 @@ class Futurelettercard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "✍️",
+                      "📝",
                       style: TextStyle(fontSize: 16.0),
                     ),
                     const SizedBox(width: 8.0),
